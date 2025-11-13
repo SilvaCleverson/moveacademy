@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MoveAcademy · Em breve</title>
+  <title>MoveAcademy · Aprenda Move</title>
   <style>
     * {
       box-sizing: border-box;
@@ -13,97 +13,302 @@
     }
     body {
       min-height: 100vh;
-      background: radial-gradient(circle at top, #0f172a 0, #020617 45%, #020617 100%);
-      color: #e5e7eb;
+      background:
+        radial-gradient(circle at top left, #122C4A 0, #0A1A2F 45%, #020617 100%);
+      color: #E5E7EB;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 24px;
     }
-    .card {
-      max-width: 480px;
+    .shell {
+      max-width: 760px;
       width: 100%;
-      background: rgba(15,23,42,0.9);
-      border-radius: 20px;
-      padding: 28px 24px 24px;
-      border: 1px solid rgba(148,163,184,0.4);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .logo {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      margin-bottom: 6px;
-      background: linear-gradient(120deg, #22c55e, #38bdf8);
-      -webkit-background-clip: text;
-      color: transparent;
+    .card {
+      width: 100%;
+      background:
+        radial-gradient(circle at top right, rgba(74,222,128,0.18), transparent 55%),
+        radial-gradient(circle at bottom left, rgba(106,215,229,0.22), transparent 55%),
+        rgba(15,23,42,0.96);
+      border-radius: 28px;
+      padding: 26px 26px 22px;
+      border: 1px solid rgba(106,215,229,0.45);
+      box-shadow: 0 26px 70px rgba(0,0,0,0.75);
+      position: relative;
+      overflow: hidden;
+    }
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 16px;
     }
     .badge {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 999px;
       background: rgba(15,118,110,0.2);
-      color: #6ee7b7;
+      color: #A7F3D0;
       font-size: 11px;
-      text-transform: uppercase;
       letter-spacing: 0.16em;
-      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+    .lang-switcher {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.65);
+      gap: 2px;
+    }
+    .lang-btn {
+      border: none;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: transparent;
+      color: #9CA3AF;
+      cursor: pointer;
+    }
+    .lang-btn.active {
+      background: linear-gradient(135deg, #6AD7E5, #4BE4C9);
+      color: #020617;
+      font-weight: 600;
+    }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      margin-top: 2px;
+    }
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 20%, #FFFFFF 0, rgba(255,255,255,0.15) 18%, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(63,254,149,0.65), transparent 60%),
+        radial-gradient(circle at 20% 80%, rgba(106,215,229,0.85), transparent 55%),
+        #0F233E;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.5),
+        0 14px 40px rgba(0,0,0,0.85);
+      position: relative;
+      overflow: hidden;
+    }
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      width: 58%;
+      height: 58%;
+      border-radius: 50%;
+      border: 2px solid rgba(226,232,240,0.75);
+      border-top-color: transparent;
+      border-right-color: transparent;
+      transform: rotate(-28deg);
+    }
+    .logo-text-main {
+      font-size: 26px;
+      font-weight: 750;
+      letter-spacing: 0.05em;
+      background: linear-gradient(120deg, #6AD7E5, #4BE4C9);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .logo-text-sub {
+      font-size: 12px;
+      color: #9CA3AF;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-top: -2px;
+    }
+    .content-block {
+      margin-top: 10px;
     }
     .title {
       font-size: 22px;
-      font-weight: 600;
+      font-weight: 650;
+      color: #F9FAFB;
       margin-bottom: 10px;
-      color: #f9fafb;
     }
     .subtitle {
       font-size: 14px;
-      color: #9ca3af;
-      margin-bottom: 20px;
-      line-height: 1.5;
+      color: #CBD5F5;
+      line-height: 1.7;
+      margin-bottom: 18px;
     }
     .tagline {
       font-size: 13px;
-      color: #a5b4fc;
+      color: #A5B4FC;
       margin-bottom: 18px;
     }
-    .footer {
-      font-size: 11px;
-      color: #6b7280;
-      margin-top: 10px;
-    }
     .highlight {
-      color: #4ade80;
+      color: #3FFE95;
       font-weight: 500;
     }
-    @media (max-width: 480px) {
-      .card {
-        padding: 22px 18px 18px;
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .btn-primary {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: default;
+      background: linear-gradient(135deg, #6AD7E5, #4BE4C9);
+      color: #020617;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+    }
+    .pill {
+      font-size: 11px;
+      color: #9CA3AF;
+    }
+    .pill strong {
+      color: #E5E7EB;
+      font-weight: 500;
+    }
+    .footer {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #6B7280;
+    }
+    .footer span {
+      color: #A5B4FC;
+    }
+    @media (max-width: 640px) {
+      body {
+        padding: 16px;
       }
-      .logo { font-size: 22px; }
-      .title { font-size: 20px; }
+      .card {
+        padding: 20px 18px 18px;
+        border-radius: 22px;
+      }
+      .logo-text-main {
+        font-size: 22px;
+      }
+      .title {
+        font-size: 19px;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="badge">Em construção</div>
-    <div class="logo">MoveAcademy</div>
-    <h1 class="title">Aprenda Move de forma guiada e prática.</h1>
-    <p class="subtitle">
-      Plataforma de ensino focada em <span class="highlight">Move e Sui</span>,
-      com trilhas interativas, desafios de código e feedback em tempo real.
-    </p>
-    <p class="tagline">
-      Em breve aqui em <strong>moveacademy.site</strong> 🚀
-    </p>
-    <p class="footer">
-      Quer falar comigo sobre o projeto?  
-      <br />
-      Envie um e-mail para: <strong>seu-email@seu-dominio.com</strong>
-    </p>
-  </main>
+  <div class="shell">
+    <main class="card">
+      <div class="top-row">
+        <div class="badge" id="badge">EM CONSTRUÇÃO</div>
+        <div class="lang-switcher">
+          <button class="lang-btn active" data-lang="pt">PT</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="es">ES</button>
+        </div>
+      </div>
+
+      <div class="logo-row">
+        <div class="logo-mark" aria-hidden="true"></div>
+        <div>
+          <div class="logo-text-main">MoveAcademy</div>
+          <div class="logo-text-sub">MOVE · SUI · LEARN</div>
+        </div>
+      </div>
+
+      <!-- Blocos de idioma -->
+      <section class="content-block lang-block" data-lang-content="pt">
+        <h1 class="title">Aprenda Move com trilhas guiadas e desafios de código.</h1>
+        <p class="subtitle">
+          Plataforma de ensino focada na linguagem <span class="highlight">Move</span> para
+          blockchains como <span class="highlight">Sui</span>, com trilhas interativas,
+          exercícios práticos e feedback em tempo real.
+        </p>
+        <p class="tagline">
+          Em breve aqui em <strong>moveacademy.site</strong> — começando pelo básico até projetos on-chain.
+        </p>
+      </section>
+
+      <section class="content-block lang-block" data-lang-content="en" style="display:none">
+        <h1 class="title">Learn Move with guided tracks and real code challenges.</h1>
+        <p class="subtitle">
+          An education platform focused on the <span class="highlight">Move</span> language for
+          blockchains like <span class="highlight">Sui</span>, with interactive paths,
+          hands-on exercises and real-time feedback.
+        </p>
+        <p class="tagline">
+          Coming soon at <strong>moveacademy.site</strong> — from the basics to on-chain projects.
+        </p>
+      </section>
+
+      <section class="content-block lang-block" data-lang-content="es" style="display:none">
+        <h1 class="title">Aprende Move con rutas guiadas y desafíos de código.</h1>
+        <p class="subtitle">
+          Plataforma de aprendizaje centrada en el lenguaje <span class="highlight">Move</span>
+          para cadenas como <span class="highlight">Sui</span>, con rutas interactivas,
+          ejercicios prácticos y retroalimentación en tiempo real.
+        </p>
+        <p class="tagline">
+          Muy pronto en <strong>moveacademy.site</strong> — desde lo básico hasta proyectos on-chain.
+        </p>
+      </section>
+
+      <div class="cta-row">
+        <button class="btn-primary" type="button" disabled>
+          🚧 Plataforma em construção
+        </button>
+        <div class="pill">
+          Focada em <strong>Move</strong>, inspirada pela <strong>Sui</strong>.
+        </div>
+      </div>
+
+      <p class="footer">
+        MoveAcademy · identidade visual inspirada no ecossistema <span>Sui</span> — feita para builders que querem aprender Move.
+      </p>
+    </main>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll('.lang-btn');
+    const blocks = document.querySelectorAll('.lang-block');
+    const badge = document.getElementById('badge');
+
+    const badgeText = {
+      pt: 'EM CONSTRUÇÃO',
+      en: 'UNDER CONSTRUCTION',
+      es: 'EN CONSTRUCCIÓN'
+    };
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.dataset.lang;
+
+        buttons.forEach(b => b.classList.toggle('active', b === btn));
+
+        blocks.forEach(block => {
+          block.style.display = block.dataset.langContent === lang ? 'block' : 'none';
+        });
+
+        badge.textContent = badgeText[lang] || badgeText.pt;
+        document.documentElement.lang =
+          lang === 'pt' ? 'pt-BR' : (lang === 'es' ? 'es' : 'en');
+      });
+    });
+  </script>
 </body>
 </html>
