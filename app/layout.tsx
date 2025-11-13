@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { LanguageProviderWrapper } from "@/components/providers/LanguageProviderWrapper";
 
 export const metadata: Metadata = {
   title: "MoveAcademy · Aprenda Move",
@@ -13,7 +14,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        <LanguageProviderWrapper>
+          {children}
+        </LanguageProviderWrapper>
+      </body>
     </html>
   );
 }

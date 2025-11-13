@@ -22,11 +22,15 @@ Criar a **melhor plataforma de aprendizado Move em PT/EN/ES**, oferecendo:
 
 ## 🚧 Status Atual
 
-- ✅ Landing page finalizada com suporte a 3 idiomas (PT/EN/ES)
-- ✅ Identidade visual completa (paleta oficial, logo, UI Kit)
-- ✅ Estrutura de documentação criada
-- ✅ Design system documentado
-- 🚧 Preparação para migração para Next.js 14
+- ✅ Next.js 14 com App Router configurado
+- ✅ Sistema gamificado "O Guerreiro(a) do Move" implementado
+- ✅ Landing page com seleção de personagem (Sir Transfer / Sir Entry)
+- ✅ Sistema de trilhas e missões com progresso
+- ✅ Editor de código Move integrado (Monaco Editor)
+- ✅ Suporte multilíngue (PT/EN/ES) com Context API
+- ✅ Identidade visual Phantasy Star inspirada em Sui
+- ✅ Sistema de XP e progresso salvo em localStorage
+- 🚧 Adicionando missões para todas as 8 trilhas
 
 ---
 
@@ -34,22 +38,41 @@ Criar a **melhor plataforma de aprendizado Move em PT/EN/ES**, oferecendo:
 
 ```
 /
-├── index.html                    # Landing page atual (estática)
-├── README.md                     # Este arquivo
-├── public/
-│   └── logo-moveacademy.svg     # Logo oficial
-├── docs/
-│   ├── branding/
-│   │   ├── MOVEACADEMY-BRANDING.md  # Identidade visual completa
-│   │   └── logo.svg                  # Logo SVG
-│   ├── ui/
-│   │   └── UI-KIT.md                 # Componentes e padrões de UI
-│   └── project/
-│       ├── VISION.md                 # Visão do projeto
-│       ├── TECH-STACK.md             # Stack tecnológica
-│       └── TODO.md                   # Tarefas e roadmap
-└── moveacademy_docs/            # Documentação adicional
+├── app/                          # Next.js App Router
+│   ├── page.tsx                 # Página inicial (seleção de personagem)
+│   ├── layout.tsx              # Layout raiz
+│   ├── globals.css             # Estilos globais
+│   └── trilhas/                # Rotas de trilhas
+│       ├── page.tsx            # Mapa de Moviara (todas as trilhas)
+│       └── [slug]/            # Trilha específica
+│           ├── page.tsx       # Detalhes da trilha
+│           └── [missao]/      # Missão específica
+│               └── page.tsx   # Editor + instruções
+│
+├── components/                  # Componentes React
+│   ├── guerreiro/              # Componentes gamificados
+│   ├── MoveEditor.tsx         # Editor Monaco
+│   └── providers/             # Providers de contexto
+│
+├── contexts/                    # Contextos React
+│   └── LanguageContext.tsx   # Gerenciamento de idioma
+│
+├── lib/                         # Utilitários e dados
+│   ├── data/                   # Dados estáticos
+│   ├── types/                  # Tipos TypeScript
+│   └── monaco-moveacademy-theme.ts
+│
+├── public/                      # Arquivos estáticos
+│   ├── C1.png, C2.png         # Personagens
+│   └── sui-symbol.svg         # Ícones
+│
+└── docs/                        # Documentação
+    ├── project/               # Documentação técnica
+    ├── branding/              # Identidade visual
+    └── PROJECT-STRUCTURE.md   # Estrutura detalhada
 ```
+
+📄 Veja [`docs/PROJECT-STRUCTURE.md`](docs/PROJECT-STRUCTURE.md) para estrutura completa
 
 ---
 
@@ -77,22 +100,23 @@ A identidade visual é inspirada diretamente no ecossistema **Sui**, criando uma
 
 ## 🧱 Roadmap
 
-### Fase 1 — App Base
-- [ ] Migrar para Next.js 14 (App Router)
-- [ ] Configurar TailwindCSS com paleta oficial
-- [ ] Criar layout principal (Navbar + Footer)
-- [ ] Implementar sistema de i18n (PT/EN/ES)
+### Fase 1 — App Base ✅
+- [x] Migrar para Next.js 14 (App Router)
+- [x] Configurar TailwindCSS com paleta oficial
+- [x] Criar layout principal
+- [x] Implementar sistema de i18n (PT/EN/ES)
 
-### Fase 2 — Trilhas e Cursos
-- [ ] CRUD de trilhas e aulas
-- [ ] Sistema de progresso por usuário
-- [ ] Templates de aula interativos
-- [ ] Navegação entre aulas
+### Fase 2 — Trilhas e Cursos 🚧
+- [x] Estrutura de trilhas e missões
+- [x] Sistema de progresso (localStorage)
+- [x] Templates de missão interativos
+- [x] Navegação entre missões
+- [ ] Adicionar todas as missões das 8 trilhas
 
-### Fase 3 — Editor de Código Move
-- [ ] Integrar Monaco Editor
+### Fase 3 — Editor de Código Move 🚧
+- [x] Integrar Monaco Editor
+- [x] Tema do editor (MoveAcademy dark)
 - [ ] Destaque de sintaxe Move customizado
-- [ ] Tema do editor (MoveAcademy dark)
 - [ ] Execução via backend (VPS necessário)
 
 ### Fase 4 — Autenticação e Perfis
@@ -111,30 +135,24 @@ A identidade visual é inspirada diretamente no ecossistema **Sui**, criando uma
 
 ## 🚀 Como Rodar Localmente
 
-### Landing Page Atual (HTML estático)
+### Pré-requisitos
 
-A landing page atual é um arquivo HTML estático que pode ser aberto diretamente no navegador ou servido com qualquer servidor HTTP simples:
+- Node.js 18+ e npm
 
-```bash
-# Com Python
-python -m http.server 8000
-
-# Com Node.js (http-server)
-npx http-server
-
-# Com PHP
-php -S localhost:8000
-```
-
-Acesse: `http://localhost:8000`
-
-### Futuro (Next.js)
-
-Quando migrar para Next.js:
+### Instalação e Execução
 
 ```bash
+# Instalar dependências
 npm install
+
+# Rodar em modo desenvolvimento
 npm run dev
+
+# Build para produção
+npm run build
+
+# Rodar build de produção
+npm start
 ```
 
 Acesse: `http://localhost:3000`
@@ -144,8 +162,10 @@ Acesse: `http://localhost:3000`
 ## 🏗️ Infraestrutura
 
 ### Atual
-- ✅ **Frontend:** HTML/CSS/JS estático
-- ✅ **Hosting:** Vercel/Netlify (deploy automático via Git)
+- ✅ **Frontend:** Next.js 14 (App Router)
+- ✅ **Estilização:** Tailwind CSS
+- ✅ **Editor:** Monaco Editor
+- ✅ **Hosting:** Vercel (deploy automático via Git)
 
 ### Futuro (quando implementar execução de código)
 - 🔄 **Backend:** Node.js/Python para execução de código Move
@@ -182,8 +202,10 @@ Toda ajuda é bem-vinda! O foco principal é:
 - [`docs/project/VISION.md`](docs/project/VISION.md) - Visão completa do projeto
 - [`docs/project/TECH-STACK.md`](docs/project/TECH-STACK.md) - Stack tecnológica
 - [`docs/project/TODO.md`](docs/project/TODO.md) - Tarefas e roadmap detalhado
-- [`docs/branding/MOVEACADEMY-BRANDING.md`](docs/branding/MOVEACADEMY-BRANDING.md) - Guia de identidade visual
-- [`docs/ui/UI-KIT.md`](docs/ui/UI-KIT.md) - Componentes e padrões de UI
+- [`docs/project/CONCEITO-GUERREIRO-MOVE.md`](docs/project/CONCEITO-GUERREIRO-MOVE.md) - Conceito gamificado
+- [`docs/PROJECT-STRUCTURE.md`](docs/PROJECT-STRUCTURE.md) - Estrutura detalhada do projeto
+- [`docs/branding/UI-KIT.md`](docs/branding/UI-KIT.md) - Guia de identidade visual
+- [`MANIFESTO.md`](MANIFESTO.md) - Manifesto do MoveAcademy
 
 ---
 
