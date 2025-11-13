@@ -30,6 +30,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# arquivos temporários de commit
+commit_msg.txt
+*.tmp
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

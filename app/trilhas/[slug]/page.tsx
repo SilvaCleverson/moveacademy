@@ -176,7 +176,7 @@ export default function TrilhaDetailPage({ params }: PageProps) {
                   <div className={`h-0.5 bg-gradient-to-r from-transparent ${
                     codornaSelecionada === "transfer" ? "via-sui-blue/60" : "via-move-green/60"
                   } to-transparent my-1.5`} />
-                </div>
+        </div>
 
                 {/* XP Display */}
                 <div className="hud-text-box">
@@ -201,10 +201,10 @@ export default function TrilhaDetailPage({ params }: PageProps) {
                       }
                     </p>
                   )}
-                </div>
               </div>
             </div>
           </div>
+        </div>
         )}
 
         {/* Lista de Missões */}
@@ -240,10 +240,10 @@ export default function TrilhaDetailPage({ params }: PageProps) {
                 <MissaoCard
                   key={missao.id}
                   missao={missao}
-                  trilhaSlug={trilha.slug}
+            trilhaSlug={trilha.slug}
                   concluida={concluida}
                   bloqueada={bloqueada}
-                />
+          />
               );
             })}
           </div>

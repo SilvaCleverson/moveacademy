@@ -4,6 +4,18 @@
 
 O **MoveAcademy** é uma plataforma educacional completa para desenvolvedores que desejam aprender e dominar a linguagem **Move**, usada em blockchains como **Sui**.
 
+## 🌍 Bem-vindo a Moviara
+
+**Moviara** é o mundo onde sua jornada Move começa. Um universo onde código e magia se encontram, e cada linha que você escreve é um passo em direção ao domínio dos artefatos da blockchain.
+
+Neste mundo, você é um **Guerreiro(a) do Move**, escolhendo entre dois caminhos:
+- **Sir Transfer** - A codorna que move objetos, especialista em transferências e ownership
+- **Sir Entry** - A codorna que entra em ação, mestre em funções entry e execução
+
+Cada missão é uma aventura, cada trilha um continente a explorar. Aprenda Move enquanto constrói seu herói, ganha XP, desbloqueia badges e se torna um verdadeiro mestre de Moviara.
+
+> *"Num mundo onde o código rege os contratos do destino, uma nova alma desperta. Para dominar os artefatos da blockchain, ela precisa aprender a linguagem dos criadores: Move."*
+
 ---
 
 ## 🎯 Objetivo
@@ -30,7 +42,48 @@ Criar a **melhor plataforma de aprendizado Move em PT/EN/ES**, oferecendo:
 - ✅ Suporte multilíngue (PT/EN/ES) com Context API
 - ✅ Identidade visual Phantasy Star inspirada em Sui
 - ✅ Sistema de XP e progresso salvo em localStorage
-- 🚧 Adicionando missões para todas as 8 trilhas
+- ✅ Card da codorna selecionada nas páginas
+- ✅ Exemplo de código exibido acima do editor
+- ✅ Sistema de execução simulada ("Compilação da Sui")
+- ✅ 3 trilhas completas com missões (20 missões no total)
+- 🚧 5 trilhas pendentes (precisam de missões)
+
+---
+
+## 🗺️ Trilhas de Moviara
+
+Explore os 8 continentes de Moviara, cada um com seu próprio desafio e conhecimento:
+
+### ✅ Trilhas Completas
+
+1. **🪨 Despertar da Essência** (8 missões • 1550 XP)
+   - Sua jornada começa aqui. Aprenda os fundamentos do Move enquanto constrói seu próprio herói.
+   - Conceitos: Módulos, funções, variáveis, tipos, structs, controle de fluxo
+
+2. **🛡️ Domínio da Propriedade** (6 missões • 1000 XP)
+   - Domine os conceitos fundamentais de ownership em Move.
+   - Conceitos: Ownership, Copy, Store, Key, Drop, abilities combinadas
+
+3. **⚡ Sui Prático** (6 missões • 1300 XP)
+   - Aprenda a trabalhar com objetos, transferências e funções entry no Sui.
+   - Conceitos: Objetos Sui, transfer, entry functions, compartilhado, congelado
+
+### 🚧 Trilhas em Construção
+
+4. **🪙 Moedas e Tokens** (0 missões • 1800 XP planejado)
+   - Crie seu próprio sistema de moedas e tokens no Sui. Aprenda sobre Coin<T> e economia tokenizada.
+
+5. **🎨 NFTs Avançado** (0 missões • 2000 XP planejado)
+   - Crie coleções NFT complexas com metadados, royalties e marketplaces no Sui.
+
+6. **💎 DeFi e Finanças** (0 missões • 2500 XP planejado)
+   - Construa protocolos DeFi: DEX, staking, lending e yield farming no Sui.
+
+7. **🎮 Gaming e Metaverso** (0 missões • 2200 XP planejado)
+   - Crie jogos Web3, sistemas de recompensas e experiências imersivas no Sui.
+
+8. **👑 Caminho do Mestre** (0 missões • 3000 XP planejado)
+   - Torne-se um mestre do Move. Projetos avançados, otimizações e padrões de design profissional.
 
 ---
 
@@ -111,11 +164,14 @@ A identidade visual é inspirada diretamente no ecossistema **Sui**, criando uma
 - [x] Sistema de progresso (localStorage)
 - [x] Templates de missão interativos
 - [x] Navegação entre missões
-- [ ] Adicionar todas as missões das 8 trilhas
+- [x] 3 trilhas completas: Despertar da Essência (8), Domínio da Propriedade (6), Sui Prático (6)
+- [ ] Adicionar missões para: Moedas e Tokens, NFTs Avançado, DeFi, Gaming, Caminho do Mestre
 
 ### Fase 3 — Editor de Código Move 🚧
 - [x] Integrar Monaco Editor
 - [x] Tema do editor (MoveAcademy dark)
+- [x] Exemplo de código exibido acima do editor
+- [x] Sistema de execução simulada (para demo)
 - [ ] Destaque de sintaxe Move customizado
 - [ ] Execução via backend (VPS necessário)
 
@@ -157,6 +213,21 @@ npm start
 
 Acesse: `http://localhost:3000`
 
+### ⚠️ Importante: Encoding
+
+**SEMPRE** configure o encoding UTF-8 antes de fazer commits:
+
+```bash
+# PowerShell
+chcp 65001
+
+# Ou use arquivo temporário para mensagens de commit
+echo "sua mensagem" > commit_msg.txt
+git commit -F commit_msg.txt
+```
+
+Veja [`.git-encoding-config.md`](.git-encoding-config.md) para mais detalhes.
+
 ---
 
 ## 🏗️ Infraestrutura
@@ -166,6 +237,8 @@ Acesse: `http://localhost:3000`
 - ✅ **Estilização:** Tailwind CSS
 - ✅ **Editor:** Monaco Editor
 - ✅ **Hosting:** Vercel (deploy automático via Git)
+  - Produção: [moveacademy.vercel.app](https://moveacademy.vercel.app) (branch `master`)
+  - Homologação: [moveacademy-site.vercel.app](https://moveacademy-site.vercel.app) (branch `nextjs`)
 
 ### Futuro (quando implementar execução de código)
 - 🔄 **Backend:** Node.js/Python para execução de código Move
@@ -203,9 +276,11 @@ Toda ajuda é bem-vinda! O foco principal é:
 - [`docs/project/TECH-STACK.md`](docs/project/TECH-STACK.md) - Stack tecnológica
 - [`docs/project/TODO.md`](docs/project/TODO.md) - Tarefas e roadmap detalhado
 - [`docs/project/CONCEITO-GUERREIRO-MOVE.md`](docs/project/CONCEITO-GUERREIRO-MOVE.md) - Conceito gamificado
+- [`docs/project/DIFERENCIAL.md`](docs/project/DIFERENCIAL.md) - Diferenciais da plataforma
 - [`docs/PROJECT-STRUCTURE.md`](docs/PROJECT-STRUCTURE.md) - Estrutura detalhada do projeto
 - [`docs/branding/UI-KIT.md`](docs/branding/UI-KIT.md) - Guia de identidade visual
 - [`MANIFESTO.md`](MANIFESTO.md) - Manifesto do MoveAcademy
+- [`.git-encoding-config.md`](.git-encoding-config.md) - Configuração de encoding para commits
 
 ---
 
