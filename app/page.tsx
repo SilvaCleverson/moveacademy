@@ -216,12 +216,12 @@ export default function Home() {
                   </div>
                   <div className="hud-text-box">
                     <p className="text-[#CBD5F5] text-xs font-mono italic text-center">
-                      "{lang === "pt"
+                      &quot;{lang === "pt"
                         ? "Determinação e foco para dominar Move"
                         : lang === "en"
                         ? "Determination and focus to master Move"
                         : "Determinación y enfoque para dominar Move"
-                      }"
+                      }&quot;
                     </p>
                   </div>
                 </div>
@@ -281,12 +281,12 @@ export default function Home() {
                   </div>
                   <div className="hud-text-box">
                     <p className="text-[#CBD5F5] text-xs font-mono italic text-center">
-                      "{lang === "pt"
+                      &quot;{lang === "pt"
                         ? "Agilidade e sabedoria para conquistar Move"
                         : lang === "en"
                         ? "Agility and wisdom to conquer Move"
                         : "Agilidad y sabiduría para conquistar Move"
-                      }"
+                      }&quot;
                     </p>
                   </div>
                 </div>
