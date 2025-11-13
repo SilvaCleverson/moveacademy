@@ -67,16 +67,15 @@ export default function Home() {
     <div className="min-h-screen flex items-center justify-center p-6 sm:p-4 bg-gradient-deep-night text-[#E5E7EB]">
       <div className="max-w-[760px] w-full flex items-center justify-center">
         <main className="w-full bg-gradient-to-br from-[rgba(74,222,128,0.18)] via-transparent to-[rgba(106,215,229,0.22)] bg-[rgba(15,23,42,0.96)] rounded-[28px] sm:rounded-[22px] p-[26px] sm:p-5 sm:px-[18px] border border-[rgba(106,215,229,0.45)] shadow-[0_26px_70px_rgba(0,0,0,0.75)] relative overflow-hidden">
-          <div className="absolute top-4 right-4 z-10">
-            <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-[rgba(234,179,8,0.25)] border border-[rgba(234,179,8,0.5)] text-[#FCD34D] text-[10px] font-semibold tracking-wider uppercase shadow-[0_4px_12px_rgba(234,179,8,0.3)]">
-              🧪 Site de Homologação
-            </div>
-          </div>
           <div className="flex justify-between items-center mb-3 gap-4">
             <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-[rgba(15,118,110,0.2)] text-[#A7F3D0] text-[11px] tracking-widest uppercase">
               {badgeText[lang]}
             </div>
-            <div className="inline-flex p-0.5 rounded-full bg-[rgba(15,23,42,0.9)] border border-[rgba(148,163,184,0.65)] gap-0.5">
+            <div className="flex flex-col items-end gap-1.5">
+              <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-[rgba(234,179,8,0.25)] border border-[rgba(234,179,8,0.5)] text-[#FCD34D] text-[10px] font-semibold tracking-wider uppercase shadow-[0_4px_12px_rgba(234,179,8,0.3)]">
+                🧪 Site de Homologação
+              </div>
+              <div className="inline-flex p-0.5 rounded-full bg-[rgba(15,23,42,0.9)] border border-[rgba(148,163,184,0.65)] gap-0.5">
               <button
                 onClick={() => handleLangChange("pt")}
                 className={`px-2.5 py-1 rounded-full text-[11px] tracking-wider uppercase transition-all ${
@@ -107,6 +106,7 @@ export default function Home() {
               >
                 ES
               </button>
+              </div>
             </div>
           </div>
 
