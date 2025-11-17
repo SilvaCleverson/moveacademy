@@ -15,6 +15,7 @@ import ActionBar from "@/components/ide/ActionBar";
 import ConsolePanel from "@/components/ide/ConsolePanel";
 import ObjetivoPanel from "@/components/ide/ObjetivoPanel";
 import { useAudio } from "@/contexts/AudioContext";
+import { validateMoveCode, getValidationSchema } from "@/lib/validation/move-validator";
 
 interface PageProps {
   params: {
@@ -192,15 +193,15 @@ export default function MissaoPage({ params }: PageProps) {
   }
 
   const { trilha, missao } = result;
-  
+
   // Se não tem missões, mostra loading enquanto redireciona
   if (trilha.missoes.length === 0) {
-    return (
+  return (
       <div className="min-h-screen bg-gradient-deep-night text-[#E5E7EB] flex items-center justify-center">
         <div className="text-center">
           <p className="text-[#CBD5F5]">Carregando...</p>
         </div>
-      </div>
+        </div>
     );
   }
 
@@ -228,47 +229,13 @@ export default function MissaoPage({ params }: PageProps) {
       <div className="min-h-screen bg-gradient-deep-night text-[#E5E7EB] flex items-center justify-center">
         <div className="text-center">
           <p className="text-[#CBD5F5]">{lang === "pt" ? "Missão bloqueada. Complete as missões anteriores primeiro." : lang === "en" ? "Mission locked. Complete previous missions first." : "Misión bloqueada. Completa las misiones anteriores primero."}</p>
-        </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   const handleExecutar = () => {
     handleRun();
-  };
-
-  const handleBuild = () => {
-    const jaConcluida = missoesConcluidas.includes(missao.id);
-    setStatusExecucao("compilando");
-    setConsoleOutput([`$ sui move build`]);
-    playSound("compile");
-    
-    setTimeout(() => {
-      setConsoleOutput(prev => [...prev, `✓ Compiling Move modules...`, `  Building module ${missao.codigoInicial?.match(/module\s+(\S+)/)?.[1] || "0x1::despertar"}`, `✓ Build successful!`]);
-      setStatusExecucao("sucesso");
-      playSound("success");
-    }, 1500);
-  };
-
-  const handleTest = () => {
-    const jaConcluida = missoesConcluidas.includes(missao.id);
-    setStatusExecucao("compilando");
-    setConsoleOutput([`$ sui move test`]);
-    playSound("compile");
-    
-    setTimeout(() => {
-      setStatusExecucao("executando");
-      setConsoleOutput(prev => [...prev, `✓ Running 1 test`, `  Test: test_${missao.slug}`, `✓ Test passed!`]);
-      
-      setTimeout(() => {
-        setStatusExecucao("sucesso");
-        playSound("success");
-        if (!jaConcluida) {
-          setConsoleOutput(prev => [...prev, `🎉 Missão concluída! +${missao.xpRecompensa} XP`]);
-          playSound("xp");
-        }
-      }, 1000);
-    }, 1500);
   };
 
   const handleRun = () => {
@@ -277,38 +244,60 @@ export default function MissaoPage({ params }: PageProps) {
     setConsoleOutput([`$ sui move build`]);
     playSound("compile");
     
-    // Resultado aleatório (50% sucesso, 50% erro)
-    const sucesso = Math.random() >= 0.5;
+    // Validação baseada em schema
+    const schema = getValidationSchema(missao.id);
+    let validationResult: { isValid: boolean; errors: string[]; warnings: string[] };
+    
+    if (schema) {
+      validationResult = validateMoveCode(codigo, schema);
+    } else {
+      // Fallback: validação básica se não houver schema
+      const hasModule = /module\s+\S+::\S+\s*\{/.test(codigo);
+      validationResult = {
+        isValid: hasModule,
+        errors: hasModule ? [] : ["Módulo não encontrado"],
+        warnings: []
+      };
+    }
     
     setTimeout(() => {
-      if (!sucesso) {
-        // Simula erro de compilação
-        setConsoleOutput(prev => [...prev, 
+      if (!validationResult.isValid) {
+        // Erro de validação
+        const moduleName = missao.codigoInicial?.match(/module\s+(\S+)/)?.[1] || "0x1::despertar";
+        const errorOutput = [
           `✗ Compiling Move modules...`,
-          `  Building module ${missao.codigoInicial?.match(/module\s+(\S+)/)?.[1] || "0x1::despertar"}`,
+          `  Building module ${moduleName}`,
           ``,
           `Error:`,
-          `  ┌─ ${missao.slug}.move:5:7`,
-          `  │`,
-          `5 │     // Seu código aqui`,
-          `  │     ^^^^^^^^^^^^^^^^`,
-          `  │`,
-          `  = Missing implementation`,
-          `  = Hint: Você precisa implementar a função main()`,
-          ``
-        ]);
+        ];
+        
+        // Adiciona cada erro encontrado
+        validationResult.errors.forEach((error, index) => {
+          errorOutput.push(`  ${index + 1}. ${error}`);
+        });
+        
+        errorOutput.push(``);
+        errorOutput.push(`  = Validation failed`);
+        errorOutput.push(`  = Hint: Verifique os requisitos da missão`);
+        errorOutput.push(``);
+        
+        setConsoleOutput(prev => [...prev, ...errorOutput]);
         setStatusExecucao("erro");
         playSound("error");
         
-        // Mostra modal de erro
+        // Mostra modal de erro com detalhes específicos
+        const errorMessage = validationResult.errors.length > 0
+          ? validationResult.errors.join("\n")
+          : lang === "pt"
+          ? "Seu código não passou na validação. Verifique os requisitos da missão."
+          : lang === "en"
+          ? "Your code did not pass validation. Check the mission requirements."
+          : "Tu código no pasó la validación. Verifica los requisitos de la misión.";
+        
         setErroDetalhes({
-          titulo: lang === "pt" ? "Erro na Execução" : lang === "en" ? "Execution Error" : "Error de Ejecución",
-          mensagem: lang === "pt" 
-            ? "Seu código não foi executado com sucesso. Verifique se você implementou todas as funções necessárias."
-            : lang === "en"
-            ? "Your code did not execute successfully. Make sure you implemented all necessary functions."
-            : "Tu código no se ejecutó correctamente. Asegúrate de implementar todas las funciones necesarias.",
-          linha: 5,
+          titulo: lang === "pt" ? "Erro na Validação" : lang === "en" ? "Validation Error" : "Error de Validación",
+          mensagem: errorMessage,
+          linha: undefined,
           codigo: codigo
         });
         setMostrarModalErro(true);

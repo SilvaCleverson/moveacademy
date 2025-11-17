@@ -189,7 +189,7 @@ A identidade visual é inspirada diretamente no ecossistema **Sui**, criando uma
 - [x] Interface simplificada para iniciantes
 - [ ] Destaque de sintaxe Move customizado
 - [ ] Execução via backend (VPS necessário)
-- [ ] Atalhos de teclado (CTRL+B, CTRL+T, CTRL+R)
+- [ ] Atalhos de teclado (CTRL+R para Executar)
 
 ### Fase 4 — Autenticação e Perfis
 - [ ] Integração com Supabase/Clerk
