@@ -145,10 +145,7 @@ export default function MissaoPage({ params }: PageProps) {
       setCodigo(missao.codigoInicial);
     }
     
-    // Se a trilha não tem missões, redireciona para página em construção
-    if (trilha.missoes.length === 0) {
-      router.push("/em-construcao");
-    }
+    // BLOQUEIO REMOVIDO - Trilhas sem missões também são acessíveis
   }, [params, router]);
 
   // BLOQUEIO DESABILITADO - Todas as trilhas e missões estão liberadas

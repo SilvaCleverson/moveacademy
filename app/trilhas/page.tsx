@@ -135,7 +135,9 @@ export default function TrilhasPage() {
                               color: trilha.cor || "#3FFE95",
                             }}
                           >
-                            {trilha.missoes.length} {lang === "pt" ? "MISSÕES" : lang === "en" ? "MISSIONS" : "MISIONES"}
+                            {trilha.missoes.length > 0 
+                              ? `${trilha.missoes.length} ${lang === "pt" ? "MISSÕES" : lang === "en" ? "MISSIONS" : "MISIONES"}`
+                              : lang === "pt" ? "EM DESENVOLVIMENTO" : lang === "en" ? "IN DEVELOPMENT" : "EN DESARROLLO"}
                           </span>
                           <span className="hud-text-box px-2 py-1 text-sui-blue font-bold">
                             ⭐ {trilha.xpTotal} XP

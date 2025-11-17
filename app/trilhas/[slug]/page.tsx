@@ -104,25 +104,10 @@ export default function TrilhaDetailPage({ params }: PageProps) {
       router.push("/not-found");
       return;
     }
-    
-    // Se a trilha não tem missões, redireciona para página em construção
-    if (trilha.missoes.length === 0) {
-      router.push("/em-construcao");
-    }
+    // BLOQUEIO REMOVIDO - Trilhas sem missões também são acessíveis
   }, [trilha, router]);
 
   if (!trilha) {
-    return (
-      <div className="min-h-screen bg-gradient-deep-night text-[#E5E7EB] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-[#CBD5F5]">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Se não tem missões, mostra loading enquanto redireciona
-  if (trilha.missoes.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-deep-night text-[#E5E7EB] flex items-center justify-center">
         <div className="text-center">
@@ -248,22 +233,56 @@ export default function TrilhaDetailPage({ params }: PageProps) {
           <h2 className="text-xl sm:text-2xl font-bold text-sui-blue mb-4 sm:mb-6">
             {lang === "pt" ? "Missões" : lang === "en" ? "Missions" : "Misiones"}
           </h2>
-          <div className="space-y-4">
-            {trilha.missoes.map((missao, index) => {
-              const concluida = missoesConcluidas.includes(missao.id);
-              const bloqueada = false; // BLOQUEIO DESABILITADO - Todas as missões liberadas
+          {trilha.missoes.length === 0 ? (
+            <div className="bg-[#020617]/50 rounded-lg p-6 sm:p-8 border border-sui-blue/20">
+              <div className="text-center mb-6">
+                <p className="text-[#CBD5F5] text-lg sm:text-xl mb-2 font-bold">
+                  {lang === "pt" 
+                    ? "🚧 Esta trilha está em desenvolvimento"
+                    : lang === "en"
+                    ? "🚧 This trail is under development"
+                    : "🚧 Esta trilha está en desarrollo"}
+                </p>
+                <p className="text-[#9CA3AF] text-sm mb-4">
+                  {lang === "pt"
+                    ? "As missões desta trilha serão adicionadas em breve. Fique atento!"
+                    : lang === "en"
+                    ? "Missions for this trail will be added soon. Stay tuned!"
+                    : "Las misiones de esta trilha se agregarán pronto. ¡Mantente atento!"}
+                </p>
+              </div>
+              
+              {/* O que será aprendido */}
+              <div className="bg-move-navy/30 rounded-lg p-4 sm:p-6 border border-sui-blue/10">
+                <h3 className="text-sui-blue font-bold text-base sm:text-lg mb-3 font-mono uppercase">
+                  {lang === "pt" ? "📚 O QUE VOCÊ VAI APRENDER" : lang === "en" ? "📚 WHAT YOU'LL LEARN" : "📚 LO QUE APRENDERÁS"}
+                </h3>
+                <div className="text-[#E5E7EB] text-sm sm:text-base leading-relaxed">
+                  <p className="mb-3">{trilha.descricao[lang]}</p>
+                  <div className="bg-[#0A1A2F]/50 rounded p-3 border-l-2 border-sui-blue/50">
+                    <p className="text-[#CBD5F5] italic text-xs sm:text-sm">{trilha.lore[lang]}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {trilha.missoes.map((missao, index) => {
+                const concluida = missoesConcluidas.includes(missao.id);
+                const bloqueada = false; // BLOQUEIO DESABILITADO - Todas as missões liberadas
 
-              return (
-                <MissaoCard
-                  key={missao.id}
-                  missao={missao}
-            trilhaSlug={trilha.slug}
-                  concluida={concluida}
-                  bloqueada={bloqueada}
-          />
-              );
-            })}
-          </div>
+                return (
+                  <MissaoCard
+                    key={missao.id}
+                    missao={missao}
+              trilhaSlug={trilha.slug}
+                    concluida={concluida}
+                    bloqueada={bloqueada}
+            />
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
