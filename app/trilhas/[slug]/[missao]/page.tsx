@@ -150,6 +150,37 @@ export default function MissaoPage({ params }: PageProps) {
     }
   }, [params, router]);
 
+  // Verifica se a missão está bloqueada e redireciona (ANTES de qualquer early return)
+  useEffect(() => {
+    if (!result) return;
+    
+    const { trilha, missao } = result;
+    
+    // Verifica se a trilha está bloqueada (trilha anterior não completa)
+    const trilhaIndex = trilhas.findIndex(t => t.id === trilha.id);
+    const isTrilhaCompleta = (t: typeof trilhas[0]) => {
+      if (t.missoes.length === 0) return false;
+      return t.missoes.every(m => missoesConcluidas.includes(m.id));
+    };
+    const isTrilhaBloqueada = trilhaIndex > 0 && !isTrilhaCompleta(trilhas[trilhaIndex - 1]);
+
+    // Verifica se a missão está bloqueada
+    const missaoIndex = trilha.missoes.findIndex(m => m.id === missao.id);
+    const isMissaoBloqueada = () => {
+      if (isTrilhaBloqueada) return true;
+      if (missaoIndex === 0) return false;
+      const missaoAnterior = trilha.missoes[missaoIndex - 1];
+      return !missoesConcluidas.includes(missaoAnterior.id);
+    };
+
+    const missaoBloqueada = isMissaoBloqueada();
+    
+    if (missaoBloqueada) {
+      router.push(`/trilhas/${trilha.slug}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result, missoesConcluidas, router]); // trilhas é constante importada, não precisa estar nas dependências
+
   if (!result) {
     return (
       <div className="min-h-screen bg-gradient-deep-night text-[#E5E7EB] flex items-center justify-center">
@@ -181,7 +212,7 @@ export default function MissaoPage({ params }: PageProps) {
   };
   const isTrilhaBloqueada = trilhaIndex > 0 && !isTrilhaCompleta(trilhas[trilhaIndex - 1]);
 
-  // Verifica se a missão está bloqueada
+  // Verifica se a missão está bloqueada (para exibição)
   const missaoIndex = trilha.missoes.findIndex(m => m.id === missao.id);
   const isMissaoBloqueada = () => {
     if (isTrilhaBloqueada) return true;
@@ -189,15 +220,7 @@ export default function MissaoPage({ params }: PageProps) {
     const missaoAnterior = trilha.missoes[missaoIndex - 1];
     return !missoesConcluidas.includes(missaoAnterior.id);
   };
-
   const missaoBloqueada = isMissaoBloqueada();
-
-  // Redireciona se a missão está bloqueada
-  useEffect(() => {
-    if (missaoBloqueada) {
-      router.push(`/trilhas/${trilha.slug}`);
-    }
-  }, [missaoBloqueada, router, trilha.slug]);
 
   // Se a missão está bloqueada, mostra mensagem
   if (missaoBloqueada) {

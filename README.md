@@ -36,15 +36,19 @@ Criar a **melhor plataforma de aprendizado Move em PT/EN/ES**, oferecendo:
 
 - ✅ Next.js 14 com App Router configurado
 - ✅ Sistema gamificado "O Guerreiro(a) do Move" implementado
-- ✅ Landing page com seleção de personagem (Sir Transfer / Sir Entry)
+- ✅ Landing page com seleção de personagem (Sir Transfer / Sir Entry) - carrossel estilo Golden Axe
 - ✅ Sistema de trilhas e missões com progresso
+- ✅ Layout IDE completo (Sidebar, Console, ActionBar, ObjetivoPanel)
 - ✅ Editor de código Move integrado (Monaco Editor)
 - ✅ Suporte multilíngue (PT/EN/ES) com Context API
 - ✅ Identidade visual Phantasy Star inspirada em Sui
-- ✅ Sistema de XP e progresso salvo em localStorage
-- ✅ Card da codorna selecionada nas páginas
+- ✅ Sistema de XP e progresso salvo em localStorage (sem resetar no refresh)
+- ✅ Card da codorna selecionada nas páginas com XP e progresso
 - ✅ Exemplo de código exibido acima do editor
 - ✅ Sistema de execução simulada ("Compilação da Sui")
+- ✅ Modais informativos (Solução, Erro, Sucesso)
+- ✅ Sistema de áudio com howler.js (efeitos sonoros)
+- ✅ Botões simplificados para iniciantes (Executar, Solução, Limpar)
 - ✅ 3 trilhas completas com missões (20 missões no total)
 - 🚧 5 trilhas pendentes (precisam de missões)
 
@@ -104,11 +108,18 @@ Explore os 8 continentes de Moviara, cada um com seu próprio desafio e conhecim
 │
 ├── components/                  # Componentes React
 │   ├── guerreiro/              # Componentes gamificados
+│   ├── ide/                    # Componentes do layout IDE
+│   │   ├── IDEHeader.tsx      # Cabeçalho do IDE
+│   │   ├── TrilhasSidebar.tsx # Sidebar de navegação
+│   │   ├── ActionBar.tsx      # Barra de ações
+│   │   ├── ConsolePanel.tsx   # Painel de console
+│   │   └── ObjetivoPanel.tsx  # Painel de objetivos
 │   ├── MoveEditor.tsx         # Editor Monaco
 │   └── providers/             # Providers de contexto
 │
 ├── contexts/                    # Contextos React
-│   └── LanguageContext.tsx   # Gerenciamento de idioma
+│   ├── LanguageContext.tsx   # Gerenciamento de idioma
+│   └── AudioContext.tsx     # Gerenciamento de áudio (howler.js)
 │
 ├── lib/                         # Utilitários e dados
 │   ├── data/                   # Dados estáticos
@@ -170,10 +181,15 @@ A identidade visual é inspirada diretamente no ecossistema **Sui**, criando uma
 ### Fase 3 — Editor de Código Move 🚧
 - [x] Integrar Monaco Editor
 - [x] Tema do editor (MoveAcademy dark)
+- [x] Layout IDE completo (Sidebar, Console, ActionBar, ObjetivoPanel)
 - [x] Exemplo de código exibido acima do editor
 - [x] Sistema de execução simulada (para demo)
+- [x] Modais de ajuda (Solução, Erro, Sucesso)
+- [x] Sistema de áudio com efeitos sonoros
+- [x] Interface simplificada para iniciantes
 - [ ] Destaque de sintaxe Move customizado
 - [ ] Execução via backend (VPS necessário)
+- [ ] Atalhos de teclado (CTRL+B, CTRL+T, CTRL+R)
 
 ### Fase 4 — Autenticação e Perfis
 - [ ] Integração com Supabase/Clerk
