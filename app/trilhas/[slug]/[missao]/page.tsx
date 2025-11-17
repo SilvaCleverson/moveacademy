@@ -277,15 +277,11 @@ export default function MissaoPage({ params }: PageProps) {
     setConsoleOutput([`$ sui move build`]);
     playSound("compile");
     
-    // Simula verificação de erros no código
-    // Para testar o modal de erro, você pode executar sem implementar a função
-    const codigoSemComentarios = codigo.replace(/\/\/.*$/gm, "").replace(/\s+/g, " ").trim();
-    const temErro = codigoSemComentarios.length < 50 || 
-                    (missao.numero === 1 && !codigo.includes("debug::print")) ||
-                    codigo.includes("// Seu código aqui") && codigoSemComentarios.length < 100;
+    // Resultado aleatório (50% sucesso, 50% erro)
+    const sucesso = Math.random() >= 0.5;
     
     setTimeout(() => {
-      if (temErro) {
+      if (!sucesso) {
         // Simula erro de compilação
         setConsoleOutput(prev => [...prev, 
           `✗ Compiling Move modules...`,
