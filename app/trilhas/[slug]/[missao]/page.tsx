@@ -9,6 +9,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Image from "next/image";
+import IDEHeader from "@/components/ide/IDEHeader";
+import TrilhasSidebar from "@/components/ide/TrilhasSidebar";
+import ActionBar from "@/components/ide/ActionBar";
+import ConsolePanel from "@/components/ide/ConsolePanel";
+import ObjetivoPanel from "@/components/ide/ObjetivoPanel";
+import { useAudio } from "@/contexts/AudioContext";
 
 interface PageProps {
   params: {
@@ -22,6 +28,7 @@ type CodornaType = "transfer" | "entry" | null;
 export default function MissaoPage({ params }: PageProps) {
   const router = useRouter();
   const { lang } = useLanguage();
+  const { playSound } = useAudio();
   
   // Estados (sempre declarados no topo)
   const [codigo, setCodigo] = useState("");
@@ -33,6 +40,14 @@ export default function MissaoPage({ params }: PageProps) {
   const [missoesConcluidas, setMissoesConcluidas] = useState<string[]>([]);
   const [xp, setXp] = useState(0);
   const [xpAnimando, setXpAnimando] = useState(false);
+  const [consoleOutput, setConsoleOutput] = useState<string[]>([]);
+  const [consoleOpen, setConsoleOpen] = useState(true);
+  const [objetivoCollapsed, setObjetivoCollapsed] = useState(false);
+  const [xpInicializado, setXpInicializado] = useState(false);
+  const [mostrarModalSucesso, setMostrarModalSucesso] = useState(false);
+  const [mostrarModalSolucao, setMostrarModalSolucao] = useState(false);
+  const [mostrarModalErro, setMostrarModalErro] = useState(false);
+  const [erroDetalhes, setErroDetalhes] = useState<{ titulo: string; mensagem: string; linha?: number; codigo?: string } | null>(null);
 
   // Carrega codorna selecionada do localStorage
   useEffect(() => {
@@ -53,10 +68,15 @@ export default function MissaoPage({ params }: PageProps) {
         // Ignora erro
       }
     }
+    // Marca que as missões foram carregadas
+    setXpInicializado(true);
   }, []);
 
   // Calcula XP baseado em TODAS as missões concluídas de TODAS as trilhas
   useEffect(() => {
+    // Só calcula depois que as missões foram carregadas
+    if (!xpInicializado) return;
+    
     // Pega todas as missões de todas as trilhas
     const todasMissoes = trilhas.flatMap((t) => t.missoes);
     
@@ -65,6 +85,14 @@ export default function MissaoPage({ params }: PageProps) {
       .filter((m) => missoesConcluidas.includes(m.id))
       .reduce((sum, m) => sum + m.xpRecompensa, 0);
     
+    // Se é a primeira vez carregando (xp === 0), define diretamente sem animação
+    if (xp === 0) {
+      setXp(xpTotal);
+      setXpAnimando(false);
+      return;
+    }
+    
+    // Se o XP aumentou, anima
     if (xpTotal > xp) {
       setXpAnimando(true);
       const targetXp = xpTotal;
@@ -87,10 +115,11 @@ export default function MissaoPage({ params }: PageProps) {
 
       return () => clearInterval(timer);
     } else {
+      // Se o XP não mudou, apenas atualiza sem animação
       setXp(xpTotal);
       setXpAnimando(false);
     }
-  }, [missoesConcluidas, xp]);
+  }, [missoesConcluidas, xpInicializado]); // Removido 'xp' das dependências para evitar loop
 
   useEffect(() => {
     // Garante que params está disponível
@@ -143,364 +172,487 @@ export default function MissaoPage({ params }: PageProps) {
     );
   }
 
+  // Verifica se a trilha está bloqueada (trilha anterior não completa)
+  const trilhaIndex = trilhas.findIndex(t => t.id === trilha.id);
+  const isTrilhaCompleta = (t: typeof trilhas[0]) => {
+    if (t.missoes.length === 0) return false;
+    return t.missoes.every(m => missoesConcluidas.includes(m.id));
+  };
+  const isTrilhaBloqueada = trilhaIndex > 0 && !isTrilhaCompleta(trilhas[trilhaIndex - 1]);
+
+  // Verifica se a missão está bloqueada
+  const missaoIndex = trilha.missoes.findIndex(m => m.id === missao.id);
+  const isMissaoBloqueada = () => {
+    if (isTrilhaBloqueada) return true;
+    if (missaoIndex === 0) return false;
+    const missaoAnterior = trilha.missoes[missaoIndex - 1];
+    return !missoesConcluidas.includes(missaoAnterior.id);
+  };
+
+  // Se a missão está bloqueada, redireciona para a trilha
+  if (isMissaoBloqueada()) {
+    useEffect(() => {
+      router.push(`/trilhas/${trilha.slug}`);
+    }, []);
+    return (
+      <div className="min-h-screen bg-gradient-deep-night text-[#E5E7EB] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-[#CBD5F5]">{lang === "pt" ? "Missão bloqueada. Complete as missões anteriores primeiro." : lang === "en" ? "Mission locked. Complete previous missions first." : "Misión bloqueada. Completa las misiones anteriores primero."}</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleExecutar = () => {
-    // Verifica se a missão já foi concluída
+    handleRun();
+  };
+
+  const handleBuild = () => {
     const jaConcluida = missoesConcluidas.includes(missao.id);
-    
-    // Primeiro mostra "Compilação da Sui"
     setStatusExecucao("compilando");
+    setConsoleOutput([`$ sui move build`]);
+    playSound("compile");
     
-    // Após 1.5 segundos, mostra "executando"
+    setTimeout(() => {
+      setConsoleOutput(prev => [...prev, `✓ Compiling Move modules...`, `  Building module ${missao.codigoInicial?.match(/module\s+(\S+)/)?.[1] || "0x1::despertar"}`, `✓ Build successful!`]);
+      setStatusExecucao("sucesso");
+      playSound("success");
+    }, 1500);
+  };
+
+  const handleTest = () => {
+    const jaConcluida = missoesConcluidas.includes(missao.id);
+    setStatusExecucao("compilando");
+    setConsoleOutput([`$ sui move test`]);
+    playSound("compile");
+    
     setTimeout(() => {
       setStatusExecucao("executando");
+      setConsoleOutput(prev => [...prev, `✓ Running 1 test`, `  Test: test_${missao.slug}`, `✓ Test passed!`]);
       
-      // Após mais 1 segundo, sempre retorna sucesso
       setTimeout(() => {
         setStatusExecucao("sucesso");
-        
-        // Só salva e ganha XP se ainda não foi concluída
+        playSound("success");
         if (!jaConcluida) {
-          // Salva missão como concluída no localStorage
-          const saved = localStorage.getItem("moveacademy-missoes-concluidas");
-          let novasMissoesConcluidas: string[] = [];
-          if (saved) {
-            try {
-              novasMissoesConcluidas = JSON.parse(saved);
-            } catch (e) {
-              // Ignora erro
-            }
-          }
-          
-          if (!novasMissoesConcluidas.includes(missao.id)) {
-            novasMissoesConcluidas.push(missao.id);
-            localStorage.setItem("moveacademy-missoes-concluidas", JSON.stringify(novasMissoesConcluidas));
-            // Atualiza o estado para refletir a mudança imediatamente
-            setMissoesConcluidas(novasMissoesConcluidas);
-          }
-        }
-        
-        // Após 2 segundos, redireciona para próxima missão (só se foi a primeira vez)
-        if (!jaConcluida) {
-          setTimeout(() => {
-            const proximaMissao = trilha.missoes.find((m) => m.numero === missao.numero + 1);
-            if (proximaMissao) {
-              router.push(`/trilhas/${trilha.slug}/${proximaMissao.slug}`);
-            } else {
-              // Última missão - volta para trilha
-              router.push(`/trilhas/${trilha.slug}`);
-            }
-          }, 2000);
+          setConsoleOutput(prev => [...prev, `🎉 Missão concluída! +${missao.xpRecompensa} XP`]);
+          playSound("xp");
         }
       }, 1000);
     }, 1500);
   };
 
+  const handleRun = () => {
+    const jaConcluida = missoesConcluidas.includes(missao.id);
+    setStatusExecucao("compilando");
+    setConsoleOutput([`$ sui move build`]);
+    playSound("compile");
+    
+    // Simula verificação de erros no código
+    // Para testar o modal de erro, você pode executar sem implementar a função
+    const codigoSemComentarios = codigo.replace(/\/\/.*$/gm, "").replace(/\s+/g, " ").trim();
+    const temErro = codigoSemComentarios.length < 50 || 
+                    (missao.numero === 1 && !codigo.includes("debug::print")) ||
+                    codigo.includes("// Seu código aqui") && codigoSemComentarios.length < 100;
+    
+    setTimeout(() => {
+      if (temErro) {
+        // Simula erro de compilação
+        setConsoleOutput(prev => [...prev, 
+          `✗ Compiling Move modules...`,
+          `  Building module ${missao.codigoInicial?.match(/module\s+(\S+)/)?.[1] || "0x1::despertar"}`,
+          ``,
+          `Error:`,
+          `  ┌─ ${missao.slug}.move:5:7`,
+          `  │`,
+          `5 │     // Seu código aqui`,
+          `  │     ^^^^^^^^^^^^^^^^`,
+          `  │`,
+          `  = Missing implementation`,
+          `  = Hint: Você precisa implementar a função main()`,
+          ``
+        ]);
+        setStatusExecucao("erro");
+        playSound("error");
+        
+        // Mostra modal de erro
+        setErroDetalhes({
+          titulo: lang === "pt" ? "Erro na Execução" : lang === "en" ? "Execution Error" : "Error de Ejecución",
+          mensagem: lang === "pt" 
+            ? "Seu código não foi executado com sucesso. Verifique se você implementou todas as funções necessárias."
+            : lang === "en"
+            ? "Your code did not execute successfully. Make sure you implemented all necessary functions."
+            : "Tu código no se ejecutó correctamente. Asegúrate de implementar todas las funciones necesarias.",
+          linha: 5,
+          codigo: codigo
+        });
+        setMostrarModalErro(true);
+      } else {
+        // Sucesso
+        setConsoleOutput(prev => [...prev, `✓ Compiling Move modules...`, `  Building module ${missao.codigoInicial?.match(/module\s+(\S+)/)?.[1] || "0x1::despertar"}`, `✓ Build successful!`]);
+        setStatusExecucao("executando");
+        
+        setTimeout(() => {
+          setConsoleOutput(prev => [...prev, `$ sui move run`, `✓ Executing...`, `✓ Execution successful!`]);
+          setStatusExecucao("sucesso");
+          playSound("success");
+          
+          if (!jaConcluida) {
+            setConsoleOutput(prev => [...prev, `🎉 Missão concluída! +${missao.xpRecompensa} XP`]);
+            playSound("xp");
+            playSound("complete");
+            
+            // Salva missão como concluída
+            const saved = localStorage.getItem("moveacademy-missoes-concluidas");
+            let novasMissoesConcluidas: string[] = [];
+            if (saved) {
+              try {
+                novasMissoesConcluidas = JSON.parse(saved);
+              } catch (e) {
+                // Ignora erro
+              }
+            }
+            
+            if (!novasMissoesConcluidas.includes(missao.id)) {
+              novasMissoesConcluidas.push(missao.id);
+              localStorage.setItem("moveacademy-missoes-concluidas", JSON.stringify(novasMissoesConcluidas));
+              setMissoesConcluidas(novasMissoesConcluidas);
+            }
+            
+            // Mostra modal de sucesso
+            setMostrarModalSucesso(true);
+          }
+        }, 1000);
+      }
+    }, 1500);
+  };
+
+  const handleClear = () => {
+    setCodigo(missao.codigoInicial || "");
+    setConsoleOutput([]);
+    setStatusExecucao("idle");
+  };
+
+  const handleMostrarSolucao = () => {
+    if (missao.codigoSolucao) {
+      setMostrarModalSolucao(true);
+      playSound("click");
+    }
+  };
+
+  const handleCopiarSolucao = () => {
+    if (missao.codigoSolucao) {
+      navigator.clipboard.writeText(missao.codigoSolucao);
+      playSound("success");
+      setConsoleOutput([`✓ Solução copiada para a área de transferência!`]);
+    }
+  };
+
+  // Layout IDE para todas as trilhas
   return (
-    <div className="min-h-screen bg-gradient-deep-night text-[#E5E7EB] p-4 sm:p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Navegação e seletor de idioma */}
-        <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
-          <Link
-            href={`/trilhas/${trilha.slug}`}
-            className="inline-flex items-center gap-2 text-sui-blue hover:text-sui-cyan transition-colors text-sm sm:text-base"
-          >
-            ← {lang === "pt" ? "Voltar" : lang === "en" ? "Back" : "Volver"}
-          </Link>
+    <div className="h-screen flex flex-col bg-gradient-deep-night text-[#E5E7EB] overflow-hidden">
+      <IDEHeader codornaSelecionada={codornaSelecionada} xp={xp} xpAnimando={xpAnimando} />
+      
+      <div className="flex-1 flex overflow-hidden">
+        <TrilhasSidebar 
+          missoesConcluidas={missoesConcluidas}
+          currentTrilhaSlug={trilha.slug}
+          currentMissaoSlug={missao.slug}
+        />
+        
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex overflow-hidden">
+            {/* Editor Central */}
+            <div className="flex-1 flex flex-col overflow-hidden bg-[#0A1A2F]">
+              <div className="p-4 border-b border-sui-blue/25 bg-move-navy flex-shrink-0">
+                <h2 className="text-sm font-bold text-sui-blue uppercase tracking-wider">
+                  {lang === "pt" ? "Seu Código" : lang === "en" ? "Your Code" : "Tu Código"}
+                </h2>
+              </div>
+              <div className="flex-1 p-4 overflow-hidden min-h-0">
+                <div className="h-full">
+                  <MoveEditor
+                    value={codigo}
+                    onChange={(newCode) => {
+                      setCodigo(newCode || "");
+                      setStatusExecucao("idle");
+                    }}
+                    height="100%"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <ObjetivoPanel 
+              missao={missao}
+              isCollapsed={objetivoCollapsed}
+              onToggle={() => setObjetivoCollapsed(!objetivoCollapsed)}
+            />
+          </div>
+          
+          <ActionBar
+            onRun={handleRun}
+            onClear={handleClear}
+            onMostrarSolucao={missao.codigoSolucao ? handleMostrarSolucao : undefined}
+            status={statusExecucao}
+            disabled={false}
+          />
+          
+          <ConsolePanel
+            output={consoleOutput}
+            isOpen={consoleOpen}
+            onToggle={() => setConsoleOpen(!consoleOpen)}
+            onClear={() => setConsoleOutput([])}
+          />
         </div>
+      </div>
 
-        {/* Card da Codorna Selecionada */}
-        {codornaSelecionada && (
-          <div className="mb-6 hud-panel p-4 sm:p-5">
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              {/* Imagem da Codorna */}
-              <div className="flex-shrink-0">
-                <div className={`relative w-24 h-24 sm:w-28 sm:h-28 border-2 ${
-                  codornaSelecionada === "transfer" ? "border-sui-blue/60" : "border-move-green/60"
-                } bg-[#0A1A2F] p-1.5`} style={{
-                  boxShadow: codornaSelecionada === "transfer"
-                    ? "inset 0 0 15px rgba(106, 215, 229, 0.4), 0 0 20px rgba(106, 215, 229, 0.3)"
-                    : "inset 0 0 15px rgba(63, 254, 149, 0.4), 0 0 20px rgba(63, 254, 149, 0.3)",
-                }}>
-                  <div className={`relative w-full h-full border-2 ${
-                    codornaSelecionada === "transfer" ? "border-sui-blue/50" : "border-move-green/50"
-                  }`}>
-                    <Image
-                      src={codornaSelecionada === "transfer" ? "/C1.png" : "/C2.png"}
-                      alt={codornaSelecionada === "transfer" ? "Sir Transfer" : "Sir Entry"}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 96px, 112px"
-                      unoptimized
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Informações */}
-              <div className="flex-1 min-w-0 text-center sm:text-left">
-                <div className="hud-text-box mb-2">
-                  <h3 className={`text-lg sm:text-xl font-bold mb-1 font-mono uppercase tracking-wider ${
-                    codornaSelecionada === "transfer" ? "text-sui-blue" : "text-move-green"
-                  }`}>
-                    {codornaSelecionada === "transfer" ? "SIR TRANSFER" : "SIR ENTRY"}
-                  </h3>
-                  <div className={`h-0.5 bg-gradient-to-r from-transparent ${
-                    codornaSelecionada === "transfer" ? "via-sui-blue/60" : "via-move-green/60"
-                  } to-transparent my-1.5`} />
-                </div>
-
-                {/* XP Display */}
-                <div className="hud-text-box">
-                  <div className="flex items-center justify-center sm:justify-start gap-2">
-                    <span className="text-lg">⭐</span>
-                    <span className={`text-base sm:text-lg font-bold font-mono ${
-                      xpAnimando ? "text-move-green" : "text-move-green"
-                    }`}>
-                      {xp} XP
-                    </span>
-                    {xpAnimando && (
-                      <span className="text-xs text-sui-cyan">
-                        {lang === "pt" ? "Ganando..." : lang === "en" ? "Earning..." : "Ganando..."}
-                      </span>
-                    )}
-                  </div>
-                  {xp > 0 && (
-                    <p className="text-xs text-sui-cyan mt-1 font-mono">
-                      {lang === "pt" 
-                        ? `✓ ${missoesConcluidas.filter(id => trilha.missoes.some(m => m.id === id)).length} missões concluídas!`
-                        : lang === "en"
-                        ? `✓ ${missoesConcluidas.filter(id => trilha.missoes.some(m => m.id === id)).length} missions completed!`
-                        : `✓ ${missoesConcluidas.filter(id => trilha.missoes.some(m => m.id === id)).length} misiones completadas!`
-                      }
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Seção Visual - Objetivo/Sugestão */}
-        <div className="mb-6 hud-panel p-4 sm:p-6">
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-sui-blue/60 bg-[#0A1A2F] flex items-center justify-center text-3xl sm:text-4xl" style={{
-                boxShadow: "inset 0 0 10px rgba(106, 215, 229, 0.4), 0 0 15px rgba(106, 215, 229, 0.3)",
-              }}>
-                {missao.icone}
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="hud-text-box mb-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-1.5 h-1.5 bg-sui-blue" />
-                  <h2 className="text-base sm:text-lg font-bold text-sui-blue font-mono uppercase tracking-wider">
-                    {lang === "pt" ? "OBJETIVO" : lang === "en" ? "OBJECTIVE" : "OBJETIVO"}
-                  </h2>
-                  <div className="flex-1 h-0.5 bg-gradient-to-r from-sui-blue/60 to-transparent" />
-                </div>
-                <p className="text-[#E5E7EB] text-sm sm:text-base font-mono leading-relaxed">
-                  {missao.descricao}
-                </p>
-              </div>
-              <div className="hud-text-box">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-1.5 h-1.5 bg-move-green" />
-                  <h3 className="text-xs sm:text-sm font-bold text-move-green font-mono uppercase tracking-wider">
-                    {lang === "pt" ? "O QUE VOCÊ PRECISA FAZER" : lang === "en" ? "WHAT YOU NEED TO DO" : "QUÉ NECESITAS HACER"}
-                  </h3>
-                  <div className="flex-1 h-0.5 bg-gradient-to-r from-move-green/60 to-transparent" />
-                </div>
-                <p className="text-[#CBD5F5] text-xs sm:text-sm font-mono italic">
-                  {lang === "pt"
-                    ? "Complete o código no editor à direita e clique em 'Executar código'. A compilação da Sui validará seu código e você ganhará XP!"
-                    : lang === "en"
-                    ? "Complete the code in the editor on the right and click 'Run code'. Sui compilation will validate your code and you'll earn XP!"
-                    : "Completa el código en el editor a la derecha y haz clic en 'Ejecutar código'. ¡La compilación de Sui validará tu código y ganarás XP!"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Layout de 2 colunas */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          {/* Coluna Esquerda: Instruções */}
-          <div className="space-y-4 sm:space-y-6">
-            {/* Header da Missão */}
-            <div className="bg-gradient-to-br from-move-navy via-move-navy/90 to-aqua-soft rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-sui-blue/25">
-              <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-4">
-                <span className="text-4xl sm:text-5xl flex-shrink-0">{missao.icone}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs sm:text-sm text-sui-blue font-semibold mb-1">
-                    {lang === "pt" ? "Missão" : lang === "en" ? "Mission" : "Misión"} {missao.numero}
-                  </div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-[#E5E7EB]">{missao.titulo}</h1>
-                </div>
-              </div>
-              <p className="text-[#CBD5F5] text-base sm:text-lg mb-4">{missao.descricao}</p>
-            </div>
-
-            {/* Conteúdo/Instruções */}
-            <div className="bg-move-navy/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-sui-blue/25">
-              <div className="text-[#E5E7EB] prose prose-invert max-w-none [&>h1]:text-2xl [&>h1]:font-bold [&>h1]:mb-4 [&>h1]:text-sui-blue [&>h2]:text-xl [&>h2]:font-semibold [&>h2]:mb-3 [&>h2]:mt-6 [&>h2]:text-sui-cyan [&>p]:mb-4 [&>p]:text-[#CBD5F5] [&>ul]:list-disc [&>ul]:ml-6 [&>ul]:mb-4 [&>ul]:text-[#CBD5F5] [&>ol]:list-decimal [&>ol]:ml-6 [&>ol]:mb-4 [&>ol]:text-[#CBD5F5] [&>code]:bg-[#1E293B] [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-move-green [&>pre]:bg-[#020617] [&>pre]:p-4 [&>pre]:rounded-lg [&>pre]:border [&>pre]:border-sui-blue/25 [&>pre]:overflow-x-auto [&>pre>code]:text-[#E5E7EB]">
-                <ReactMarkdown>
-                  {missao.conteudo}
-                </ReactMarkdown>
-              </div>
-            </div>
-
-            {/* Dicas */}
-            {missao.dicas && missao.dicas.length > 0 && (
-              <details className="bg-move-navy/30 rounded-xl p-4 border border-sui-blue/20">
-                <summary className="cursor-pointer text-sui-cyan font-semibold mb-2">
-                  💡 {lang === "pt" ? "Dicas" : lang === "en" ? "Tips" : "Consejos"} ({missao.dicas.length})
-                </summary>
-                <ul className="mt-2 space-y-1 text-[#CBD5F5]">
-                  {missao.dicas.map((dica, index) => (
-                    <li key={index} className="text-sm">
-                      • {dica}
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            )}
-          </div>
-
-          {/* Coluna Direita: Editor e Execução */}
-          <div className="space-y-4 sm:space-y-6">
-            {/* Exemplo de Código */}
-            {missao.codigoSolucao && (
-              <div className="bg-move-navy/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-sui-blue/25">
-                <div className="flex items-center gap-2 mb-3 sm:mb-4">
-                  <span className="text-xl sm:text-2xl">💻</span>
-                  <h2 className="text-lg sm:text-xl font-bold text-sui-cyan">
-                    {lang === "pt" ? "Exemplo" : lang === "en" ? "Example" : "Ejemplo"}
-                  </h2>
-                </div>
-                <div className="bg-[#020617] rounded-lg p-4 border border-sui-blue/25 overflow-x-auto">
-                  <pre className="text-sm sm:text-base text-[#E5E7EB] font-mono whitespace-pre-wrap">
-                    <code>{missao.codigoSolucao}</code>
-                  </pre>
-                </div>
-              </div>
-            )}
-
-            {/* Editor de Código */}
-            <div className="bg-move-navy/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-sui-blue/25">
-              <h2 className="text-lg sm:text-xl font-bold text-[#E5E7EB] mb-3 sm:mb-4">
-                {lang === "pt" ? "Seu Código" : lang === "en" ? "Your Code" : "Tu Código"}
+      {/* Modal de Sucesso */}
+      {mostrarModalSucesso && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-b from-move-navy to-[#0A1A2F] border-2 border-sui-blue rounded-lg p-6 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div className="text-center mb-6">
+              <div className="text-6xl mb-4 animate-bounce">🎉</div>
+              <h2 className="text-2xl font-bold text-sui-blue mb-2">
+                {lang === "pt" ? "Missão Concluída!" : lang === "en" ? "Mission Complete!" : "¡Misión Completada!"}
               </h2>
-              <div className="mb-4">
-                <MoveEditor
-                  value={codigo}
-                  onChange={(newCode) => {
-                    setCodigo(newCode || "");
-                    setStatusExecucao("idle"); // Reset status ao editar
-                  }}
-                  height="250px"
-                />
-              </div>
+              <p className="text-[#CBD5F5] mb-4">
+                {lang === "pt" 
+                  ? `Você ganhou ${missao.xpRecompensa} XP!` 
+                  : lang === "en"
+                  ? `You earned ${missao.xpRecompensa} XP!`
+                  : `¡Ganaste ${missao.xpRecompensa} XP!`}
+              </p>
+              {missao.badgeRecompensa && (
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <span className="text-2xl">{missao.badgeRecompensa.icone}</span>
+                  <span className="text-move-green font-semibold">{missao.badgeRecompensa.nome}</span>
+                </div>
+              )}
+            </div>
 
-              {/* Botão Executar */}
-              <button
-                onClick={handleExecutar}
-                disabled={statusExecucao === "compilando" || statusExecucao === "executando"}
-                className="w-full px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-gradient-sui-move text-[#020617] font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
-              >
-                {statusExecucao === "compilando"
-                  ? (lang === "pt" ? "⏳ Compilação da Sui..." : lang === "en" ? "⏳ Sui Compilation..." : "⏳ Compilación de Sui...")
-                  : statusExecucao === "executando" 
-                  ? (lang === "pt" ? "Executando..." : lang === "en" ? "Running..." : "Ejecutando...")
-                  : (lang === "pt" ? "▶ Executar código" : lang === "en" ? "▶ Run code" : "▶ Ejecutar código")
+            <div className="flex flex-col gap-3">
+              {(() => {
+                const proximaMissao = trilha.missoes.find((m) => m.numero === missao.numero + 1);
+                if (proximaMissao) {
+                  return (
+                    <button
+                      onClick={() => {
+                        setMostrarModalSucesso(false);
+                        playSound("click");
+                        router.push(`/trilhas/${trilha.slug}/${proximaMissao.slug}`);
+                      }}
+                      className="w-full px-6 py-3 bg-gradient-sui-move text-[#020617] font-bold rounded-lg hover:opacity-90 transition-opacity hover:scale-105 active:scale-95"
+                    >
+                      {lang === "pt" ? "➡️ Próxima Missão" : lang === "en" ? "➡️ Next Mission" : "➡️ Siguiente Misión"}
+                    </button>
+                  );
+                } else {
+                  return (
+                    <button
+                      onClick={() => {
+                        setMostrarModalSucesso(false);
+                        playSound("click");
+                        router.push(`/trilhas/${trilha.slug}`);
+                      }}
+                      className="w-full px-6 py-3 bg-gradient-sui-move text-[#020617] font-bold rounded-lg hover:opacity-90 transition-opacity hover:scale-105 active:scale-95"
+                    >
+                      {lang === "pt" ? "📋 Ver Trilha" : lang === "en" ? "📋 View Track" : "📋 Ver Trilha"}
+                    </button>
+                  );
                 }
+              })()}
+              
+              <button
+                onClick={() => {
+                  setMostrarModalSucesso(false);
+                  playSound("click");
+                }}
+                className="w-full px-6 py-3 bg-sui-blue/20 hover:bg-sui-blue/30 border border-sui-blue/50 text-sui-blue font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
+              >
+                {lang === "pt" ? "✏️ Continuar Editando" : lang === "en" ? "✏️ Keep Editing" : "✏️ Seguir Editando"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Solução */}
+      {mostrarModalSolucao && missao.codigoSolucao && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-b from-move-navy to-[#0A1A2F] border-2 border-move-green rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300">
+            {/* Header do Modal */}
+            <div className="p-4 border-b border-move-green/25 flex items-center justify-between flex-shrink-0">
+              <div>
+                <h2 className="text-xl font-bold text-move-green mb-1">
+                  {lang === "pt" ? "💡 Solução Completa" : lang === "en" ? "💡 Complete Solution" : "💡 Solución Completa"}
+                </h2>
+                <p className="text-sm text-[#CBD5F5]">
+                  {lang === "pt" 
+                    ? "Analise a solução e copie se necessário" 
+                    : lang === "en"
+                    ? "Analyze the solution and copy if needed"
+                    : "Analiza la solución y copia si es necesario"}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setMostrarModalSolucao(false);
+                  playSound("click");
+                }}
+                className="text-[#CBD5F5] hover:text-sui-blue transition-colors text-2xl"
+                aria-label={lang === "pt" ? "Fechar" : lang === "en" ? "Close" : "Cerrar"}
+              >
+                ×
               </button>
             </div>
 
-            {/* Feedback de Compilação */}
-            {statusExecucao === "compilando" && (
-              <div className="bg-sui-blue/20 border-2 border-sui-blue rounded-xl p-4 sm:p-6 flex items-start sm:items-center gap-3 sm:gap-4">
-                <div className="text-3xl sm:text-4xl flex-shrink-0 animate-spin">⚙️</div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-bold text-sui-blue mb-1">
-                    {lang === "pt" ? "Compilação da Sui" : lang === "en" ? "Sui Compilation" : "Compilación de Sui"}
-                  </h3>
-                  <p className="text-sui-cyan text-xs sm:text-sm">
-                    {lang === "pt" ? "Validando seu código..." : lang === "en" ? "Validating your code..." : "Validando tu código..."}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Feedback de Execução */}
-            {statusExecucao === "sucesso" && (
-              <div className="bg-green-500/20 border-2 border-green-500 rounded-xl p-4 sm:p-6 flex items-start sm:items-center gap-3 sm:gap-4">
-                <div className="text-3xl sm:text-4xl flex-shrink-0">✓</div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-bold text-green-400 mb-1">
-                    {lang === "pt" ? "Compilado com sucesso!" : lang === "en" ? "Compiled successfully!" : "¡Compilado con éxito!"}
-                  </h3>
-                  <p className="text-green-300 text-xs sm:text-sm">
-                    {lang === "pt" ? "Avançando para próxima missão..." : lang === "en" ? "Advancing to next mission..." : "Avanzando a la siguiente misión..."}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {statusExecucao === "erro" && (
-              <div className="bg-red-500/20 border-2 border-red-500 rounded-xl p-4 sm:p-6 flex items-start sm:items-center gap-3 sm:gap-4">
-                <div className="text-3xl sm:text-4xl flex-shrink-0">✗</div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-bold text-red-400 mb-1">
-                    {lang === "pt" ? "Erro de compilação" : lang === "en" ? "Compilation error" : "Error de compilación"}
-                  </h3>
-                  <p className="text-red-300 text-xs sm:text-sm">{mensagemErro}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Recompensas */}
-            <div className="bg-move-navy/30 rounded-xl p-3 sm:p-4 border border-sui-blue/20">
-              <h3 className="text-xs sm:text-sm font-semibold text-sui-blue mb-2 sm:mb-3">
-                {lang === "pt" ? "Recompensas:" : lang === "en" ? "Rewards:" : "Recompensas:"}
-              </h3>
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                <div className="flex items-center gap-2 text-move-green">
-                  <span>⭐</span>
-                  <span className="font-semibold">{missao.xpRecompensa} XP</span>
-                </div>
-                {missao.badgeRecompensa && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{missao.badgeRecompensa.icone}</span>
-                    <span className="text-[#CBD5F5]">{missao.badgeRecompensa.nome}</span>
+            {/* Conteúdo do Modal - Editor com Solução */}
+            <div className="flex-1 overflow-hidden p-4 min-h-0" style={{ minHeight: "500px", maxHeight: "calc(90vh - 200px)" }}>
+              <div className="w-full h-full border border-sui-blue/25 rounded-lg overflow-hidden bg-[#020617]" style={{ height: "100%" }}>
+                {missao.codigoSolucao ? (
+                  <MoveEditor 
+                    value={missao.codigoSolucao} 
+                    readOnly={true} 
+                    height="600px"
+                  />
+                ) : (
+                  <div className="p-4 text-[#CBD5F5]">
+                    {lang === "pt" ? "Solução não disponível" : lang === "en" ? "Solution not available" : "Solución no disponible"}
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Botão Ver Solução */}
-            <button
-              onClick={() => setMostrarSolucao(!mostrarSolucao)}
-              className="w-full px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-move-navy border border-sui-blue/50 text-sui-blue font-semibold hover:bg-move-navy/80 transition-colors text-sm sm:text-base"
-            >
-              {mostrarSolucao 
-                ? (lang === "pt" ? "Ocultar" : lang === "en" ? "Hide" : "Ocultar")
-                : (lang === "pt" ? "Ver" : lang === "en" ? "View" : "Ver")
-              } {lang === "pt" ? "Solução" : lang === "en" ? "Solution" : "Solución"}
-            </button>
-
-            {/* Solução */}
-            {mostrarSolucao && missao.codigoSolucao && (
-              <div className="bg-[#020617] rounded-xl p-4 border border-move-green/25">
-                <h3 className="text-sm font-semibold text-move-green mb-2">
-                  {lang === "pt" ? "Solução:" : lang === "en" ? "Solution:" : "Solución:"}
-                </h3>
-                <MoveEditor value={missao.codigoSolucao} readOnly={true} height="200px" />
-              </div>
-            )}
+            {/* Footer do Modal - Botões */}
+            <div className="p-4 border-t border-move-green/25 flex gap-3 flex-shrink-0">
+              <button
+                onClick={handleCopiarSolucao}
+                className="flex-1 px-6 py-3 bg-gradient-sui-move text-[#020617] font-bold rounded-lg hover:opacity-90 transition-opacity hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+              >
+                <span>📋</span>
+                <span>{lang === "pt" ? "Copiar Solução" : lang === "en" ? "Copy Solution" : "Copiar Solución"}</span>
+              </button>
+              <button
+                onClick={() => {
+                  setMostrarModalSolucao(false);
+                  playSound("click");
+                }}
+                className="px-6 py-3 bg-sui-blue/20 hover:bg-sui-blue/30 border border-sui-blue/50 text-sui-blue font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
+              >
+                {lang === "pt" ? "Fechar" : lang === "en" ? "Close" : "Cerrar"}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Modal de Erro */}
+      {mostrarModalErro && erroDetalhes && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-b from-[#2A1A1A] to-[#0A1A2F] border-2 border-red-500/50 rounded-lg max-w-2xl w-full shadow-2xl animate-in fade-in zoom-in duration-300">
+            {/* Header do Modal */}
+            <div className="p-4 border-b border-red-500/25 flex items-center justify-between flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <span className="text-2xl">⚠️</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-red-400 mb-1">
+                    {erroDetalhes.titulo}
+                  </h2>
+                  <p className="text-sm text-[#CBD5F5]">
+                    {lang === "pt" 
+                      ? "Não se preocupe! Erros fazem parte do aprendizado." 
+                      : lang === "en"
+                      ? "Don't worry! Errors are part of learning."
+                      : "¡No te preocupes! Los errores son parte del aprendizaje."}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setMostrarModalErro(false);
+                  playSound("click");
+                }}
+                className="text-[#CBD5F5] hover:text-red-400 transition-colors text-2xl"
+                aria-label={lang === "pt" ? "Fechar" : lang === "en" ? "Close" : "Cerrar"}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Conteúdo do Modal */}
+            <div className="p-6 space-y-4">
+              {/* Mensagem de Erro */}
+              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                <p className="text-[#E5E7EB] text-sm leading-relaxed">
+                  {erroDetalhes.mensagem}
+                </p>
+              </div>
+
+              {/* Dicas para Iniciantes */}
+              <div className="bg-sui-blue/10 border border-sui-blue/30 rounded-lg p-4">
+                <h3 className="text-sm font-bold text-sui-blue mb-2 flex items-center gap-2">
+                  <span>💡</span>
+                  <span>{lang === "pt" ? "Dicas para Resolver:" : lang === "en" ? "Tips to Fix:" : "Consejos para Resolver:"}</span>
+                </h3>
+                <ul className="text-sm text-[#CBD5F5] space-y-1.5 ml-6 list-disc">
+                  <li>{lang === "pt" ? "Verifique se você implementou todas as funções solicitadas" : lang === "en" ? "Check if you implemented all requested functions" : "Verifica si implementaste todas las funciones solicitadas"}</li>
+                  <li>{lang === "pt" ? "Leia novamente as instruções no painel à direita" : lang === "en" ? "Read the instructions in the right panel again" : "Lee nuevamente las instrucciones en el panel derecho"}</li>
+                  <li>{lang === "pt" ? "Use o botão 'Solução' se precisar de ajuda" : lang === "en" ? "Use the 'Solution' button if you need help" : "Usa el botón 'Solución' si necesitas ayuda"}</li>
+                </ul>
+              </div>
+
+              {/* Exemplo de Erro no Console */}
+              {erroDetalhes.linha && (
+                <div className="bg-[#020617] border border-red-500/25 rounded-lg p-3">
+                  <p className="text-xs text-red-400 mb-2 font-mono">
+                    {lang === "pt" ? "Erro encontrado na linha:" : lang === "en" ? "Error found at line:" : "Error encontrado en la línea:"} {erroDetalhes.linha}
+                  </p>
+                  <div className="bg-[#0A1A2F] rounded p-2 font-mono text-xs text-[#CBD5F5] overflow-x-auto">
+                    <pre className="whitespace-pre-wrap">
+{`Error:
+  ┌─ ${missao.slug}.move:${erroDetalhes.linha}:7
+  │
+${erroDetalhes.linha} │     // Seu código aqui
+  │     ^^^^^^^^^^^^^^^^
+  │
+  = Missing implementation
+  = Hint: Você precisa implementar a função main()`}
+                    </pre>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer do Modal - Botões */}
+            <div className="p-4 border-t border-red-500/25 flex gap-3 flex-shrink-0">
+              {missao.codigoSolucao && (
+                <button
+                  onClick={() => {
+                    setMostrarModalErro(false);
+                    setMostrarModalSolucao(true);
+                    playSound("click");
+                  }}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-move-green/20 to-sui-blue/20 hover:from-move-green/30 hover:to-sui-blue/30 border border-move-green/50 text-move-green font-semibold rounded-lg transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <span>💡</span>
+                  <span>{lang === "pt" ? "Ver Solução" : lang === "en" ? "View Solution" : "Ver Solución"}</span>
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setMostrarModalErro(false);
+                  playSound("click");
+                }}
+                className="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400 font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
+              >
+                {lang === "pt" ? "Tentar Novamente" : lang === "en" ? "Try Again" : "Intentar de Nuevo"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

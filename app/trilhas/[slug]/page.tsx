@@ -24,6 +24,7 @@ export default function TrilhaDetailPage({ params }: PageProps) {
   const [missoesConcluidas, setMissoesConcluidas] = useState<string[]>([]);
   const [xp, setXp] = useState(0);
   const [xpAnimando, setXpAnimando] = useState(false);
+  const [xpInicializado, setXpInicializado] = useState(false);
 
   // Carrega codorna selecionada do localStorage
   useEffect(() => {
@@ -44,10 +45,15 @@ export default function TrilhaDetailPage({ params }: PageProps) {
         // Ignora erro
       }
     }
+    // Marca que as missões foram carregadas
+    setXpInicializado(true);
   }, []);
 
   // Calcula XP baseado em TODAS as missões concluídas de TODAS as trilhas
   useEffect(() => {
+    // Só calcula depois que as missões foram carregadas
+    if (!xpInicializado) return;
+    
     // Pega todas as missões de todas as trilhas
     const todasMissoes = trilhas.flatMap((t) => t.missoes);
     
@@ -56,6 +62,14 @@ export default function TrilhaDetailPage({ params }: PageProps) {
       .filter((m) => missoesConcluidas.includes(m.id))
       .reduce((sum, m) => sum + m.xpRecompensa, 0);
     
+    // Se é a primeira vez carregando (xp === 0), define diretamente sem animação
+    if (xp === 0) {
+      setXp(xpTotal);
+      setXpAnimando(false);
+      return;
+    }
+    
+    // Se o XP aumentou, anima
     if (xpTotal > xp) {
       setXpAnimando(true);
       const targetXp = xpTotal;
@@ -78,9 +92,11 @@ export default function TrilhaDetailPage({ params }: PageProps) {
 
       return () => clearInterval(timer);
     } else {
+      // Se o XP não mudou, apenas atualiza sem animação
       setXp(xpTotal);
+      setXpAnimando(false);
     }
-  }, [missoesConcluidas, xp]);
+  }, [missoesConcluidas, xpInicializado]); // Removido 'xp' das dependências para evitar loop
 
   useEffect(() => {
     if (!trilha) {

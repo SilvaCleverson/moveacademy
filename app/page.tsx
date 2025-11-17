@@ -2,21 +2,146 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAudio } from "@/contexts/AudioContext";
 
-type CodornaType = "transfer" | "entry" | null;
+type CodornaType = "transfer" | "entry";
+
+interface Personagem {
+  id: CodornaType;
+  nome: string;
+  nomeEn: string;
+  nomeEs: string;
+  descricao: string;
+  descricaoEn: string;
+  descricaoEs: string;
+  imagem: string;
+  atributos: {
+    forca: number;
+    sabedoria: number;
+    destreza: number;
+  };
+}
+
+const personagens: Personagem[] = [
+  {
+    id: "transfer",
+    nome: "Sir Transfer",
+    nomeEn: "Sir Transfer",
+    nomeEs: "Sir Transfer",
+    descricao: "Mestre da transferência de propriedade. Especialista em mover recursos entre contas com segurança.",
+    descricaoEn: "Master of property transfer. Expert in moving resources between accounts safely.",
+    descricaoEs: "Maestro de la transferencia de propiedad. Experto en mover recursos entre cuentas de forma segura.",
+    imagem: "/C1.png",
+    atributos: {
+      forca: 8,
+      sabedoria: 6,
+      destreza: 7,
+    },
+  },
+  {
+    id: "entry",
+    nome: "Sir Entry",
+    nomeEn: "Sir Entry",
+    nomeEs: "Sir Entry",
+    descricao: "Guardião das funções de entrada. Domina o controle de acesso e validação de parâmetros.",
+    descricaoEn: "Guardian of entry functions. Masters access control and parameter validation.",
+    descricaoEs: "Guardián de las funciones de entrada. Domina el control de acceso y la validación de parámetros.",
+    imagem: "/C2.png",
+    atributos: {
+      forca: 6,
+      sabedoria: 8,
+      destreza: 7,
+    },
+  },
+];
 
 export default function Home() {
+  const router = useRouter();
   const { lang, setLang } = useLanguage();
-  const [codornaSelecionada, setCodornaSelecionada] = useState<CodornaType>(null);
+  const { playSound } = useAudio();
+  const [personagemSelecionado, setPersonagemSelecionado] = useState<number>(0);
+  const [animando, setAnimando] = useState(false);
 
-  // Salva a codorna selecionada no localStorage
+  const selecionarPersonagem = useCallback((index: number) => {
+    if (animando) return;
+    if (index === personagemSelecionado) return;
+    
+    playSound("click");
+    setAnimando(true);
+    setPersonagemSelecionado(index);
+    
+    setTimeout(() => {
+      setAnimando(false);
+    }, 300);
+  }, [animando, personagemSelecionado, playSound]);
+
+  const proximoPersonagem = useCallback(() => {
+    if (animando) return;
+    playSound("click");
+    const proximo = (personagemSelecionado + 1) % personagens.length;
+    setAnimando(true);
+    setPersonagemSelecionado(proximo);
+    setTimeout(() => {
+      setAnimando(false);
+    }, 300);
+  }, [animando, personagemSelecionado, playSound]);
+
+  const personagemAnterior = useCallback(() => {
+    if (animando) return;
+    playSound("click");
+    const anterior = (personagemSelecionado - 1 + personagens.length) % personagens.length;
+    setAnimando(true);
+    setPersonagemSelecionado(anterior);
+    setTimeout(() => {
+      setAnimando(false);
+    }, 300);
+  }, [animando, personagemSelecionado, playSound]);
+
+  const confirmarSelecao = useCallback(() => {
+    const personagem = personagens[personagemSelecionado];
+    localStorage.setItem("moveacademy-codorna", personagem.id);
+    playSound("success");
+    
+    // Redireciona para as trilhas
+    setTimeout(() => {
+      router.push("/trilhas");
+    }, 500);
+  }, [personagemSelecionado, playSound, router]);
+
+  // Carrega personagem salvo
   useEffect(() => {
-    if (codornaSelecionada) {
-      localStorage.setItem("moveacademy-codorna", codornaSelecionada);
+    const saved = localStorage.getItem("moveacademy-codorna");
+    if (saved === "transfer" || saved === "entry") {
+      const index = personagens.findIndex((p) => p.id === saved);
+      if (index !== -1) {
+        setPersonagemSelecionado(index);
+      }
     }
-  }, [codornaSelecionada]);
+  }, []);
+
+  // Navegação por teclado (setas esquerda/direita)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (animando) return;
+      
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        personagemAnterior();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        proximoPersonagem();
+      } else if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        confirmarSelecao();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [personagemSelecionado, animando, personagemAnterior, proximoPersonagem, confirmarSelecao]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 sm:p-4 bg-[#0A1A2F] text-[#FFFFFF] relative overflow-hidden">
@@ -97,7 +222,7 @@ export default function Home() {
                 <div className="w-1 h-6 sm:h-8 bg-sui-cyan" />
               </div>
               <div className="h-0.5 bg-gradient-to-r from-transparent via-sui-blue to-transparent my-2" />
-              <p className="text-[#E5E7EB] text-xs sm:text-sm font-mono">
+              <p className="text-[#E5E7EB] text-xs sm:text-sm font-mono mb-3">
                 &gt; {lang === "pt" 
                   ? "ESCOLHA SUA CODORNA E COMECE SUA JORNADA ÉPICA"
                   : lang === "en"
@@ -161,137 +286,169 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Seleção de Personagem - Cards estilo JRPG */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4">
-            {/* Codorna 1 */}
-            <Link
-              href="/trilhas"
-              onClick={() => setCodornaSelecionada("transfer")}
-              className={`group relative hud-panel p-4 sm:p-5 hover:border-sui-blue transition-all duration-300 cursor-pointer block h-full ${
-                codornaSelecionada === "transfer" ? "border-sui-blue border-2" : ""
-              }`}
-              style={{
-                boxShadow: codornaSelecionada === "transfer" 
-                  ? "inset 0 0 20px rgba(106, 215, 229, 0.3), 0 0 25px rgba(106, 215, 229, 0.4)"
-                  : "inset 0 0 15px rgba(106, 215, 229, 0.1)",
-              }}
-            >
-              {/* Borda lateral esquerda */}
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-sui-blue via-sui-cyan to-sui-blue opacity-60 group-hover:opacity-100 transition-opacity" />
-              
-              <div className="relative z-10 flex flex-col h-full">
-                {/* Personagem - Destaque no topo */}
-                <div className="mb-3 sm:mb-4 flex justify-center">
-                  <div className="relative w-32 h-32 sm:w-36 sm:h-36 border-2 border-sui-blue/60 bg-[#0A1A2F] p-1.5" style={{
-                    boxShadow: "inset 0 0 15px rgba(106, 215, 229, 0.4), 0 0 20px rgba(106, 215, 229, 0.3)",
-                  }}>
-                    <div className="relative w-full h-full border-2 border-sui-blue/50">
-                      <Image
-                        src="/C1.png"
-                        alt="Codorna Azul"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 128px, 144px"
-                        unoptimized
-                      />
-                    </div>
-                  </div>
-                </div>
+          {/* Carrossel de Seleção de Personagem - Estilo HUD */}
+          <div className="mb-4 sm:mb-5">
+            <div className="relative">
+              {/* Botões de navegação */}
+              <button
+                onClick={personagemAnterior}
+                disabled={animando}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-sui-blue/20 hover:bg-sui-blue/40 border-2 border-sui-blue/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center text-xl md:text-2xl text-sui-blue hover:scale-110 active:scale-95"
+                aria-label={lang === "pt" ? "Personagem anterior" : lang === "en" ? "Previous character" : "Personaje anterior"}
+              >
+                ‹
+              </button>
 
-                {/* Texto organizado abaixo */}
-                <div className="flex-1 flex flex-col justify-end">
-                  <div className="hud-text-box mb-2">
-                    <h2 className="text-lg sm:text-xl font-bold text-sui-blue mb-1.5 font-mono uppercase tracking-wider group-hover:text-sui-cyan transition-colors text-center">
-                      SIR TRANSFER
-                    </h2>
-                    <div className="h-0.5 bg-gradient-to-r from-transparent via-sui-blue/60 to-transparent my-1.5" />
-                    <p className="text-[#E5E7EB] text-xs font-mono text-center">
-                      &gt; {lang === "pt" 
-                        ? "A CODORNA QUE MOVE OBJETOS"
-                        : lang === "en"
-                        ? "THE QUAIL THAT MOVES OBJECTS"
-                        : "LA CODORNIZ QUE MUEVE OBJETOS"
-                      }
-                    </p>
-                  </div>
-                  <div className="hud-text-box">
-                    <p className="text-[#CBD5F5] text-xs font-mono italic text-center">
-                      &quot;{lang === "pt"
-                        ? "Determinação e foco para dominar Move"
-                        : lang === "en"
-                        ? "Determination and focus to master Move"
-                        : "Determinación y enfoque para dominar Move"
-                      }&quot;
-                    </p>
-                  </div>
+              <button
+                onClick={proximoPersonagem}
+                disabled={animando}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-10 h-10 md:w-12 md:h-12 rounded-full bg-sui-blue/20 hover:bg-sui-blue/40 border-2 border-sui-blue/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center text-xl md:text-2xl text-sui-blue hover:scale-110 active:scale-95"
+                aria-label={lang === "pt" ? "Próximo personagem" : lang === "en" ? "Next character" : "Siguiente personaje"}
+              >
+                ›
+              </button>
+
+              {/* Container do carrossel */}
+              <div className="relative overflow-hidden">
+                <div 
+                  className="flex transition-transform duration-300 ease-in-out"
+                  style={{
+                    transform: `translateX(-${personagemSelecionado * 100}%)`,
+                  }}
+                >
+                  {personagens.map((p, index) => {
+                    const isSelecionado = index === personagemSelecionado;
+                    const isTransfer = p.id === "transfer";
+                    
+                    return (
+                      <div
+                        key={p.id}
+                        className="w-full flex-shrink-0 px-2"
+                      >
+                        <div 
+                          onClick={() => {
+                            if (isSelecionado) {
+                              confirmarSelecao();
+                            } else {
+                              selecionarPersonagem(index);
+                            }
+                          }}
+                          className={`group relative hud-panel p-4 sm:p-5 transition-all duration-300 cursor-pointer ${
+                            isSelecionado 
+                              ? isTransfer 
+                                ? "border-sui-blue border-2" 
+                                : "border-move-green border-2"
+                              : ""
+                          }`}
+                        style={{
+                          boxShadow: isSelecionado
+                            ? p.id === "transfer"
+                              ? "inset 0 0 20px rgba(106, 215, 229, 0.3), 0 0 25px rgba(106, 215, 229, 0.4)"
+                              : "inset 0 0 20px rgba(63, 254, 149, 0.3), 0 0 25px rgba(63, 254, 149, 0.4)"
+                            : "inset 0 0 15px rgba(106, 215, 229, 0.1)",
+                        }}
+                        >
+                          {/* Borda lateral */}
+                          <div className={`absolute ${p.id === "transfer" ? "left-0" : "right-0"} top-0 bottom-0 w-1 bg-gradient-to-b ${
+                            p.id === "transfer"
+                              ? "from-sui-blue via-sui-cyan to-sui-blue"
+                              : "from-move-green via-sui-cyan to-move-green"
+                          } opacity-60 group-hover:opacity-100 transition-opacity`} />
+                          
+                          <div className="relative z-10 flex flex-col items-center">
+                            {/* Personagem */}
+                            <div className="mb-3 sm:mb-4">
+                              <div className={`relative w-32 h-32 sm:w-36 sm:h-36 border-2 ${
+                                p.id === "transfer" ? "border-sui-blue/60" : "border-move-green/60"
+                              } bg-[#0A1A2F] p-1.5`}
+                              style={{
+                                boxShadow: p.id === "transfer"
+                                  ? "inset 0 0 15px rgba(106, 215, 229, 0.4), 0 0 20px rgba(106, 215, 229, 0.3)"
+                                  : "inset 0 0 15px rgba(63, 254, 149, 0.4), 0 0 20px rgba(63, 254, 149, 0.3)",
+                              }}>
+                                <div className={`relative w-full h-full border-2 ${
+                                  p.id === "transfer" ? "border-sui-blue/50" : "border-move-green/50"
+                                }`}>
+                                  <Image
+                                    src={p.imagem}
+                                    alt={p.nome}
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 640px) 128px, 144px"
+                                    unoptimized
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Texto */}
+                            <div className="w-full text-center">
+                              <div className="hud-text-box mb-2">
+                                <h2 className={`text-lg sm:text-xl font-bold ${
+                                  p.id === "transfer" ? "text-sui-blue" : "text-move-green"
+                                } mb-1.5 font-mono uppercase tracking-wider group-hover:text-sui-cyan transition-colors`}>
+                                  {lang === "pt" ? p.nome : lang === "en" ? p.nomeEn : p.nomeEs}
+                                </h2>
+                                <div className={`h-0.5 bg-gradient-to-r from-transparent ${
+                                  p.id === "transfer" ? "via-sui-blue/60" : "via-move-green/60"
+                                } to-transparent my-1.5`} />
+                                <p className="text-[#E5E7EB] text-xs font-mono">
+                                  &gt; {p.id === "transfer"
+                                    ? (lang === "pt" 
+                                        ? "A CODORNA QUE MOVE OBJETOS"
+                                        : lang === "en"
+                                        ? "THE QUAIL THAT MOVES OBJECTS"
+                                        : "LA CODORNIZ QUE MUEVE OBJETOS")
+                                    : (lang === "pt"
+                                        ? "A CODORNA QUE ENTRA EM AÇÃO"
+                                        : lang === "en"
+                                        ? "THE QUAIL THAT TAKES ACTION"
+                                        : "LA CODORNIZ QUE ENTRA EN ACCIÓN")
+                                  }
+                                </p>
+                              </div>
+                              <div className="hud-text-box">
+                                <p className="text-[#CBD5F5] text-xs font-mono italic">
+                                  &quot;{lang === "pt" ? p.descricao : lang === "en" ? p.descricaoEn : p.descricaoEs}&quot;
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            </Link>
 
-            {/* Codorna 2 */}
-            <Link
-              href="/trilhas"
-              onClick={() => setCodornaSelecionada("entry")}
-              className={`group relative hud-panel p-4 sm:p-5 hover:border-move-green transition-all duration-300 cursor-pointer block h-full ${
-                codornaSelecionada === "entry" ? "border-move-green border-2" : ""
-              }`}
-              style={{
-                boxShadow: codornaSelecionada === "entry"
-                  ? "inset 0 0 20px rgba(63, 254, 149, 0.3), 0 0 25px rgba(63, 254, 149, 0.4)"
-                  : "inset 0 0 15px rgba(63, 254, 149, 0.1)",
-              }}
-            >
-              {/* Borda lateral direita */}
-              <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-move-green via-sui-cyan to-move-green opacity-60 group-hover:opacity-100 transition-opacity" />
-              
-              <div className="relative z-10 flex flex-col h-full">
-                {/* Personagem - Destaque no topo */}
-                <div className="mb-3 sm:mb-4 flex justify-center">
-                  <div className="relative w-32 h-32 sm:w-36 sm:h-36 border-2 border-move-green/60 bg-[#0A1A2F] p-1.5" style={{
-                    boxShadow: "inset 0 0 15px rgba(63, 254, 149, 0.4), 0 0 20px rgba(63, 254, 149, 0.3)",
-                  }}>
-                    <div className="relative w-full h-full border-2 border-move-green/50">
-                      <Image
-                        src="/C2.png"
-                        alt="Codorna Verde"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 128px, 144px"
-                        unoptimized
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Texto organizado abaixo */}
-                <div className="flex-1 flex flex-col justify-end">
-                  <div className="hud-text-box mb-2">
-                    <h2 className="text-lg sm:text-xl font-bold text-move-green mb-1.5 font-mono uppercase tracking-wider group-hover:text-sui-cyan transition-colors text-center">
-                      SIR ENTRY
-                    </h2>
-                    <div className="h-0.5 bg-gradient-to-r from-transparent via-move-green/60 to-transparent my-1.5" />
-                    <p className="text-[#E5E7EB] text-xs font-mono text-center">
-                      &gt; {lang === "pt"
-                        ? "A CODORNA QUE ENTRA EM AÇÃO"
-                        : lang === "en"
-                        ? "THE QUAIL THAT TAKES ACTION"
-                        : "LA CODORNIZ QUE ENTRA EN ACCIÓN"
-                      }
-                    </p>
-                  </div>
-                  <div className="hud-text-box">
-                    <p className="text-[#CBD5F5] text-xs font-mono italic text-center">
-                      &quot;{lang === "pt"
-                        ? "Agilidade e sabedoria para conquistar Move"
-                        : lang === "en"
-                        ? "Agility and wisdom to conquer Move"
-                        : "Agilidad y sabiduría para conquistar Move"
-                      }&quot;
-                    </p>
-                  </div>
-                </div>
+              {/* Indicadores de personagem */}
+              <div className="flex justify-center gap-2 mt-4">
+                {personagens.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => selecionarPersonagem(index)}
+                    disabled={animando}
+                    className={`w-3 h-3 rounded-full transition-all ${
+                      index === personagemSelecionado
+                        ? "bg-sui-blue w-8 scale-110"
+                        : "bg-sui-blue/30 hover:bg-sui-blue/50"
+                    }`}
+                    aria-label={`${lang === "pt" ? "Personagem" : lang === "en" ? "Character" : "Personaje"} ${index + 1}`}
+                  />
+                ))}
               </div>
-            </Link>
+
+              {/* Instrução de clique */}
+              <div className="mt-4 text-center">
+                <p className="text-xs text-[#CBD5F5] font-mono">
+                  {lang === "pt" 
+                    ? "Clique no personagem para confirmar" 
+                    : lang === "en" 
+                    ? "Click on character to confirm" 
+                    : "Haz clic en el personaje para confirmar"}
+                </p>
+              </div>
+            </div>
           </div>
           
           {/* Borda inferior estilo HUD */}
