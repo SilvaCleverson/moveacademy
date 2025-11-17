@@ -105,6 +105,13 @@ export default function IDEHeader({ codornaSelecionada, xp, xpAnimando }: IDEHea
             </div>
           </div>
         )}
+
+        {/* Commit Hash (versão) - discreto */}
+        {process.env.NEXT_PUBLIC_COMMIT_HASH && (
+          <div className="text-xs text-sui-blue/40 font-mono" title="Commit hash da versão atual">
+            {process.env.NEXT_PUBLIC_COMMIT_HASH.substring(0, 7)}
+          </div>
+        )}
       </div>
     </header>
   );

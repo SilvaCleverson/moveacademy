@@ -50,13 +50,12 @@ A escuridão se dissipa. Você sente uma energia pulsante em suas mãos. É hora
 
 ### 🔷 O Que É Um Módulo?
 
-Um **módulo** em Move é a unidade fundamental de organização de código. Em Moviara, pense nele como um **artefato mágico** que contém poderes e conhecimentos. É como um cofre sagrado onde você guarda suas funções, structs, constantes e recursos.
+Um **módulo** em Move é a unidade fundamental de organização de código. Em Moviara, pense nele como um **artefato mágico** que contém poderes e conhecimentos.
 
 **Analogia (Moviara):**
-Pense em um módulo como um **artefato mágico** em Moviara:
 - Cada **módulo** é um **artefato** com poderes específicos
 - As **funções** são os **feitiços** dentro desse artefato
-- O **endereço** é como o **selo do criador** (identifica quem forjou o artefato)
+- O **endereço** (ex: \`0x1\`) é como o **selo do criador** (identifica quem forjou o artefato)
 - O **nome do módulo** é o **nome do artefato** gravado nele
 
 **Estrutura de um módulo:**
@@ -66,66 +65,29 @@ module <endereço>::<nome> {
 }
 \`\`\`
 
-**Explicação detalhada:**
+**Explicação:**
 - \`module\` - Palavra-chave que define um módulo (obrigatória)
-- \`<endereço>\` - O endereço do dono do módulo. Pode ser:
-  - Um endereço temporário para testes: \`0x1\`, \`0x2\`, etc.
-  - Um endereço real na blockchain Sui: \`0x1234...abcd\`
+- \`<endereço>\` - O endereço do dono do módulo:
+  - Temporário para testes: \`0x1\`, \`0x2\`, etc.
+  - Real na blockchain Sui: \`0x1234...abcd\`
 - \`::\` - Separador entre endereço e nome (dois pontos duplos)
 - \`<nome>\` - Nome do módulo (deve começar com letra minúscula, usar snake_case)
 
-**O que significa \`0x1::despertar\`?**
-- \`0x1\` é um **endereço temporário** usado para testes e aprendizado
-  - O \`0x\` indica que é um número em **hexadecimal** (base 16)
-  - O \`1\` é o número do endereço (simples para testes)
-  - Em produção, você usaria um endereço real da sua carteira Sui
-- \`::\` separa o endereço do nome do módulo
-- \`despertar\` é o **nome do artefato** (módulo) que você está criando
-
-**Analogia:**
-Pense em \`0x1::despertar\` como:
-- \`0x1\` = O **endereço da sua oficina** (onde você forja artefatos)
-- \`::\` = O **separador** (como um "de" ou "em")
-- \`despertar\` = O **nome do artefato** que você está criando nessa oficina
-
-**Exemplo prático:**
-\`\`\`move
-module 0x1::despertar {
-    // Este artefato pertence ao endereço 0x1
-    // E se chama "despertar"
-}
-\`\`\`
-
-**Por que usar \`0x1\`?**
-- ✅ É simples e fácil de lembrar
-- ✅ Funciona perfeitamente para testes e aprendizado
-- ✅ Não precisa de uma carteira real para começar
-- ✅ Quando você publicar na Sui, usará seu endereço real (ex: \`0xABC123...\`)
+**Exemplo: \`0x1::despertar\`**
+- \`0x1\` = Endereço temporário usado para testes (hexadecimal)
+- \`::\` = Separador
+- \`despertar\` = Nome do módulo (artefato)
 
 **Por que usar módulos?**
-- ✅ **Organização**: Agrupa código relacionado em um único lugar
-- ✅ **Namespace**: Evita conflitos de nomes (dois módulos podem ter funções com o mesmo nome)
-- ✅ **Reutilização**: Outros módulos podem importar e usar suas funções com \`use\`
-- ✅ **Segurança**: Controla o que é público (\`public\`) ou privado (sem \`public\`)
-- ✅ **Modularidade**: Facilita manutenção e testes do código
-
-**Exemplo prático:**
-\`\`\`move
-module 0x1::despertar {
-    // Este artefato pertence ao endereço 0x1
-    // E se chama "despertar"
-    // Todo poder aqui dentro faz parte deste artefato
-    
-    // Você pode definir feitiços (funções) aqui
-    // Você pode definir formas (structs) aqui
-    // Você pode definir runas (constantes) aqui
-}
-\`\`\`
+- ✅ **Organização**: Agrupa código relacionado
+- ✅ **Namespace**: Evita conflitos de nomes
+- ✅ **Reutilização**: Outros módulos podem importar com \`use\`
+- ✅ **Segurança**: Controla o que é público ou privado
+- ✅ **Modularidade**: Facilita manutenção e testes
 
 **Importante:**
-- Todo arquivo Move deve ter **exatamente um módulo** (um artefato)
+- Todo arquivo Move deve ter **exatamente um módulo**
 - O nome do arquivo deve corresponder ao nome do módulo (ex: \`despertar.move\`)
-- Módulos são artefatos que você pode forjar e publicar na blockchain Sui
 
 ### 📖 Outros Conceitos
 
@@ -1037,6 +999,12 @@ Em Moviara, ownership é fundamental. Cada recurso tem um único dono. Aprenda e
 - Diferença entre **copy** e **move**
 - Como recursos são transferidos
 
+## 📚 Conceitos Move
+
+- **Ownership**: Cada valor tem um único dono. Quando você passa um valor para uma função, o ownership é transferido (move)
+- **Move**: Transferência de ownership - o valor original não pode mais ser usado
+- **Copy**: Duplicação de um valor (requer ability \`copy\`)
+
 ## 💻 Exemplo
 
 \`\`\`move
@@ -1055,10 +1023,21 @@ module 0x1::ownership {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`struct Recurso has drop\` - Define uma struct que pode ser descartada
+- \`criar(valor: u64): Recurso\` - Cria e retorna um Recurso (ownership é transferido)
+- \`obter_valor(recurso: Recurso)\` - Recebe o Recurso (ownership é movido para a função)
+- Após chamar \`obter_valor\`, o recurso não pode mais ser usado (foi consumido)
+
 ## ✨ Recompensas
 
 - **XP**: 150 pontos
-- **Badge**: "Guardião" 🔑`,
+- **Badge**: "Guardião" 🔑
+
+## 🎮 Sua Missão
+
+Crie uma struct Recurso e funções para criar e obter seu valor!`,
         codigoInicial: `module 0x1::ownership {
     // Crie uma struct Recurso com campo valor: u64
     // Crie uma função criar que retorna Recurso
@@ -1098,11 +1077,22 @@ module 0x1::ownership {
         lore: "Algumas coisas podem ser copiadas. Aprenda quando e como usar essa habilidade poderosa.",
         conteudo: `# 📋 Missão 2: Ability Copy
 
+## 📖 A Duplicação
+
+Algumas coisas podem ser copiadas. Aprenda quando e como usar essa habilidade poderosa.
+
 ## 🎯 O Que Você Vai Aprender
 
 - Ability **copy** no Move
 - Quando usar copy vs move
 - Tipos primitivos são copy por padrão
+
+## 📚 Conceitos Move
+
+- **copy**: Ability que permite duplicar valores
+- **Tipos primitivos** (u64, u8, bool, address) já são copy por padrão
+- **Structs** precisam de \`has copy\` para serem copiadas
+- Com copy, você pode usar o mesmo valor múltiplas vezes
 
 ## 💻 Exemplo
 
@@ -1118,9 +1108,20 @@ module 0x1::copy_example {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`has copy, drop\` - Permite copiar e descartar a struct
+- \`(contador, contador)\` - Cria uma tupla com duas cópias do contador
+- Sem \`copy\`, isso causaria erro (tentaria mover o mesmo valor duas vezes)
+- Com \`copy\`, o valor é duplicado e ambas as cópias podem ser usadas
+
 ## ✨ Recompensas
 
-- **XP**: 150 pontos`,
+- **XP**: 150 pontos
+
+## 🎮 Sua Missão
+
+Crie uma struct Contador com copy e uma função que a duplica!`,
         codigoInicial: `module 0x1::copy_example {
     // Crie uma struct Contador com copy e drop
     // Crie uma função que duplica o contador
@@ -1149,11 +1150,22 @@ module 0x1::copy_example {
         lore: "Alguns recursos precisam ser guardados para sempre. Aprenda a habilidade 'store'.",
         conteudo: `# 📦 Missão 3: Ability Store
 
+## 📖 O Armazenamento
+
+Alguns recursos precisam ser guardados para sempre. Aprenda a habilidade 'store'.
+
 ## 🎯 O Que Você Vai Aprender
 
 - Ability **store** no Move
 - Quando usar store
 - Armazenamento global
+
+## 📚 Conceitos Move
+
+- **store**: Ability que permite armazenar structs em recursos globais
+- Usado para dados que precisam persistir na blockchain
+- Necessário para structs dentro de outras structs armazenadas globalmente
+- Diferente de \`key\` (usado no Sui para objetos)
 
 ## 💻 Exemplo
 
@@ -1166,9 +1178,20 @@ module 0x1::store_example {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`has store\` - Permite que a struct seja armazenada em recursos globais
+- \`Configuracao\` pode ser um campo de uma struct maior armazenada globalmente
+- Sem \`store\`, a struct não pode ser parte de recursos persistentes
+- Útil para configurações e dados que precisam existir permanentemente
+
 ## ✨ Recompensas
 
-- **XP**: 150 pontos`,
+- **XP**: 150 pontos
+
+## 🎮 Sua Missão
+
+Crie uma struct Configuracao com ability store!`,
         codigoInicial: `module 0x1::store_example {
     // Crie uma struct Configuracao com store
 }`,
@@ -1193,11 +1216,22 @@ module 0x1::store_example {
         lore: "A chave mestre. Com ela, você pode criar objetos únicos que existem no mundo inteiro.",
         conteudo: `# 🗝️ Missão 4: Ability Key
 
+## 📖 A Chave Mestre
+
+A chave mestre. Com ela, você pode criar objetos únicos que existem no mundo inteiro.
+
 ## 🎯 O Que Você Vai Aprender
 
 - Ability **key** no Move
 - Diferença entre key e store
 - Uso no Sui
+
+## 📚 Conceitos Move
+
+- **key**: Ability que permite objetos serem identificados globalmente (específico do Sui)
+- **UID**: Identificador único obrigatório para objetos com \`key\`
+- **Diferença key vs store**: \`key\` é para objetos Sui, \`store\` é para dados em recursos globais
+- Objetos com \`key\` podem ser transferidos e identificados na blockchain
 
 ## 💻 Exemplo
 
@@ -1212,9 +1246,20 @@ module 0x1::key_example {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`has key\` - Permite que a struct seja um objeto Sui identificável
+- \`id: UID\` - Campo obrigatório para objetos com \`key\`
+- \`UID\` é criado com \`object::new(ctx)\` durante a criação
+- Objetos com \`key\` podem ser transferidos, compartilhados ou congelados no Sui
+
 ## ✨ Recompensas
 
-- **XP**: 200 pontos`,
+- **XP**: 200 pontos
+
+## 🎮 Sua Missão
+
+Crie uma struct com ability key e campo UID!`,
         codigoInicial: `module 0x1::key_example {
     // Crie uma struct com key e UID
 }`,
@@ -1241,11 +1286,22 @@ module 0x1::key_example {
         lore: "Tudo tem um fim. Aprenda a habilidade de descartar recursos com segurança.",
         conteudo: `# 🗑️ Missão 5: Ability Drop
 
+## 📖 O Fim
+
+Tudo tem um fim. Aprenda a habilidade de descartar recursos com segurança.
+
 ## 🎯 O Que Você Vai Aprender
 
 - Ability **drop** no Move
 - Quando recursos são destruídos
 - Gerenciamento de memória
+
+## 📚 Conceitos Move
+
+- **drop**: Ability que permite destruir valores quando não são mais necessários
+- **Automático**: Drop acontece automaticamente no final do escopo
+- **Necessário**: Sem \`drop\`, você não pode descartar valores (precisa consumir ou retornar)
+- **Gerenciamento**: Move gerencia memória automaticamente através de ownership e drop
 
 ## 💻 Exemplo
 
@@ -1261,9 +1317,20 @@ module 0x1::drop_example {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`has drop\` - Permite que a struct seja descartada
+- Quando \`descartar\` termina, \`temp\` é automaticamente destruído
+- Sem \`drop\`, você precisaria retornar ou consumir o valor de outra forma
+- Útil para valores temporários que não precisam persistir
+
 ## ✨ Recompensas
 
-- **XP**: 150 pontos`,
+- **XP**: 150 pontos
+
+## 🎮 Sua Missão
+
+Crie uma struct Temporario com ability drop!`,
         codigoInicial: `module 0x1::drop_example {
     // Crie uma struct com drop
 }`,
@@ -1291,11 +1358,24 @@ module 0x1::drop_example {
         lore: "O verdadeiro poder vem da combinação. Domine todas as abilities juntas.",
         conteudo: `# ⚡ Missão 6: Combinando Abilities
 
+## 📖 O Poder Combinado
+
+O verdadeiro poder vem da combinação. Domine todas as abilities juntas.
+
 ## 🎯 O Que Você Vai Aprender
 
 - Combinar múltiplas abilities
 - Escolher as abilities corretas
 - Padrões comuns
+
+## 📚 Conceitos Move
+
+- **Múltiplas abilities**: Você pode combinar \`copy\`, \`drop\`, \`store\` e \`key\`
+- **Padrões comuns**:
+  - \`copy, drop\` - Valores temporários que podem ser copiados
+  - \`drop, store\` - Dados persistentes que não precisam ser copiados
+  - \`copy, drop, store\` - Dados flexíveis que podem ser copiados e armazenados
+- **Escolha baseada no uso**: Pense em como o valor será usado
 
 ## 💻 Exemplo
 
@@ -1308,10 +1388,22 @@ module 0x1::combinado {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`has copy, drop, store\` - Combina três abilities
+- \`copy\` - Permite duplicar o valor
+- \`drop\` - Permite descartar quando não necessário
+- \`store\` - Permite armazenar em recursos globais
+- Este padrão é útil para dados que precisam de máxima flexibilidade
+
 ## ✨ Recompensas
 
 - **XP**: 200 pontos
-- **Badge**: "Mestre das Abilities" ⚡`,
+- **Badge**: "Mestre das Abilities" ⚡
+
+## 🎮 Sua Missão
+
+Crie uma struct que combine copy, drop e store!`,
         codigoInicial: `module 0x1::combinado {
     // Crie uma struct com copy, drop e store
 }`,
@@ -1366,11 +1458,22 @@ module 0x1::combinado {
         lore: "O mundo Sui se abre. Crie seu primeiro objeto que existe no blockchain.",
         conteudo: `# 🌊 Missão 1: Criar seu Primeiro Objeto
 
+## 📖 O Mundo Sui
+
+O mundo Sui se abre. Crie seu primeiro objeto que existe no blockchain.
+
 ## 🎯 O Que Você Vai Aprender
 
 - Criar objetos no Sui
 - UID (Unique Identifier)
 - Ability key
+
+## 📚 Conceitos Sui Move
+
+- **Objetos Sui**: Structs com \`has key\` que existem na blockchain
+- **UID**: Identificador único obrigatório para cada objeto
+- **TxContext**: Contexto da transação, necessário para criar UIDs
+- **object::new(ctx)**: Cria um novo UID único para o objeto
 
 ## 💻 Exemplo
 
@@ -1393,9 +1496,21 @@ module 0x1::meu_objeto {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`has key\` - Torna a struct um objeto Sui identificável
+- \`id: UID\` - Campo obrigatório (deve ser o primeiro campo)
+- \`object::new(ctx)\` - Gera um identificador único para o objeto
+- \`TxContext\` - Fornece informações sobre a transação atual
+- O objeto criado pode ser transferido, compartilhado ou armazenado
+
 ## ✨ Recompensas
 
-- **XP**: 200 pontos`,
+- **XP**: 200 pontos
+
+## 🎮 Sua Missão
+
+Crie seu primeiro objeto Sui com UID e ability key!`,
         codigoInicial: `module 0x1::meu_objeto {
     use sui::object::{Self, UID};
     use sui::tx_context::TxContext;
@@ -1434,11 +1549,22 @@ module 0x1::meu_objeto {
         lore: "O poder de mover objetos. Aprenda a transferir propriedades no mundo Sui.",
         conteudo: `# 📤 Missão 2: Transferir Objetos
 
+## 📖 O Poder de Mover
+
+O poder de mover objetos. Aprenda a transferir propriedades no mundo Sui.
+
 ## 🎯 O Que Você Vai Aprender
 
 - transfer::transfer
 - Transferir objetos para endereços
 - Ownership no Sui
+
+## 📚 Conceitos Sui Move
+
+- **transfer::transfer**: Função que move ownership de um objeto para um endereço
+- **Ownership no Sui**: Objetos pertencem a endereços (carteiras)
+- **Address**: Tipo que representa um endereço na blockchain Sui
+- Após transferir, o objeto passa a pertencer ao destinatário
 
 ## 💻 Exemplo
 
@@ -1453,9 +1579,20 @@ module 0x1::transferir {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`transfer::transfer(objeto, destinatario)\` - Move o objeto para o endereço
+- O objeto é consumido (ownership transferido)
+- O destinatário recebe o objeto em sua carteira
+- Útil para NFTs, tokens e outros objetos transferíveis
+
 ## ✨ Recompensas
 
-- **XP**: 200 pontos`,
+- **XP**: 200 pontos
+
+## 🎮 Sua Missão
+
+Crie uma função que transfere um objeto para um endereço!`,
         codigoInicial: `module 0x1::transferir {
     use sui::transfer;
     use sui::tx_context::TxContext;
@@ -1485,11 +1622,24 @@ module 0x1::transferir {
         lore: "A porta de entrada. Entry functions são o ponto de partida para todas as ações no Sui.",
         conteudo: `# 🚪 Missão 3: Entry Functions
 
+## 📖 A Porta de Entrada
+
+A porta de entrada. Entry functions são o ponto de partida para todas as ações no Sui.
+
 ## 🎯 O Que Você Vai Aprender
 
 - entry fun
 - Diferença entre public e entry
 - Transações no Sui
+
+## 📚 Conceitos Sui Move
+
+- **entry fun**: Função que pode ser chamada diretamente em uma transação
+- **Diferença public vs entry**: 
+  - \`public fun\` - Pode ser chamada por outros módulos
+  - \`entry fun\` - Pode ser chamada diretamente em transação (mais restritiva)
+- **TxContext**: Sempre necessário em entry functions
+- Entry functions são o ponto de entrada para ações do usuário
 
 ## 💻 Exemplo
 
@@ -1503,9 +1653,20 @@ module 0x1::entry_example {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`public entry fun\` - Combina \`public\` (visível) e \`entry\` (chamável em transação)
+- \`ctx: &mut TxContext\` - Contexto da transação (obrigatório em entry)
+- Entry functions aparecem na interface do Sui como ações disponíveis
+- Use entry para funções principais que usuários chamam diretamente
+
 ## ✨ Recompensas
 
-- **XP**: 200 pontos`,
+- **XP**: 200 pontos
+
+## 🎮 Sua Missão
+
+Crie uma entry function que pode ser chamada diretamente em transação!`,
         codigoInicial: `module 0x1::entry_example {
     use sui::tx_context::TxContext;
 
@@ -1533,11 +1694,22 @@ module 0x1::entry_example {
         lore: "Alguns objetos pertencem a todos. Aprenda a criar recursos compartilhados.",
         conteudo: `# 🌐 Missão 4: Objetos Compartilhados
 
+## 📖 O Recurso Global
+
+Alguns objetos pertencem a todos. Aprenda a criar recursos compartilhados.
+
 ## 🎯 O Que Você Vai Aprender
 
 - transfer::share_object
 - Objetos compartilhados
 - Acesso global
+
+## 📚 Conceitos Sui Move
+
+- **share_object**: Torna um objeto acessível por todos na blockchain
+- **Objetos compartilhados**: Não pertencem a um endereço específico
+- **Acesso global**: Qualquer um pode ler e modificar (se permitido)
+- **Uso comum**: Games, marketplaces, sistemas globais
 
 ## 💻 Exemplo
 
@@ -1552,9 +1724,20 @@ module 0x1::compartilhado {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`transfer::share_object(objeto)\` - Torna o objeto compartilhado
+- O objeto não pertence mais a nenhum endereço específico
+- Múltiplos usuários podem interagir com o mesmo objeto
+- Útil para sistemas que precisam de estado global compartilhado
+
 ## ✨ Recompensas
 
-- **XP**: 250 pontos`,
+- **XP**: 250 pontos
+
+## 🎮 Sua Missão
+
+Crie uma função que compartilha um objeto para acesso global!`,
         codigoInicial: `module 0x1::compartilhado {
     use sui::transfer;
     use sui::tx_context::TxContext;
@@ -1584,11 +1767,22 @@ module 0x1::compartilhado {
         lore: "Algumas coisas nunca mudam. Aprenda a criar objetos congelados no tempo.",
         conteudo: `# ❄️ Missão 5: Objetos Congelados
 
+## 📖 A Imutabilidade
+
+Algumas coisas nunca mudam. Aprenda a criar objetos congelados no tempo.
+
 ## 🎯 O Que Você Vai Aprender
 
 - transfer::freeze_object
 - Objetos imutáveis
 - Quando usar frozen
+
+## 📚 Conceitos Sui Move
+
+- **freeze_object**: Torna um objeto imutável permanentemente
+- **Imutabilidade**: O objeto não pode mais ser modificado
+- **Uso comum**: Metadados, certificados, dados históricos
+- **Irreversível**: Uma vez congelado, não pode ser descongelado
 
 ## 💻 Exemplo
 
@@ -1603,9 +1797,20 @@ module 0x1::congelado {
 }
 \`\`\`
 
+## 🔍 Explicação
+
+- \`transfer::freeze_object(objeto)\` - Congela o objeto permanentemente
+- Após congelar, nenhuma função pode modificar o objeto
+- O objeto ainda pode ser lido e transferido
+- Útil para garantir que dados importantes nunca sejam alterados
+
 ## ✨ Recompensas
 
-- **XP**: 200 pontos`,
+- **XP**: 200 pontos
+
+## 🎮 Sua Missão
+
+Crie uma função que congela um objeto permanentemente!`,
         codigoInicial: `module 0x1::congelado {
     use sui::transfer;
     use sui::tx_context::TxContext;
@@ -1635,16 +1840,70 @@ module 0x1::congelado {
         lore: "Você dominou os objetos. Agora crie algo grandioso que use todo seu conhecimento.",
         conteudo: `# 🌊 Missão 6: Sistema Completo de Objetos
 
+## 📖 O Domínio Completo
+
+Você dominou os objetos. Agora crie algo grandioso que use todo seu conhecimento.
+
 ## 🎯 O Que Você Vai Aprender
 
 - Combinar todos os conceitos
 - Criar sistema completo
 - Padrões Sui
 
+## 📚 Conceitos Sui Move
+
+- **Sistema completo**: Combina criação, mutação, transferência e compartilhamento
+- **Padrões Sui**: 
+  - Criar objetos com UID
+  - Modificar com entry functions
+  - Compartilhar para acesso global
+- **Boas práticas**: Use entry para ações principais, organize código em módulos
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::sistema_completo {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct Sistema has key {
+        id: UID,
+        contador: u64,
+    }
+
+    public fun criar(ctx: &mut TxContext): Sistema {
+        Sistema {
+            id: object::new(ctx),
+            contador: 0,
+        }
+    }
+
+    public entry fun incrementar(sistema: &mut Sistema) {
+        sistema.contador = sistema.contador + 1;
+    }
+
+    public fun compartilhar(sistema: Sistema, ctx: &mut TxContext) {
+        transfer::share_object(sistema);
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- \`criar\` - Cria um novo objeto Sistema com UID
+- \`incrementar\` - Entry function que modifica o contador
+- \`compartilhar\` - Torna o sistema acessível globalmente
+- Este padrão combina todos os conceitos: criação, mutação e compartilhamento
+
 ## ✨ Recompensas
 
 - **XP**: 250 pontos
-- **Badge**: "Mestre Sui" 🌊`,
+- **Badge**: "Mestre Sui" 🌊
+
+## 🎮 Sua Missão
+
+Crie um sistema completo que combine criação, mutação e compartilhamento de objetos!`,
         codigoInicial: `module 0x1::sistema_completo {
     // Crie um sistema completo com objetos, transfer, entry functions
 }`,
