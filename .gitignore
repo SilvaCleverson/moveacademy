@@ -25,10 +25,25 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
+.env.local
 .env*.local
+.env.development
+.env.production
+.env.test
 
 # vercel
 .vercel
+.vercel.json
+
+# secrets and credentials
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.json
+credentials.json
+config.json
 
 # arquivos temporários de commit
 commit_msg.txt
