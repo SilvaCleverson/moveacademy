@@ -180,34 +180,8 @@ export default function MissaoPage({ params }: PageProps) {
     );
   }
 
-  // Verifica se a trilha está bloqueada (trilha anterior não completa)
-  const trilhaIndex = trilhas.findIndex(t => t.id === trilha.id);
-  const isTrilhaCompleta = (t: typeof trilhas[0]) => {
-    if (t.missoes.length === 0) return false;
-    return t.missoes.every(m => missoesConcluidas.includes(m.id));
-  };
-  const isTrilhaBloqueada = trilhaIndex > 0 && !isTrilhaCompleta(trilhas[trilhaIndex - 1]);
-
-  // Verifica se a missão está bloqueada (para exibição)
-  const missaoIndex = trilha.missoes.findIndex(m => m.id === missao.id);
-  const isMissaoBloqueada = () => {
-    if (isTrilhaBloqueada) return true;
-    if (missaoIndex === 0) return false;
-    const missaoAnterior = trilha.missoes[missaoIndex - 1];
-    return !missoesConcluidas.includes(missaoAnterior.id);
-  };
-  const missaoBloqueada = isMissaoBloqueada();
-
-  // Se a missão está bloqueada, mostra mensagem
-  if (missaoBloqueada) {
-    return (
-      <div className="min-h-screen bg-gradient-deep-night text-[#E5E7EB] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-[#CBD5F5]">{lang === "pt" ? "Missão bloqueada. Complete as missões anteriores primeiro." : lang === "en" ? "Mission locked. Complete previous missions first." : "Misión bloqueada. Completa las misiones anteriores primero."}</p>
-      </div>
-    </div>
-  );
-}
+  // BLOQUEIO DESABILITADO - Todas as missões estão liberadas
+  // Verificação de bloqueio removida para permitir acesso a todas as missões
 
   const handleExecutar = () => {
     handleRun();
