@@ -284,6 +284,8 @@ Toda ajuda é bem-vinda! O foco principal é:
 4. Mantenha o código limpo e legível
 5. Documente mudanças significativas
 
+> **Nota:** Este projeto será doado para a comunidade ParaDev no futuro. Contribuições são bem-vindas e ajudarão a preparar o projeto para essa transição.
+
 ---
 
 ## 📚 Documentação
@@ -308,6 +310,18 @@ Projeto criado para ajudar builders a dominar a linguagem **Move** e construir n
 
 ---
 
+## 🤝 Futuro do Projeto
+
+Este projeto será **doado para a comunidade ParaDev** no futuro, tornando-o um recurso aberto e colaborativo para toda a comunidade de desenvolvedores Move e Sui.
+
+A doação garantirá que:
+- ✅ O projeto continue evoluindo com contribuições da comunidade
+- ✅ Seja mantido de forma colaborativa e transparente
+- ✅ Permaneça gratuito e acessível para todos
+- ✅ Seja um legado para a comunidade ParaDev
+
+---
+
 ## 📄 Licença
 
-Este projeto está em desenvolvimento ativo.
+Este projeto está em desenvolvimento ativo. Após a doação para a comunidade ParaDev, a licença será definida em conjunto com a comunidade.
