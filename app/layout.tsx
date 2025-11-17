@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { LanguageProviderWrapper } from "@/components/providers/LanguageProviderWrapper";
 import AudioProviderWrapper from "@/components/providers/AudioProviderWrapper";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "MoveAcademy · Aprenda Move",
@@ -19,6 +20,7 @@ export default function RootLayout({
       <LanguageProviderWrapper>
         <AudioProviderWrapper>
           {children}
+          <Footer />
         </AudioProviderWrapper>
       </LanguageProviderWrapper>
       </body>
