@@ -251,7 +251,7 @@ export default function TrilhaDetailPage({ params }: PageProps) {
           <div className="space-y-4">
             {trilha.missoes.map((missao, index) => {
               const concluida = missoesConcluidas.includes(missao.id);
-              const bloqueada = index > 0 && !missoesConcluidas.includes(trilha.missoes[index - 1].id);
+              const bloqueada = false; // BLOQUEIO DESABILITADO - Todas as missões liberadas
 
               return (
                 <MissaoCard

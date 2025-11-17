@@ -67,25 +67,13 @@ export default function TrilhasSidebar({ missoesConcluidas, currentTrilhaSlug, c
     return trilha.missoes.every(m => isMissaoConcluida(m.id));
   };
 
+  // BLOQUEIO DESABILITADO - Todas as trilhas e missões estão liberadas
   const isTrilhaBloqueada = (trilhaIndex: number) => {
-    // A primeira trilha sempre está disponível
-    if (trilhaIndex === 0) return false;
-    
-    // Verifica se a trilha anterior está completa
-    const trilhaAnterior = trilhas[trilhaIndex - 1];
-    return !isTrilhaCompleta(trilhaAnterior);
+    return false; // Todas as trilhas liberadas
   };
 
   const isMissaoBloqueada = (trilha: typeof trilhas[0], trilhaIndex: number, missaoIndex: number) => {
-    // Se a trilha está bloqueada, todas as missões estão bloqueadas
-    if (isTrilhaBloqueada(trilhaIndex)) return true;
-    
-    // A primeira missão da trilha só está disponível se a trilha não estiver bloqueada
-    if (missaoIndex === 0) return false;
-    
-    // As outras missões só estão disponíveis se a missão anterior foi concluída
-    const missaoAnterior = trilha.missoes[missaoIndex - 1];
-    return !isMissaoConcluida(missaoAnterior.id);
+    return false; // Todas as missões liberadas
   };
 
   return (
