@@ -39,7 +39,8 @@ export default function TrilhasSidebar({ missoesConcluidas, currentTrilhaSlug, c
       }
     }
     setPreviousMissoesConcluidas([...missoesConcluidas]);
-  }, [missoesConcluidas, playSound]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [missoesConcluidas, playSound]); // previousMissoesConcluidas é intencionalmente omitido
 
   const toggleTrilha = (slug: string) => {
     playSound("click");

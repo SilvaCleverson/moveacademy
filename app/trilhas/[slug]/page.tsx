@@ -96,7 +96,8 @@ export default function TrilhaDetailPage({ params }: PageProps) {
       setXp(xpTotal);
       setXpAnimando(false);
     }
-  }, [missoesConcluidas, xpInicializado]); // Removido 'xp' das dependências para evitar loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [missoesConcluidas, xpInicializado]); // xp removido intencionalmente para evitar loop
 
   useEffect(() => {
     if (!trilha) {

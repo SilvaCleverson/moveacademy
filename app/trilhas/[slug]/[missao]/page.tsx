@@ -112,14 +112,15 @@ export default function MissaoPage({ params }: PageProps) {
           setXp(Math.floor(currentXp));
         }
       }, interval);
-
+      
       return () => clearInterval(timer);
     } else {
       // Se o XP não mudou, apenas atualiza sem animação
       setXp(xpTotal);
       setXpAnimando(false);
     }
-  }, [missoesConcluidas, xpInicializado]); // Removido 'xp' das dependências para evitar loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [missoesConcluidas, xpInicializado]); // xp removido intencionalmente para evitar loop
 
   useEffect(() => {
     // Garante que params está disponível
@@ -189,11 +190,17 @@ export default function MissaoPage({ params }: PageProps) {
     return !missoesConcluidas.includes(missaoAnterior.id);
   };
 
-  // Se a missão está bloqueada, redireciona para a trilha
-  if (isMissaoBloqueada()) {
-    useEffect(() => {
+  const missaoBloqueada = isMissaoBloqueada();
+
+  // Redireciona se a missão está bloqueada
+  useEffect(() => {
+    if (missaoBloqueada) {
       router.push(`/trilhas/${trilha.slug}`);
-    }, []);
+    }
+  }, [missaoBloqueada, router, trilha.slug]);
+
+  // Se a missão está bloqueada, mostra mensagem
+  if (missaoBloqueada) {
     return (
       <div className="min-h-screen bg-gradient-deep-night text-[#E5E7EB] flex items-center justify-center">
         <div className="text-center">
