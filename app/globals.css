@@ -203,3 +203,130 @@ body {
   }
 }
 
+/* 🎄 TEMA NATALINO */
+:root {
+  --christmas-bg: linear-gradient(135deg, #1a3a52 0%, #0f233e 50%, #0a1a2f 100%);
+  --scroll-bg: #f4e4bc;
+  --scroll-border: #8b4513;
+  --scroll-shadow: rgba(139, 69, 19, 0.3);
+  --factory-bg: #1a1a1a;
+  --factory-border: #4a4a4a;
+  --factory-glow: rgba(106, 215, 229, 0.3);
+}
+
+/* Fundo com neve */
+.christmas-theme .bg-gradient-deep-night {
+  background: var(--christmas-bg) !important;
+  position: relative;
+}
+
+.christmas-theme .bg-gradient-deep-night::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Painel de objetivo estilo pergaminho */
+.christmas-theme .christmas-scroll {
+  background: var(--scroll-bg) !important;
+  border-left: 4px solid var(--scroll-border) !important;
+  box-shadow: 
+    inset 0 0 20px var(--scroll-shadow),
+    0 0 30px rgba(139, 69, 19, 0.2) !important;
+  position: relative;
+}
+
+.christmas-theme .christmas-scroll::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(139, 69, 19, 0.1) 2px,
+      rgba(139, 69, 19, 0.1) 4px
+    );
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.christmas-theme .christmas-scroll h2 {
+  color: #8b4513 !important;
+}
+
+.christmas-theme .christmas-scroll p,
+.christmas-theme .christmas-scroll li {
+  color: #5c3a1a !important;
+}
+
+.christmas-theme .christmas-scroll code {
+  background: rgba(139, 69, 19, 0.1) !important;
+  color: #8b4513 !important;
+  border: 1px solid rgba(139, 69, 19, 0.3) !important;
+}
+
+/* Editor estilo fábrica/terminal */
+.christmas-theme .christmas-factory-terminal {
+  background: var(--factory-bg) !important;
+  border: 2px solid var(--factory-border) !important;
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.5),
+    0 0 30px var(--factory-glow) !important;
+  position: relative;
+  padding-top: 60px !important;
+}
+
+.christmas-theme .christmas-factory-terminal::after {
+  content: "🐦 OFICINA CODORNA DE NATAL — Codifique a magia. Entregue alegria. Em Move.";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: #2a2a2a;
+  border-bottom: 2px solid var(--factory-border);
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  line-height: 1.4;
+  color: #6AD7E5;
+  text-shadow: 0 0 10px rgba(106, 215, 229, 0.5);
+  z-index: 10;
+}
+
+.christmas-theme .christmas-factory-terminal > * {
+  height: calc(100% - 60px) !important;
+}
+
+/* Botão Executar com emoji natalino */
+.christmas-theme button[aria-label*="Executar"],
+.christmas-theme button[aria-label*="Run"] {
+  position: relative;
+}
+
+/* Ajustes de texto no scroll para legibilidade */
+.christmas-theme .christmas-scroll pre {
+  background: rgba(139, 69, 19, 0.15) !important;
+  border: 1px solid rgba(139, 69, 19, 0.3) !important;
+}
+
+.christmas-theme .christmas-scroll pre code {
+  background: transparent !important;
+  border: none !important;
+}
+

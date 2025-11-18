@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAudio } from "@/contexts/AudioContext";
 
-type CodornaType = "transfer" | "entry";
+type CodornaType = "ang3l" | "transfer" | "entry" | "borrow" | "module" | "patch" | "quasimodo" | "constz";
 
 interface Personagem {
   id: CodornaType;
@@ -23,6 +23,24 @@ interface Personagem {
     sabedoria: number;
     destreza: number;
   };
+}
+
+// Função para embaralhar array (Fisher-Yates), mantendo o último elemento (Ang3l) fixo
+function shuffleArray<T>(array: T[]): T[] {
+  if (array.length <= 1) return [...array];
+
+  // Separa o último elemento (Ang3l) e embaralha o resto
+  const last = array[array.length - 1];
+  const rest = array.slice(0, -1);
+  const shuffled = [...rest];
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  // Retorna com Ang3l sempre no final
+  return [...shuffled, last];
 }
 
 const personagens: Personagem[] = [
@@ -42,6 +60,21 @@ const personagens: Personagem[] = [
     },
   },
   {
+    id: "borrow",
+    nome: "Lady Borrowa",
+    nomeEn: "Lady Borrowa",
+    nomeEs: "Lady Borrowa",
+    descricao: "A codorna que usa borrowing com sabedoria. Especialista em referências e empréstimos em Move.",
+    descricaoEn: "The quail who uses borrowing wisely. Expert in references and loans in Move.",
+    descricaoEs: "La codorniz que usa borrowing con sabiduría. Experta en referencias y préstamos en Move.",
+    imagem: "/C3.png",
+    atributos: {
+      forca: 7,
+      sabedoria: 9,
+      destreza: 8,
+    },
+  },
+  {
     id: "entry",
     nome: "Sir Entry",
     nomeEn: "Sir Entry",
@@ -56,19 +89,113 @@ const personagens: Personagem[] = [
       destreza: 7,
     },
   },
+  {
+    id: "module",
+    nome: "Madame Structa",
+    nomeEn: "Madame Structa",
+    nomeEs: "Madame Structa",
+    descricao: "Guerreira das estruturas. Mestra em criar e organizar módulos e structs complexas.",
+    descricaoEn: "Warrior of structures. Master at creating and organizing modules and complex structs.",
+    descricaoEs: "Guerrera de las estructuras. Maestra en crear y organizar módulos y structs complejas.",
+    imagem: "/C4.png",
+    atributos: {
+      forca: 8,
+      sabedoria: 9,
+      destreza: 7,
+    },
+  },
+  {
+    id: "patch",
+    nome: "Patch",
+    nomeEn: "Patch",
+    nomeEs: "Patch",
+    descricao: "Especialista em correções e atualizações. Domina a arte de melhorar código existente.",
+    descricaoEn: "Expert in fixes and updates. Masters the art of improving existing code.",
+    descricaoEs: "Experto en correcciones y actualizaciones. Domina el arte de mejorar código existente.",
+    imagem: "/C6.png",
+    atributos: {
+      forca: 7,
+      sabedoria: 8,
+      destreza: 9,
+    },
+  },
+  {
+    id: "quasimodo",
+    nome: "Core",
+    nomeEn: "Core",
+    nomeEs: "Core",
+    descricao: "Núcleo do compilador. Dá dicas quando seu código está bugado.",
+    descricaoEn: "Compiler core. Gives tips when your code is buggy.",
+    descricaoEs: "Núcleo del compilador. Da consejos cuando tu código tiene errores.",
+    imagem: "/C7.png",
+    atributos: {
+      forca: 6,
+      sabedoria: 10,
+      destreza: 6,
+    },
+  },
+  {
+    id: "constz",
+    nome: "Mestre F0ntzz",
+    nomeEn: "Master F0ntzz",
+    nomeEs: "Maestro F0ntzz",
+    descricao: "Mestre dos fundamentos da linguagem. Especialista em const, let e tipos básicos. Explicações diretas e com sotaque carismático.",
+    descricaoEn: "Master of language fundamentals. Expert in const, let and basic types. Direct explanations with a charismatic accent.",
+    descricaoEs: "Maestro de los fundamentos del lenguaje. Experto en const, let y tipos básicos. Explicaciones directas con acento carismático.",
+    imagem: "/C8.png",
+    atributos: {
+      forca: 9,
+      sabedoria: 10,
+      destreza: 8,
+    },
+  },
+  {
+    id: "ang3l",
+    nome: "Ang3l",
+    nomeEn: "Ang3l",
+    nomeEs: "Ang3l",
+    descricao: "Guardadora das Chaves de Autenticidade. Especialista em identidade em Move (address, signers, auth), contextos de transação, visibilidade e permissão.",
+    descricaoEn: "Keeper of Authenticity Keys. Expert in Move identity (address, signers, auth), transaction contexts, visibility and permissions.",
+    descricaoEs: "Guardiana de las Llaves de Autenticidad. Experta en identidad en Move (address, signers, auth), contextos de transacción, visibilidad y permisos.",
+    imagem: "/C0.png",
+    atributos: {
+      forca: 8,
+      sabedoria: 10,
+      destreza: 7,
+    },
+  },
 ];
 
 export default function Home() {
   const router = useRouter();
   const { lang, setLang } = useLanguage();
   const { playSound } = useAudio();
+  const [personagensEmbaralhados, setPersonagensEmbaralhados] = useState<Personagem[]>(() => personagens);
   const [personagemSelecionado, setPersonagemSelecionado] = useState<number>(0);
   const [animando, setAnimando] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(true);
+
+  // Embaralha personagens no client-side apenas
+  useEffect(() => {
+    setPersonagensEmbaralhados(shuffleArray(personagens));
+  }, []);
+
+  // Auto-play do carrossel
+  useEffect(() => {
+    if (!autoPlay) return;
+    
+    const interval = setInterval(() => {
+      setPersonagemSelecionado((prev) => (prev + 1) % personagensEmbaralhados.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [autoPlay, personagensEmbaralhados.length]);
 
   const selecionarPersonagem = useCallback((index: number) => {
     if (animando) return;
     if (index === personagemSelecionado) return;
     
+    setAutoPlay(false);
     playSound("click");
     setAnimando(true);
     setPersonagemSelecionado(index);
@@ -80,28 +207,30 @@ export default function Home() {
 
   const proximoPersonagem = useCallback(() => {
     if (animando) return;
+    setAutoPlay(false);
     playSound("click");
-    const proximo = (personagemSelecionado + 1) % personagens.length;
+    const proximo = (personagemSelecionado + 1) % personagensEmbaralhados.length;
     setAnimando(true);
     setPersonagemSelecionado(proximo);
     setTimeout(() => {
       setAnimando(false);
     }, 300);
-  }, [animando, personagemSelecionado, playSound]);
+  }, [animando, personagemSelecionado, playSound, personagensEmbaralhados.length]);
 
   const personagemAnterior = useCallback(() => {
     if (animando) return;
+    setAutoPlay(false);
     playSound("click");
-    const anterior = (personagemSelecionado - 1 + personagens.length) % personagens.length;
+    const anterior = (personagemSelecionado - 1 + personagensEmbaralhados.length) % personagensEmbaralhados.length;
     setAnimando(true);
     setPersonagemSelecionado(anterior);
     setTimeout(() => {
       setAnimando(false);
     }, 300);
-  }, [animando, personagemSelecionado, playSound]);
+  }, [animando, personagemSelecionado, playSound, personagensEmbaralhados.length]);
 
   const confirmarSelecao = useCallback(() => {
-    const personagem = personagens[personagemSelecionado];
+    const personagem = personagensEmbaralhados[personagemSelecionado];
     localStorage.setItem("moveacademy-codorna", personagem.id);
     playSound("success");
     
@@ -109,18 +238,18 @@ export default function Home() {
     setTimeout(() => {
       router.push("/trilhas");
     }, 500);
-  }, [personagemSelecionado, playSound, router]);
+  }, [personagemSelecionado, playSound, router, personagensEmbaralhados]);
 
   // Carrega personagem salvo
   useEffect(() => {
     const saved = localStorage.getItem("moveacademy-codorna");
-    if (saved === "transfer" || saved === "entry") {
-      const index = personagens.findIndex((p) => p.id === saved);
+    if (saved && ["ang3l", "transfer", "entry", "borrow", "module", "patch", "quasimodo", "constz"].includes(saved)) {
+      const index = personagensEmbaralhados.findIndex((p) => p.id === saved);
       if (index !== -1) {
         setPersonagemSelecionado(index);
       }
     }
-  }, []);
+  }, [personagensEmbaralhados]);
 
   // Navegação por teclado (setas esquerda/direita)
   useEffect(() => {
@@ -316,7 +445,7 @@ export default function Home() {
                     transform: `translateX(-${personagemSelecionado * 100}%)`,
                   }}
                 >
-                  {personagens.map((p, index) => {
+                  {personagensEmbaralhados.map((p, index) => {
                     const isSelecionado = index === personagemSelecionado;
                     const isTransfer = p.id === "transfer";
                     
@@ -423,7 +552,7 @@ export default function Home() {
 
               {/* Indicadores de personagem */}
               <div className="flex justify-center gap-2 mt-4">
-                {personagens.map((_, index) => (
+                {personagensEmbaralhados.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => selecionarPersonagem(index)}

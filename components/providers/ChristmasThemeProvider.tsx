@@ -32,10 +32,10 @@ export default function ChristmasThemeProvider({
         now.getUTCDate()
       );
 
-      // Data de início: 30/11/2025 (UTC) - Primeiro domingo do Advento
-      const startDate = new Date(Date.UTC(2025, 10, 30)); // Mês 10 = Novembro
-      // Data de fim: 06/01/2026 (UTC) - Dia de Reis
-      const endDate = new Date(Date.UTC(2026, 0, 6)); // Mês 0 = Janeiro
+      // Data de início: 18/11/2024 (UTC) - Hoje
+      const startDate = new Date(Date.UTC(2024, 10, 18)); // Mês 10 = Novembro
+      // Data de fim: 25/12/2024 (UTC) - Natal
+      const endDate = new Date(Date.UTC(2024, 11, 25)); // Mês 11 = Dezembro
 
       const isActive =
         utcNow >= startDate && utcNow <= endDate;
