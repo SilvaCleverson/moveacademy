@@ -2651,8 +2651,624 @@ Crie um token utilitário com propósito específico!`,
     },
     cor: "#F472B6",
     icone: "🎨",
-    xpTotal: 2000,
-    missoes: [],
+    xpTotal: 2100, // 300 + 350 + 400 + 450 + 500
+    missoes: [
+      {
+        id: "missao-27",
+        slug: "colecao-nft",
+        numero: 1,
+        icone: "🎨",
+        titulo: "Criar Coleção NFT",
+        descricao: "Aprenda a criar uma coleção NFT com metadados na blockchain Sui.",
+        lore: "Os artefatos mais raros de Moviara são organizados em coleções. Crie sua primeira coleção e domine o sistema de NFTs.",
+        conteudo: `# 🎨 Missão 1: Criar Coleção NFT
+
+## 📖 Coleções de Artefatos
+
+Os artefatos mais raros de Moviara são organizados em coleções. Crie sua primeira coleção e domine o sistema de NFTs.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Display** - Sistema de metadados do Sui
+- **Collection** - Estrutura de coleções NFT
+- **Metadata** - Informações sobre NFTs
+
+## 📚 Conceitos Sui Move
+
+- **Display**: Sistema que permite atualizar metadados de NFTs sem modificar o objeto
+- **Collection**: Struct que agrupa NFTs relacionados
+- **Metadata**: Informações descritivas (nome, descrição, imagem, etc.)
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::colecao_artefatos {
+    use sui::display::{Self, Display};
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct Colecao has key {
+        id: UID,
+        nome: String,
+        descricao: String,
+    }
+
+    struct ArtefatoNFT has key, store {
+        id: UID,
+        colecao: ID,
+        nome: String,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let colecao = Colecao {
+            id: object::new(ctx),
+            nome: string::utf8(b"Artefatos de Moviara"),
+            descricao: string::utf8(b"Coleção de artefatos raros"),
+        };
+        transfer::share_object(colecao);
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- \`has key\` - Permite que o objeto seja identificado na blockchain
+- \`has store\` - Permite que o NFT seja transferido
+- \`Display\` - Sistema para metadados dinâmicos
+
+## ✨ Recompensas
+
+- **XP**: 300 pontos
+- **Badge**: "Criador de Coleções" 🎨
+
+## 🎮 Sua Missão
+
+Crie uma coleção NFT chamada "Guerreiros de Moviara"!`,
+        codigoInicial: `module 0x1::colecao_artefatos {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie uma struct Colecao com key
+    // Crie uma função init que cria e compartilha a coleção
+}`,
+        codigoSolucao: `module 0x1::colecao_artefatos {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct Colecao has key {
+        id: UID,
+        nome: vector<u8>,
+        descricao: vector<u8>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let colecao = Colecao {
+            id: object::new(ctx),
+            nome: b"Guerreiros de Moviara",
+            descricao: b"Coleção de guerreiros lendários",
+        };
+        transfer::share_object(colecao);
+    }
+}`,
+        dicas: [
+          "Use 'has key' para objetos na blockchain",
+          "transfer::share_object torna o objeto compartilhado",
+          "object::new cria um novo UID",
+        ],
+        xpRecompensa: 300,
+        badgeRecompensa: {
+          id: "badge-criador-colecoes",
+          nome: "Criador de Coleções",
+          descricao: "Você criou sua primeira coleção NFT!",
+          icone: "🎨",
+        },
+        conceitosAprendidos: ["Coleções NFT", "Display", "Metadata", "share_object"],
+        preRequisitos: ["missao-07"],
+      },
+      {
+        id: "missao-28",
+        slug: "metadata-nft",
+        numero: 2,
+        icone: "📝",
+        titulo: "Metadados de NFT",
+        descricao: "Aprenda a adicionar e atualizar metadados em NFTs usando Display.",
+        lore: "Cada artefato precisa de informações. Domine o sistema Display para criar NFTs ricos em metadados.",
+        conteudo: `# 📝 Missão 2: Metadados de NFT
+
+## 📖 Informações dos Artefatos
+
+Cada artefato precisa de informações. Domine o sistema Display para criar NFTs ricos em metadados.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Display** - Sistema de metadados dinâmicos
+- **update_version** - Atualizar metadados
+- **name**, **description**, **image_url** - Campos padrão
+
+## 📚 Conceitos Sui Move
+
+- **Display**: Permite metadados que podem ser atualizados sem modificar o objeto
+- **update_version**: Atualiza a versão dos metadados
+- **Metadados padrão**: name, description, image_url, link, project_url
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::metadata_nft {
+    use sui::display::{Self, Display};
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct ArtefatoNFT has key, store {
+        id: UID,
+        display: Display,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let mut display = display::new();
+        display::add(&mut display, b"name", b"Artefato Lendário");
+        display::add(&mut display, b"description", b"Um artefato poderoso");
+        display::add(&mut display, b"image_url", b"https://exemplo.com/imagem.png");
+        
+        let nft = ArtefatoNFT {
+            id: object::new(ctx),
+            display,
+        };
+        display::update_version(&mut nft.display);
+        transfer::transfer(nft, tx_context::sender(ctx));
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- \`display::new()\` - Cria um novo Display
+- \`display::add()\` - Adiciona um campo de metadado
+- \`display::update_version()\` - Publica os metadados
+
+## ✨ Recompensas
+
+- **XP**: 350 pontos
+
+## 🎮 Sua Missão
+
+Crie um NFT com metadados usando Display!`,
+        codigoInicial: `module 0x1::metadata_nft {
+    use sui::display::{Self, Display};
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um NFT com Display e metadados
+}`,
+        codigoSolucao: `module 0x1::metadata_nft {
+    use sui::display::{Self, Display};
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct ArtefatoNFT has key, store {
+        id: UID,
+        display: Display,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let mut display = display::new();
+        display::add(&mut display, b"name", b"Guerreiro de Moviara");
+        display::add(&mut display, b"description", b"Um guerreiro lendário");
+        display::add(&mut display, b"image_url", b"https://moviara.com/guerreiro.png");
+        
+        let nft = ArtefatoNFT {
+            id: object::new(ctx),
+            display,
+        };
+        display::update_version(&mut nft.display);
+        transfer::transfer(nft, tx_context::sender(ctx));
+    }
+}`,
+        dicas: [
+          "Use display::new() para criar metadados",
+          "display::add() adiciona campos",
+          "display::update_version() publica",
+        ],
+        xpRecompensa: 350,
+        conceitosAprendidos: ["Display", "Metadata", "update_version"],
+        preRequisitos: ["missao-27"],
+      },
+      {
+        id: "missao-29",
+        slug: "royalties-nft",
+        numero: 3,
+        icone: "💰",
+        titulo: "Sistema de Royalties",
+        descricao: "Implemente um sistema de royalties para NFTs em marketplaces.",
+        lore: "Os criadores merecem ser recompensados. Crie um sistema de royalties que beneficia artistas a cada venda.",
+        conteudo: `# 💰 Missão 3: Sistema de Royalties
+
+## 📖 Recompensar Criadores
+
+Os criadores merecem ser recompensados. Crie um sistema de royalties que beneficia artistas a cada venda.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Royalties** - Percentual de venda para criador
+- **Marketplace** - Sistema de vendas
+- **Transfer events** - Rastrear transferências
+
+## 📚 Conceitos Sui Move
+
+- **Royalties**: Percentual da venda que vai para o criador original
+- **Marketplace**: Sistema que facilita compra/venda de NFTs
+- **Events**: Sistema de eventos para rastrear transações
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::royalties {
+    use sui::event;
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct NFT has key, store {
+        id: UID,
+        criador: address,
+        preco_venda: u64,
+    }
+
+    struct VendaEvent has copy, drop {
+        nft_id: ID,
+        vendedor: address,
+        comprador: address,
+        preco: u64,
+        royalty: u64,
+    }
+
+    public entry fun vender(
+        nft: NFT,
+        preco: u64,
+        comprador: address,
+        ctx: &mut TxContext,
+    ) {
+        let royalty = preco * 5 / 100; // 5% de royalty
+        let criador = nft.criador;
+        
+        event::emit(VendaEvent {
+            nft_id: object::id(&nft),
+            vendedor: tx_context::sender(ctx),
+            comprador,
+            preco,
+            royalty,
+        });
+        
+        transfer::transfer(nft, comprador);
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- **Royalties**: Calculado como percentual do preço
+- **Events**: Permitem rastrear todas as vendas
+- **Transfer**: Transfere o NFT para o comprador
+
+## ✨ Recompensas
+
+- **XP**: 400 pontos
+
+## 🎮 Sua Missão
+
+Crie um sistema de royalties de 10% para NFTs!`,
+        codigoInicial: `module 0x1::royalties {
+    use sui::event;
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um sistema de royalties
+}`,
+        codigoSolucao: `module 0x1::royalties {
+    use sui::event;
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct NFT has key, store {
+        id: UID,
+        criador: address,
+    }
+
+    struct VendaEvent has copy, drop {
+        nft_id: ID,
+        preco: u64,
+        royalty: u64,
+    }
+
+    public entry fun vender(
+        nft: NFT,
+        preco: u64,
+        comprador: address,
+        ctx: &mut TxContext,
+    ) {
+        let royalty = preco * 10 / 100; // 10% de royalty
+        
+        event::emit(VendaEvent {
+            nft_id: object::id(&nft),
+            preco,
+            royalty,
+        });
+        
+        transfer::transfer(nft, comprador);
+    }
+}`,
+        dicas: [
+          "Calcule royalties como percentual",
+          "Use events para rastrear vendas",
+          "Royalties geralmente vão para o criador original",
+        ],
+        xpRecompensa: 400,
+        conceitosAprendidos: ["Royalties", "Events", "Marketplace"],
+        preRequisitos: ["missao-28"],
+      },
+      {
+        id: "missao-30",
+        slug: "marketplace-nft",
+        numero: 4,
+        icone: "🏪",
+        titulo: "Marketplace NFT",
+        descricao: "Crie um marketplace completo para compra e venda de NFTs.",
+        lore: "O mercado de artefatos floresce. Construa um marketplace onde guerreiros podem comprar e vender seus NFTs.",
+        conteudo: `# 🏪 Missão 4: Marketplace NFT
+
+## 📖 Mercado de Artefatos
+
+O mercado de artefatos floresce. Construa um marketplace onde guerreiros podem comprar e vender seus NFTs.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Marketplace** - Sistema de compra/venda
+- **Listar NFT** - Colocar NFT à venda
+- **Comprar NFT** - Adquirir NFT listado
+
+## 📚 Conceitos Sui Move
+
+- **Marketplace**: Sistema centralizado ou descentralizado para NFTs
+- **Listing**: Processo de colocar NFT à venda
+- **Purchase**: Processo de comprar NFT listado
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::marketplace {
+    use sui::object::{Self, UID, ID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+    use sui::coin::Coin;
+    use sui::sui::SUI;
+
+    struct Marketplace has key {
+        id: UID,
+        taxas: u64,
+    }
+
+    struct Listing has key, store {
+        id: UID,
+        nft_id: ID,
+        preco: u64,
+        vendedor: address,
+    }
+
+    public entry fun listar(
+        marketplace: &mut Marketplace,
+        nft: NFT,
+        preco: u64,
+        ctx: &mut TxContext,
+    ) {
+        let listing = Listing {
+            id: object::new(ctx),
+            nft_id: object::id(&nft),
+            preco,
+            vendedor: tx_context::sender(ctx),
+        };
+        transfer::share_object(listing);
+    }
+
+    public entry fun comprar(
+        listing: Listing,
+        pagamento: Coin<SUI>,
+        ctx: &mut TxContext,
+    ) {
+        // Lógica de compra
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- **Listing**: Objeto compartilhado que representa NFT à venda
+- **Purchase**: Transfere NFT e moedas
+- **Taxas**: Marketplace pode cobrar taxas
+
+## ✨ Recompensas
+
+- **XP**: 450 pontos
+- **Badge**: "Mestre do Marketplace" 🏪
+
+## 🎮 Sua Missão
+
+Crie um marketplace completo para NFTs!`,
+        codigoInicial: `module 0x1::marketplace {
+    use sui::object::{Self, UID, ID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um marketplace para NFTs
+}`,
+        codigoSolucao: `module 0x1::marketplace {
+    use sui::object::{Self, UID, ID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct Marketplace has key {
+        id: UID,
+    }
+
+    struct NFT has key, store {
+        id: UID,
+    }
+
+    struct Listing has key, store {
+        id: UID,
+        nft_id: ID,
+        preco: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let marketplace = Marketplace {
+            id: object::new(ctx),
+        };
+        transfer::share_object(marketplace);
+    }
+
+    public entry fun listar(
+        nft: NFT,
+        preco: u64,
+        ctx: &mut TxContext,
+    ) {
+        let listing = Listing {
+            id: object::new(ctx),
+            nft_id: object::id(&nft),
+            preco,
+        };
+        transfer::share_object(listing);
+    }
+}`,
+        dicas: [
+          "Use share_object para tornar listings públicos",
+          "Armazene ID do NFT no listing",
+          "Marketplace pode ser um objeto compartilhado",
+        ],
+        xpRecompensa: 450,
+        badgeRecompensa: {
+          id: "badge-mestre-marketplace",
+          nome: "Mestre do Marketplace",
+          descricao: "Você criou um marketplace NFT!",
+          icone: "🏪",
+        },
+        conceitosAprendidos: ["Marketplace", "Listing", "Purchase", "share_object"],
+        preRequisitos: ["missao-29"],
+      },
+      {
+        id: "missao-31",
+        slug: "nft-dinamico",
+        numero: 5,
+        icone: "⚡",
+        titulo: "NFTs Dinâmicos",
+        descricao: "Crie NFTs que mudam de estado e evoluem com o tempo.",
+        lore: "Os artefatos mais poderosos evoluem. Crie NFTs que mudam e crescem com as ações dos guerreiros.",
+        conteudo: `# ⚡ Missão 5: NFTs Dinâmicos
+
+## 📖 Artefatos Evolutivos
+
+Os artefatos mais poderosos evoluem. Crie NFTs que mudam e crescem com as ações dos guerreiros.
+
+## 🎯 O Que Você Vai Aprender
+
+- **NFTs mutáveis** - NFTs que podem ser modificados
+- **Estado interno** - Armazenar estado no NFT
+- **Evolução** - Mudar propriedades do NFT
+
+## 📚 Conceitos Sui Move
+
+- **Mutabilidade**: NFTs podem ter campos mutáveis
+- **Estado**: Armazenar informações que mudam
+- **Evolução**: Atualizar propriedades baseado em ações
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::nft_dinamico {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct ArtefatoNFT has key, store {
+        id: UID,
+        nivel: u64,
+        experiencia: u64,
+        poder: u64,
+    }
+
+    public fun evoluir(nft: &mut ArtefatoNFT, xp_ganho: u64) {
+        nft.experiencia = nft.experiencia + xp_ganho;
+        if (nft.experiencia >= 100) {
+            nft.nivel = nft.nivel + 1;
+            nft.poder = nft.poder + 10;
+            nft.experiencia = 0;
+        }
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- **Campos mutáveis**: Podem ser modificados após criação
+- **Evolução**: Atualiza propriedades baseado em regras
+- **Estado persistente**: Mantém informações entre transações
+
+## ✨ Recompensas
+
+- **XP**: 500 pontos
+
+## 🎮 Sua Missão
+
+Crie um NFT que evolui com experiência!`,
+        codigoInicial: `module 0x1::nft_dinamico {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um NFT que evolui
+}`,
+        codigoSolucao: `module 0x1::nft_dinamico {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    struct ArtefatoNFT has key, store {
+        id: UID,
+        nivel: u64,
+        experiencia: u64,
+    }
+
+    public fun criar(ctx: &mut TxContext): ArtefatoNFT {
+        ArtefatoNFT {
+            id: object::new(ctx),
+            nivel: 1,
+            experiencia: 0,
+        }
+    }
+
+    public fun ganhar_xp(nft: &mut ArtefatoNFT, xp: u64) {
+        nft.experiencia = nft.experiencia + xp;
+        if (nft.experiencia >= 100) {
+            nft.nivel = nft.nivel + 1;
+            nft.experiencia = 0;
+        }
+    }
+}`,
+        dicas: [
+          "Use campos mutáveis no NFT",
+          "Implemente lógica de evolução",
+          "NFTs podem ter estado interno",
+        ],
+        xpRecompensa: 500,
+        conceitosAprendidos: ["NFTs Dinâmicos", "Estado Mutável", "Evolução"],
+        preRequisitos: ["missao-30"],
+      },
+    ],
   },
   {
     id: "trilha-defi",
@@ -2674,8 +3290,657 @@ Crie um token utilitário com propósito específico!`,
     },
     cor: "#8B5CF6",
     icone: "💎",
-    xpTotal: 2500,
-    missoes: [],
+    xpTotal: 2500, // 400 + 450 + 500 + 550 + 600
+    missoes: [
+      {
+        id: "missao-32",
+        slug: "pool-liquidez",
+        numero: 1,
+        icone: "💎",
+        titulo: "Pool de Liquidez",
+        descricao: "Crie um pool de liquidez básico para troca de moedas.",
+        lore: "A liquidez move os mercados. Crie pools onde moedas podem ser trocadas.",
+        conteudo: `# 💎 Missão 1: Pool de Liquidez
+
+## 📖 Mercados Descentralizados
+
+A liquidez move os mercados. Crie pools onde moedas podem ser trocadas.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Liquidity Pool** - Reserva de moedas para troca
+- **AMM** - Automated Market Maker
+- **Swap** - Troca de moedas
+
+## 📚 Conceitos DeFi
+
+- **Liquidity Pool**: Reserva de duas moedas que permite trocas
+- **AMM**: Algoritmo que determina preços baseado em proporção
+- **Swap**: Troca de uma moeda por outra usando o pool
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::pool_liquidez {
+    use sui::object::{Self, UID};
+    use sui::coin::{Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct Pool has key {
+        id: UID,
+        moeda_a: u64,
+        moeda_b: u64,
+    }
+
+    public entry fun adicionar_liquidez(
+        pool: &mut Pool,
+        moeda_a: Coin<MOEDA_A>,
+        moeda_b: Coin<MOEDA_B>,
+    ) {
+        let quantidade_a = coin::value(&moeda_a);
+        let quantidade_b = coin::value(&moeda_b);
+        
+        pool.moeda_a = pool.moeda_a + quantidade_a;
+        pool.moeda_b = pool.moeda_b + quantidade_b;
+        
+        coin::burn(moeda_a);
+        coin::burn(moeda_b);
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- **Pool**: Armazena reservas de duas moedas
+- **Liquidez**: Quantidade de moedas no pool
+- **Swap**: Calcula quantidade de saída baseado na proporção
+
+## ✨ Recompensas
+
+- **XP**: 400 pontos
+
+## 🎮 Sua Missão
+
+Crie um pool de liquidez básico!`,
+        codigoInicial: `module 0x1::pool_liquidez {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um pool de liquidez
+}`,
+        codigoSolucao: `module 0x1::pool_liquidez {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct MOEDA_A has drop {}
+    struct MOEDA_B has drop {}
+
+    struct Pool has key {
+        id: UID,
+        moeda_a: u64,
+        moeda_b: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let pool = Pool {
+            id: object::new(ctx),
+            moeda_a: 0,
+            moeda_b: 0,
+        };
+        transfer::share_object(pool);
+    }
+
+    public entry fun adicionar_liquidez(
+        pool: &mut Pool,
+        moeda_a: Coin<MOEDA_A>,
+        moeda_b: Coin<MOEDA_B>,
+    ) {
+        pool.moeda_a = pool.moeda_a + coin::value(&moeda_a);
+        pool.moeda_b = pool.moeda_b + coin::value(&moeda_b);
+    }
+}`,
+        dicas: [
+          "Pool armazena reservas de duas moedas",
+          "Use share_object para tornar pool público",
+          "Liquidez permite trocas",
+        ],
+        xpRecompensa: 400,
+        conceitosAprendidos: ["Liquidity Pool", "AMM", "DeFi"],
+        preRequisitos: ["missao-26"],
+      },
+      {
+        id: "missao-33",
+        slug: "staking",
+        numero: 2,
+        icone: "🔒",
+        titulo: "Sistema de Staking",
+        descricao: "Implemente um sistema de staking onde usuários bloqueiam moedas para ganhar recompensas.",
+        lore: "O poder vem do compromisso. Crie um sistema onde guerreiros bloqueiam recursos para ganhar recompensas.",
+        conteudo: `# 🔒 Missão 2: Sistema de Staking
+
+## 📖 Compromisso e Recompensa
+
+O poder vem do compromisso. Crie um sistema onde guerreiros bloqueiam recursos para ganhar recompensas.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Staking** - Bloquear moedas
+- **Rewards** - Recompensas por staking
+- **Unstaking** - Desbloquear moedas
+
+## 📚 Conceitos DeFi
+
+- **Staking**: Processo de bloquear moedas por um período
+- **Rewards**: Recompensas pagas aos stakers
+- **APY**: Annual Percentage Yield (taxa de retorno anual)
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::staking {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct StakingPool has key {
+        id: UID,
+        total_staked: u64,
+        rewards_rate: u64, // Por exemplo, 10 = 10% ao ano
+    }
+
+    struct Stake has key, store {
+        id: UID,
+        quantidade: u64,
+        timestamp: u64,
+    }
+
+    public entry fun stake(
+        pool: &mut StakingPool,
+        moedas: Coin<MOEDA>,
+        ctx: &mut TxContext,
+    ) {
+        let quantidade = coin::value(&moedas);
+        pool.total_staked = pool.total_staked + quantidade;
+        
+        let stake = Stake {
+            id: object::new(ctx),
+            quantidade,
+            timestamp: tx_context::epoch_timestamp_ms(ctx),
+        };
+        transfer::transfer(stake, tx_context::sender(ctx));
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- **Staking**: Bloqueia moedas no pool
+- **Rewards**: Calculados baseado em tempo e quantidade
+- **Unstaking**: Libera moedas após período
+
+## ✨ Recompensas
+
+- **XP**: 450 pontos
+
+## 🎮 Sua Missão
+
+Crie um sistema de staking básico!`,
+        codigoInicial: `module 0x1::staking {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um sistema de staking
+}`,
+        codigoSolucao: `module 0x1::staking {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct MOEDA has drop {}
+
+    struct StakingPool has key {
+        id: UID,
+        total_staked: u64,
+    }
+
+    struct Stake has key, store {
+        id: UID,
+        quantidade: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let pool = StakingPool {
+            id: object::new(ctx),
+            total_staked: 0,
+        };
+        transfer::share_object(pool);
+    }
+
+    public entry fun stake(
+        pool: &mut StakingPool,
+        moedas: Coin<MOEDA>,
+        ctx: &mut TxContext,
+    ) {
+        let quantidade = coin::value(&moedas);
+        pool.total_staked = pool.total_staked + quantidade;
+        
+        let stake = Stake {
+            id: object::new(ctx),
+            quantidade,
+        };
+        transfer::transfer(stake, tx_context::sender(ctx));
+    }
+}`,
+        dicas: [
+          "Staking bloqueia moedas",
+          "Rewards são calculados ao longo do tempo",
+          "Use timestamp para calcular recompensas",
+        ],
+        xpRecompensa: 450,
+        conceitosAprendidos: ["Staking", "Rewards", "APY"],
+        preRequisitos: ["missao-32"],
+      },
+      {
+        id: "missao-34",
+        slug: "lending",
+        numero: 3,
+        icone: "📊",
+        titulo: "Sistema de Lending",
+        descricao: "Crie um sistema de empréstimo onde usuários podem emprestar e tomar emprestado moedas.",
+        lore: "O crédito move economias. Construa um sistema onde recursos podem ser emprestados com juros.",
+        conteudo: `# 📊 Missão 3: Sistema de Lending
+
+## 📖 Crédito Descentralizado
+
+O crédito move economias. Construa um sistema onde recursos podem ser emprestados com juros.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Lending** - Emprestar moedas
+- **Borrowing** - Tomar emprestado
+- **Interest** - Juros sobre empréstimos
+
+## 📚 Conceitos DeFi
+
+- **Lending**: Processo de emprestar moedas para ganhar juros
+- **Borrowing**: Processo de tomar emprestado pagando juros
+- **Collateral**: Garantia para empréstimos
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::lending {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::tx_context::{Self, TxContext};
+
+    struct LendingPool has key {
+        id: UID,
+        total_deposited: u64,
+        total_borrowed: u64,
+        interest_rate: u64, // Taxa de juros
+    }
+
+    public entry fun emprestar(
+        pool: &mut LendingPool,
+        moedas: Coin<MOEDA>,
+    ) {
+        let quantidade = coin::value(&moedas);
+        pool.total_deposited = pool.total_deposited + quantidade;
+    }
+
+    public entry fun tomar_emprestado(
+        pool: &mut LendingPool,
+        quantidade: u64,
+        ctx: &mut TxContext,
+    ) {
+        // Lógica de empréstimo
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- **Lending**: Deposita moedas para ganhar juros
+- **Borrowing**: Toma emprestado pagando juros
+- **Collateral**: Garantia necessária para empréstimos
+
+## ✨ Recompensas
+
+- **XP**: 500 pontos
+
+## 🎮 Sua Missão
+
+Crie um sistema de lending básico!`,
+        codigoInicial: `module 0x1::lending {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um sistema de lending
+}`,
+        codigoSolucao: `module 0x1::lending {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct MOEDA has drop {}
+
+    struct LendingPool has key {
+        id: UID,
+        total_deposited: u64,
+        total_borrowed: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let pool = LendingPool {
+            id: object::new(ctx),
+            total_deposited: 0,
+            total_borrowed: 0,
+        };
+        transfer::share_object(pool);
+    }
+
+    public entry fun emprestar(
+        pool: &mut LendingPool,
+        moedas: Coin<MOEDA>,
+    ) {
+        pool.total_deposited = pool.total_deposited + coin::value(&moedas);
+    }
+}`,
+        dicas: [
+          "Lending permite ganhar juros",
+          "Borrowing requer garantia",
+          "Taxa de juros varia com demanda",
+        ],
+        xpRecompensa: 500,
+        conceitosAprendidos: ["Lending", "Borrowing", "Interest", "Collateral"],
+        preRequisitos: ["missao-33"],
+      },
+      {
+        id: "missao-35",
+        slug: "yield-farming",
+        numero: 4,
+        icone: "🌾",
+        titulo: "Yield Farming",
+        descricao: "Implemente um sistema de yield farming onde usuários ganham recompensas por fornecer liquidez.",
+        lore: "Plante sementes de riqueza. Crie um sistema onde fornecer liquidez gera colheitas de recompensas.",
+        conteudo: `# 🌾 Missão 4: Yield Farming
+
+## 📖 Colheita de Recompensas
+
+Plante sementes de riqueza. Crie um sistema onde fornecer liquidez gera colheitas de recompensas.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Yield Farming** - Ganhar recompensas por liquidez
+- **LP Tokens** - Tokens de liquidez
+- **Rewards** - Recompensas distribuídas
+
+## 📚 Conceitos DeFi
+
+- **Yield Farming**: Processo de ganhar recompensas por fornecer liquidez
+- **LP Tokens**: Tokens que representam participação no pool
+- **APR**: Annual Percentage Rate (taxa anual)
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::yield_farming {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::tx_context::{Self, TxContext};
+
+    struct Farm has key {
+        id: UID,
+        total_liquidity: u64,
+        rewards_per_block: u64,
+    }
+
+    struct LPToken has key, store {
+        id: UID,
+        quantidade: u64,
+    }
+
+    public entry fun fornecer_liquidez(
+        farm: &mut Farm,
+        moedas: Coin<MOEDA>,
+        ctx: &mut TxContext,
+    ) {
+        let quantidade = coin::value(&moedas);
+        farm.total_liquidity = farm.total_liquidity + quantidade;
+        
+        let lp_token = LPToken {
+            id: object::new(ctx),
+            quantidade,
+        };
+        transfer::transfer(lp_token, tx_context::sender(ctx));
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- **Yield Farming**: Recompensas por fornecer liquidez
+- **LP Tokens**: Representam participação no pool
+- **Rewards**: Distribuídos proporcionalmente
+
+## ✨ Recompensas
+
+- **XP**: 550 pontos
+
+## 🎮 Sua Missão
+
+Crie um sistema de yield farming!`,
+        codigoInicial: `module 0x1::yield_farming {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um sistema de yield farming
+}`,
+        codigoSolucao: `module 0x1::yield_farming {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct MOEDA has drop {}
+
+    struct Farm has key {
+        id: UID,
+        total_liquidity: u64,
+    }
+
+    struct LPToken has key, store {
+        id: UID,
+        quantidade: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let farm = Farm {
+            id: object::new(ctx),
+            total_liquidity: 0,
+        };
+        transfer::share_object(farm);
+    }
+
+    public entry fun fornecer_liquidez(
+        farm: &mut Farm,
+        moedas: Coin<MOEDA>,
+        ctx: &mut TxContext,
+    ) {
+        let quantidade = coin::value(&moedas);
+        farm.total_liquidity = farm.total_liquidity + quantidade;
+        
+        let lp_token = LPToken {
+            id: object::new(ctx),
+            quantidade,
+        };
+        transfer::transfer(lp_token, tx_context::sender(ctx));
+    }
+}`,
+        dicas: [
+          "Yield farming recompensa liquidez",
+          "LP tokens representam participação",
+          "Rewards são distribuídos proporcionalmente",
+        ],
+        xpRecompensa: 550,
+        conceitosAprendidos: ["Yield Farming", "LP Tokens", "APR"],
+        preRequisitos: ["missao-34"],
+      },
+      {
+        id: "missao-36",
+        slug: "dex-completo",
+        numero: 5,
+        icone: "🔄",
+        titulo: "DEX Completo",
+        descricao: "Construa um DEX (Decentralized Exchange) completo com swap, liquidez e taxas.",
+        lore: "O mercado descentralizado está completo. Crie uma exchange onde qualquer um pode trocar moedas sem intermediários.",
+        conteudo: `# 🔄 Missão 5: DEX Completo
+
+## 📖 Exchange Descentralizada
+
+O mercado descentralizado está completo. Crie uma exchange onde qualquer um pode trocar moedas sem intermediários.
+
+## 🎯 O Que Você Vai Aprender
+
+- **DEX** - Decentralized Exchange
+- **Swap** - Troca de moedas
+- **Fees** - Taxas de transação
+
+## 📚 Conceitos DeFi
+
+- **DEX**: Exchange descentralizada sem intermediários
+- **Swap**: Troca instantânea de moedas
+- **Slippage**: Diferença entre preço esperado e executado
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::dex {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::tx_context::{Self, TxContext};
+
+    struct DEX has key {
+        id: UID,
+        fee_rate: u64, // Taxa em basis points (100 = 1%)
+    }
+
+    struct Pool has key {
+        id: UID,
+        moeda_a: u64,
+        moeda_b: u64,
+    }
+
+    public entry fun swap(
+        pool: &mut Pool,
+        dex: &mut DEX,
+        entrada: Coin<MOEDA_A>,
+        ctx: &mut TxContext,
+    ): Coin<MOEDA_B> {
+        let quantidade_entrada = coin::value(&entrada);
+        let quantidade_saida = (quantidade_entrada * pool.moeda_b) / pool.moeda_a;
+        
+        pool.moeda_a = pool.moeda_a + quantidade_entrada;
+        pool.moeda_b = pool.moeda_b - quantidade_saida;
+        
+        // Criar e retornar moeda de saída
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- **Swap**: Calcula quantidade de saída baseado em proporção
+- **Fees**: Taxa cobrada pela exchange
+- **Slippage**: Proteção contra mudanças de preço
+
+## ✨ Recompensas
+
+- **XP**: 600 pontos
+- **Badge**: "Mestre DeFi" 💎
+
+## 🎮 Sua Missão
+
+Crie um DEX completo!`,
+        codigoInicial: `module 0x1::dex {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um DEX completo
+}`,
+        codigoSolucao: `module 0x1::dex {
+    use sui::object::{Self, UID};
+    use sui::coin::{Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct MOEDA_A has drop {}
+    struct MOEDA_B has drop {}
+
+    struct DEX has key {
+        id: UID,
+    }
+
+    struct Pool has key {
+        id: UID,
+        moeda_a: u64,
+        moeda_b: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let dex = DEX {
+            id: object::new(ctx),
+        };
+        transfer::share_object(dex);
+        
+        let pool = Pool {
+            id: object::new(ctx),
+            moeda_a: 1000,
+            moeda_b: 1000,
+        };
+        transfer::share_object(pool);
+    }
+
+    public entry fun swap(
+        pool: &mut Pool,
+        entrada: Coin<MOEDA_A>,
+        ctx: &mut TxContext,
+    ) {
+        let quantidade_entrada = coin::value(&entrada);
+        let quantidade_saida = (quantidade_entrada * pool.moeda_b) / pool.moeda_a;
+        
+        pool.moeda_a = pool.moeda_a + quantidade_entrada;
+        pool.moeda_b = pool.moeda_b - quantidade_saida;
+    }
+}`,
+        dicas: [
+          "DEX permite trocas sem intermediários",
+          "Swap usa proporção do pool",
+          "Taxas podem ser cobradas",
+        ],
+        xpRecompensa: 600,
+        badgeRecompensa: {
+          id: "badge-mestre-defi",
+          nome: "Mestre DeFi",
+          descricao: "Você dominou DeFi!",
+          icone: "💎",
+        },
+        conceitosAprendidos: ["DEX", "Swap", "AMM", "Fees", "Slippage"],
+        preRequisitos: ["missao-35"],
+      },
+    ],
   },
   {
     id: "trilha-gaming",
@@ -2697,8 +3962,292 @@ Crie um token utilitário com propósito específico!`,
     },
     cor: "#EC4899",
     icone: "🎮",
-    xpTotal: 2200,
-    missoes: [],
+    xpTotal: 1900, // 400 + 450 + 500 + 550
+    missoes: [
+      {
+        id: "missao-37",
+        slug: "sistema-recompensas",
+        numero: 1,
+        icone: "🎁",
+        titulo: "Sistema de Recompensas",
+        descricao: "Crie um sistema de recompensas para jogadores baseado em conquistas.",
+        lore: "As recompensas motivam guerreiros. Crie um sistema que premia jogadores por suas conquistas.",
+        conteudo: `# 🎁 Missão 1: Sistema de Recompensas
+
+## 📖 Recompensar Jogadores
+
+As recompensas motivam guerreiros. Crie um sistema que premia jogadores por suas conquistas.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Rewards System** - Sistema de recompensas
+- **Achievements** - Conquistas
+- **Points** - Sistema de pontos
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::recompensas {
+    use sui::object::{Self, UID};
+    use sui::coin::Coin;
+    use sui::tx_context::{Self, TxContext};
+
+    struct SistemaRecompensas has key {
+        id: UID,
+        pontos_total: u64,
+    }
+
+    struct Conquista has key, store {
+        id: UID,
+        pontos: u64,
+    }
+
+    public entry fun ganhar_pontos(
+        sistema: &mut SistemaRecompensas,
+        pontos: u64,
+        ctx: &mut TxContext,
+    ) {
+        sistema.pontos_total = sistema.pontos_total + pontos;
+    }
+}
+\`\`\`
+
+## ✨ Recompensas
+
+- **XP**: 400 pontos
+
+## 🎮 Sua Missão
+
+Crie um sistema de recompensas!`,
+        codigoInicial: `module 0x1::recompensas {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um sistema de recompensas
+}`,
+        codigoSolucao: `module 0x1::recompensas {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct SistemaRecompensas has key {
+        id: UID,
+        pontos_total: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let sistema = SistemaRecompensas {
+            id: object::new(ctx),
+            pontos_total: 0,
+        };
+        transfer::share_object(sistema);
+    }
+
+    public entry fun ganhar_pontos(
+        sistema: &mut SistemaRecompensas,
+        pontos: u64,
+    ) {
+        sistema.pontos_total = sistema.pontos_total + pontos;
+    }
+}`,
+        dicas: ["Sistema de recompensas motiva jogadores", "Pontos podem ser trocados por prêmios", "Conquistas desbloqueiam recompensas"],
+        xpRecompensa: 400,
+        conceitosAprendidos: ["Rewards", "Achievements", "Gaming"],
+        preRequisitos: ["missao-31"],
+      },
+      {
+        id: "missao-38",
+        slug: "inventario-nft",
+        numero: 2,
+        icone: "🎒",
+        titulo: "Inventário NFT",
+        descricao: "Crie um sistema de inventário onde jogadores podem armazenar NFTs de itens.",
+        lore: "Todo guerreiro precisa de um inventário. Crie um sistema onde itens NFT podem ser armazenados e gerenciados.",
+        conteudo: `# 🎒 Missão 2: Inventário NFT
+
+## 📖 Gerenciar Itens
+
+Todo guerreiro precisa de um inventário. Crie um sistema onde itens NFT podem ser armazenados e gerenciados.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Inventory** - Sistema de inventário
+- **NFT Items** - Itens como NFTs
+- **Storage** - Armazenamento de itens
+
+## ✨ Recompensas
+
+- **XP**: 450 pontos
+
+## 🎮 Sua Missão
+
+Crie um inventário NFT!`,
+        codigoInicial: `module 0x1::inventario {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um inventário NFT
+}`,
+        codigoSolucao: `module 0x1::inventario {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct ItemNFT has key, store {
+        id: UID,
+        nome: vector<u8>,
+    }
+
+    struct Inventario has key {
+        id: UID,
+        itens: vector<ID>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let inventario = Inventario {
+            id: object::new(ctx),
+            itens: vector::empty(),
+        };
+        transfer::transfer(inventario, tx_context::sender(ctx));
+    }
+}`,
+        dicas: ["Inventário armazena IDs de NFTs", "Itens podem ser transferidos", "Use vector para lista de itens"],
+        xpRecompensa: 450,
+        conceitosAprendidos: ["Inventory", "NFT Items", "Storage"],
+        preRequisitos: ["missao-37"],
+      },
+      {
+        id: "missao-39",
+        slug: "leaderboard",
+        numero: 3,
+        icone: "🏆",
+        titulo: "Leaderboard",
+        descricao: "Implemente um sistema de ranking onde jogadores competem por posições.",
+        lore: "A competição move os guerreiros. Crie um leaderboard onde os melhores são reconhecidos.",
+        conteudo: `# 🏆 Missão 3: Leaderboard
+
+## 📖 Ranking de Jogadores
+
+A competição move os guerreiros. Crie um leaderboard onde os melhores são reconhecidos.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Leaderboard** - Sistema de ranking
+- **Scores** - Pontuações
+- **Ranking** - Classificação
+
+## ✨ Recompensas
+
+- **XP**: 500 pontos
+
+## 🎮 Sua Missão
+
+Crie um leaderboard!`,
+        codigoInicial: `module 0x1::leaderboard {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um leaderboard
+}`,
+        codigoSolucao: `module 0x1::leaderboard {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct Leaderboard has key {
+        id: UID,
+        scores: vector<u64>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let leaderboard = Leaderboard {
+            id: object::new(ctx),
+            scores: vector::empty(),
+        };
+        transfer::share_object(leaderboard);
+    }
+
+    public entry fun adicionar_score(
+        leaderboard: &mut Leaderboard,
+        score: u64,
+    ) {
+        vector::push_back(&mut leaderboard.scores, score);
+    }
+}`,
+        dicas: ["Leaderboard armazena pontuações", "Ranking ordena por score", "Top players são recompensados"],
+        xpRecompensa: 500,
+        conceitosAprendidos: ["Leaderboard", "Ranking", "Scores"],
+        preRequisitos: ["missao-38"],
+      },
+      {
+        id: "missao-40",
+        slug: "quest-system",
+        numero: 4,
+        icone: "📜",
+        titulo: "Sistema de Quests",
+        descricao: "Crie um sistema de missões/quests onde jogadores completam tarefas para ganhar recompensas.",
+        lore: "As quests guiam os guerreiros. Crie um sistema onde missões desbloqueiam recompensas.",
+        conteudo: `# 📜 Missão 4: Sistema de Quests
+
+## 📖 Missões e Tarefas
+
+As quests guiam os guerreiros. Crie um sistema onde missões desbloqueiam recompensas.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Quest System** - Sistema de missões
+- **Tasks** - Tarefas
+- **Completion** - Conclusão de quests
+
+## ✨ Recompensas
+
+- **XP**: 550 pontos
+
+## 🎮 Sua Missão
+
+Crie um sistema de quests!`,
+        codigoInicial: `module 0x1::quests {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie um sistema de quests
+}`,
+        codigoSolucao: `module 0x1::quests {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct Quest has key, store {
+        id: UID,
+        concluida: bool,
+        recompensa: u64,
+    }
+
+    struct SistemaQuests has key {
+        id: UID,
+        quests_ativas: vector<ID>,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let sistema = SistemaQuests {
+            id: object::new(ctx),
+            quests_ativas: vector::empty(),
+        };
+        transfer::share_object(sistema);
+    }
+
+    public entry fun completar_quest(
+        quest: &mut Quest,
+    ) {
+        quest.concluida = true;
+    }
+}`,
+        dicas: ["Quests têm objetivos", "Completar quests dá recompensas", "Quests podem ser sequenciais"],
+        xpRecompensa: 550,
+        conceitosAprendidos: ["Quests", "Tasks", "Completion"],
+        preRequisitos: ["missao-39"],
+      },
+    ],
   },
   {
     id: "trilha-mestre",
@@ -2720,8 +4269,220 @@ Crie um token utilitário com propósito específico!`,
     },
     cor: "#FACC15",
     icone: "👑",
-    xpTotal: 3000,
-    missoes: [],
+    xpTotal: 1950, // 600 + 650 + 700
+    missoes: [
+      {
+        id: "missao-41",
+        slug: "padroes-design",
+        numero: 1,
+        icone: "🏗️",
+        titulo: "Padrões de Design",
+        descricao: "Aprenda padrões avançados de design em Move: Capability, Witness, Hot Potato.",
+        lore: "Os mestres conhecem os padrões. Domine técnicas avançadas que tornam código mais seguro e eficiente.",
+        conteudo: `# 🏗️ Missão 1: Padrões de Design
+
+## 📖 Técnicas Avançadas
+
+Os mestres conhecem os padrões. Domine técnicas avançadas que tornam código mais seguro e eficiente.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Capability Pattern** - Controle de acesso
+- **Witness Pattern** - Prova de tipo único
+- **Hot Potato** - Objetos que devem ser consumidos
+
+## ✨ Recompensas
+
+- **XP**: 600 pontos
+
+## 🎮 Sua Missão
+
+Implemente padrões de design avançados!`,
+        codigoInicial: `module 0x1::padroes {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    // Implemente padrões de design
+}`,
+        codigoSolucao: `module 0x1::padroes {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct AdminCap has key, store {
+        id: UID,
+    }
+
+    struct Sistema has key {
+        id: UID,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+        transfer::transfer(admin_cap, tx_context::sender(ctx));
+        
+        let sistema = Sistema {
+            id: object::new(ctx),
+        };
+        transfer::share_object(sistema);
+    }
+
+    public entry fun acao_admin(
+        _cap: &AdminCap,
+        sistema: &mut Sistema,
+    ) {
+        // Ação que requer admin
+    }
+}`,
+        dicas: ["Capability controla acesso", "Witness prova tipo único", "Hot Potato deve ser consumido"],
+        xpRecompensa: 600,
+        conceitosAprendidos: ["Design Patterns", "Capability", "Witness", "Hot Potato"],
+        preRequisitos: ["missao-40"],
+      },
+      {
+        id: "missao-42",
+        slug: "otimizacao-gas",
+        numero: 2,
+        icone: "⚡",
+        titulo: "Otimização de Gas",
+        descricao: "Aprenda técnicas para otimizar consumo de gas em contratos Move.",
+        lore: "A eficiência é poder. Domine técnicas que reduzem custos e melhoram performance.",
+        conteudo: `# ⚡ Missão 2: Otimização de Gas
+
+## 📖 Eficiência e Performance
+
+A eficiência é poder. Domine técnicas que reduzem custos e melhoram performance.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Gas Optimization** - Reduzir custos
+- **Batch Operations** - Operações em lote
+- **Storage Optimization** - Otimizar armazenamento
+
+## ✨ Recompensas
+
+- **XP**: 650 pontos
+
+## 🎮 Sua Missão
+
+Otimize seu código para reduzir gas!`,
+        codigoInicial: `module 0x1::otimizacao {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    // Otimize para reduzir gas
+}`,
+        codigoSolucao: `module 0x1::otimizacao {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct Sistema has key {
+        id: UID,
+        contador: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let sistema = Sistema {
+            id: object::new(ctx),
+            contador: 0,
+        };
+        transfer::share_object(sistema);
+    }
+
+    // Operação otimizada em lote
+    public entry fun atualizar_em_lote(
+        sistema: &mut Sistema,
+        quantidade: u64,
+    ) {
+        sistema.contador = sistema.contador + quantidade;
+    }
+}`,
+        dicas: ["Batch operations reduzem gas", "Evite loops desnecessários", "Use tipos eficientes"],
+        xpRecompensa: 650,
+        conceitosAprendidos: ["Gas Optimization", "Performance", "Efficiency"],
+        preRequisitos: ["missao-41"],
+      },
+      {
+        id: "missao-43",
+        slug: "sistema-complexo",
+        numero: 3,
+        icone: "🌐",
+        titulo: "Sistema Complexo",
+        descricao: "Construa um sistema completo integrando múltiplos módulos e funcionalidades.",
+        lore: "O verdadeiro mestre constrói sistemas. Crie uma aplicação completa que integra todos os conceitos aprendidos.",
+        conteudo: `# 🌐 Missão 3: Sistema Complexo
+
+## 📖 Integração Completa
+
+O verdadeiro mestre constrói sistemas. Crie uma aplicação completa que integra todos os conceitos aprendidos.
+
+## 🎯 O Que Você Vai Aprender
+
+- **System Architecture** - Arquitetura de sistemas
+- **Module Integration** - Integração de módulos
+- **Complex Logic** - Lógica complexa
+
+## ✨ Recompensas
+
+- **XP**: 700 pontos
+- **Badge**: "Mestre do Move" 👑
+
+## 🎮 Sua Missão
+
+Construa um sistema complexo completo!`,
+        codigoInicial: `module 0x1::sistema_completo {
+    use sui::object::{Self, UID};
+    use sui::tx_context::{Self, TxContext};
+
+    // Construa um sistema complexo
+}`,
+        codigoSolucao: `module 0x1::sistema_completo {
+    use sui::object::{Self, UID};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct SistemaCompleto has key {
+        id: UID,
+        usuarios: u64,
+        transacoes: u64,
+    }
+
+    fun init(ctx: &mut TxContext) {
+        let sistema = SistemaCompleto {
+            id: object::new(ctx),
+            usuarios: 0,
+            transacoes: 0,
+        };
+        transfer::share_object(sistema);
+    }
+
+    public entry fun registrar_usuario(
+        sistema: &mut SistemaCompleto,
+    ) {
+        sistema.usuarios = sistema.usuarios + 1;
+    }
+
+    public entry fun registrar_transacao(
+        sistema: &mut SistemaCompleto,
+    ) {
+        sistema.transacoes = sistema.transacoes + 1;
+    }
+}`,
+        dicas: ["Integre múltiplos módulos", "Use padrões de design", "Otimize para performance"],
+        xpRecompensa: 700,
+        badgeRecompensa: {
+          id: "badge-mestre-move",
+          nome: "Mestre do Move",
+          descricao: "Você se tornou um mestre!",
+          icone: "👑",
+        },
+        conceitosAprendidos: ["System Architecture", "Integration", "Complex Systems"],
+        preRequisitos: ["missao-42"],
+      },
+    ],
   },
 ];
 
