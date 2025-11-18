@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 // 🎄 PREVIEW MODE: Altere para true para ver o tema natalino agora (para testes)
-const PREVIEW_MODE = true; // Mude para false quando quiser usar apenas no período correto
+const PREVIEW_MODE = false; // Mude para false quando quiser usar apenas no período correto
 
 export default function ChristmasThemeProvider({
   children,

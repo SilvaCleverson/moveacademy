@@ -16,6 +16,7 @@ import ConsolePanel from "@/components/ide/ConsolePanel";
 import ObjetivoPanel from "@/components/ide/ObjetivoPanel";
 import { useAudio } from "@/contexts/AudioContext";
 import { validateMoveCode, getValidationSchema } from "@/lib/validation/move-validator";
+import { executeMoveCode } from "@/lib/api/move-executor";
 
 interface PageProps {
   params: {
@@ -184,13 +185,13 @@ export default function MissaoPage({ params }: PageProps) {
     handleRun();
   };
 
-  const handleRun = () => {
+  const handleRun = async () => {
     const jaConcluida = missoesConcluidas.includes(missao.id);
     setStatusExecucao("compilando");
     setConsoleOutput([`$ sui move build`]);
     playSound("compile");
     
-    // Validação baseada em schema
+    // Validação local baseada em schema (primeira camada)
     const schema = getValidationSchema(missao.id);
     let validationResult: { isValid: boolean; errors: string[]; warnings: string[] };
     
@@ -206,85 +207,171 @@ export default function MissaoPage({ params }: PageProps) {
       };
     }
     
-    setTimeout(() => {
-      if (!validationResult.isValid) {
-        // Erro de validação
-        const moduleName = missao.codigoInicial?.match(/module\s+(\S+)/)?.[1] || "0x1::despertar";
-        const errorOutput = [
-          `✗ Compiling Move modules...`,
-          `  Building module ${moduleName}`,
-          ``,
-          `Error:`,
-        ];
+    // Se validação local falhar, mostra erro imediatamente
+    if (!validationResult.isValid) {
+      const moduleName = missao.codigoInicial?.match(/module\s+(\S+)/)?.[1] || "0x1::despertar";
+      const errorOutput = [
+        `✗ Compiling Move modules...`,
+        `  Building module ${moduleName}`,
+        ``,
+        `Error:`,
+      ];
+      
+      validationResult.errors.forEach((error, index) => {
+        errorOutput.push(`  ${index + 1}. ${error}`);
+      });
+      
+      errorOutput.push(``);
+      errorOutput.push(`  = Validation failed`);
+      errorOutput.push(`  = Hint: Verifique os requisitos da missão`);
+      errorOutput.push(``);
+      
+      setConsoleOutput(prev => [...prev, ...errorOutput]);
+      setStatusExecucao("erro");
+      playSound("error");
+      
+      const errorMessage = validationResult.errors.length > 0
+        ? validationResult.errors.join("\n")
+        : lang === "pt"
+        ? "Seu código não passou na validação. Verifique os requisitos da missão."
+        : lang === "en"
+        ? "Your code did not pass validation. Check the mission requirements."
+        : "Tu código no pasó la validación. Verifica los requisitos de la misión.";
+      
+      setErroDetalhes({
+        titulo: lang === "pt" ? "Erro na Validação" : lang === "en" ? "Validation Error" : "Error de Validación",
+        mensagem: errorMessage,
+        linha: undefined,
+        codigo: codigo
+      });
+      setMostrarModalErro(true);
+      return;
+    }
+    
+    // Se validação local passou, chama API real para compilar/executar
+    try {
+      const result = await executeMoveCode({
+        code: codigo,
+        missionId: missao.id,
+        action: "build"
+      });
+      
+      // Adiciona output da API ao console
+      setConsoleOutput(prev => [...prev, ...result.output]);
+      
+      if (result.exitCode === 0 && result.success) {
+        // Sucesso na compilação - executa testes também
+        setStatusExecucao("executando");
         
-        // Adiciona cada erro encontrado
-        validationResult.errors.forEach((error, index) => {
-          errorOutput.push(`  ${index + 1}. ${error}`);
-        });
-        
-        errorOutput.push(``);
-        errorOutput.push(`  = Validation failed`);
-        errorOutput.push(`  = Hint: Verifique os requisitos da missão`);
-        errorOutput.push(``);
-        
-        setConsoleOutput(prev => [...prev, ...errorOutput]);
+        try {
+          const testResult = await executeMoveCode({
+            code: codigo,
+            missionId: missao.id,
+            action: "test"
+          });
+          
+          setConsoleOutput(prev => [...prev, `$ sui move test`, ...testResult.output]);
+          
+          if (testResult.exitCode === 0 && testResult.success) {
+            setStatusExecucao("sucesso");
+            playSound("success");
+            
+            if (!jaConcluida) {
+              setConsoleOutput(prev => [...prev, `🎉 Missão concluída! +${missao.xpRecompensa} XP`]);
+              playSound("xp");
+              playSound("complete");
+              
+              // Salva missão como concluída
+              const saved = localStorage.getItem("moveacademy-missoes-concluidas");
+              let novasMissoesConcluidas: string[] = [];
+              if (saved) {
+                try {
+                  novasMissoesConcluidas = JSON.parse(saved);
+                } catch (e) {
+                  // Ignora erro
+                }
+              }
+              
+              if (!novasMissoesConcluidas.includes(missao.id)) {
+                novasMissoesConcluidas.push(missao.id);
+                localStorage.setItem("moveacademy-missoes-concluidas", JSON.stringify(novasMissoesConcluidas));
+                setMissoesConcluidas(novasMissoesConcluidas);
+              }
+              
+              setMostrarModalSucesso(true);
+            }
+          } else {
+            // Erro nos testes
+            setStatusExecucao("erro");
+            playSound("error");
+            
+            const errorMessage = testResult.errors?.join("\n") || 
+              (lang === "pt" 
+                ? "Erro na execução dos testes." 
+                : lang === "en" 
+                ? "Error running tests." 
+                : "Error al ejecutar las pruebas.");
+            
+            setErroDetalhes({
+              titulo: lang === "pt" ? "Erro nos Testes" : lang === "en" ? "Test Error" : "Error en Pruebas",
+              mensagem: errorMessage,
+              linha: undefined,
+              codigo: codigo
+            });
+            setMostrarModalErro(true);
+          }
+        } catch (testError: any) {
+          setStatusExecucao("erro");
+          playSound("error");
+          setErroDetalhes({
+            titulo: lang === "pt" ? "Erro" : lang === "en" ? "Error" : "Error",
+            mensagem: testError.message || "Erro ao executar testes",
+            linha: undefined,
+            codigo: codigo
+          });
+          setMostrarModalErro(true);
+        }
+      } else {
+        // Erro na compilação
         setStatusExecucao("erro");
         playSound("error");
         
-        // Mostra modal de erro com detalhes específicos
-        const errorMessage = validationResult.errors.length > 0
-          ? validationResult.errors.join("\n")
-          : lang === "pt"
-          ? "Seu código não passou na validação. Verifique os requisitos da missão."
-          : lang === "en"
-          ? "Your code did not pass validation. Check the mission requirements."
-          : "Tu código no pasó la validación. Verifica los requisitos de la misión.";
+        const errorMessage = result.errors?.join("\n") || 
+          (lang === "pt" 
+            ? "Erro na compilação do código." 
+            : lang === "en" 
+            ? "Error compiling code." 
+            : "Error al compilar el código.");
         
         setErroDetalhes({
-          titulo: lang === "pt" ? "Erro na Validação" : lang === "en" ? "Validation Error" : "Error de Validación",
+          titulo: lang === "pt" ? "Erro na Compilação" : lang === "en" ? "Compilation Error" : "Error de Compilación",
           mensagem: errorMessage,
           linha: undefined,
           codigo: codigo
         });
         setMostrarModalErro(true);
-      } else {
-        // Sucesso
-        setConsoleOutput(prev => [...prev, `✓ Compiling Move modules...`, `  Building module ${missao.codigoInicial?.match(/module\s+(\S+)/)?.[1] || "0x1::despertar"}`, `✓ Build successful!`]);
-        setStatusExecucao("executando");
-        
-        setTimeout(() => {
-          setConsoleOutput(prev => [...prev, `$ sui move run`, `✓ Executing...`, `✓ Execution successful!`]);
-          setStatusExecucao("sucesso");
-          playSound("success");
-          
-          if (!jaConcluida) {
-            setConsoleOutput(prev => [...prev, `🎉 Missão concluída! +${missao.xpRecompensa} XP`]);
-            playSound("xp");
-            playSound("complete");
-            
-            // Salva missão como concluída
-            const saved = localStorage.getItem("moveacademy-missoes-concluidas");
-            let novasMissoesConcluidas: string[] = [];
-            if (saved) {
-              try {
-                novasMissoesConcluidas = JSON.parse(saved);
-              } catch (e) {
-                // Ignora erro
-              }
-            }
-            
-            if (!novasMissoesConcluidas.includes(missao.id)) {
-              novasMissoesConcluidas.push(missao.id);
-              localStorage.setItem("moveacademy-missoes-concluidas", JSON.stringify(novasMissoesConcluidas));
-              setMissoesConcluidas(novasMissoesConcluidas);
-            }
-            
-            // Mostra modal de sucesso
-            setMostrarModalSucesso(true);
-          }
-        }, 1000);
       }
-    }, 1500);
+    } catch (error: any) {
+      // Erro na chamada da API
+      setStatusExecucao("erro");
+      playSound("error");
+      
+      const errorMessage = error.message || 
+        (lang === "pt" 
+          ? "Erro ao conectar com o servidor. Verifique sua conexão." 
+          : lang === "en" 
+          ? "Error connecting to server. Check your connection." 
+          : "Error al conectar con el servidor. Verifica tu conexión.");
+      
+      setConsoleOutput(prev => [...prev, `✗ Error: ${errorMessage}`]);
+      setErroDetalhes({
+        titulo: lang === "pt" ? "Erro de Conexão" : lang === "en" ? "Connection Error" : "Error de Conexión",
+        mensagem: errorMessage,
+        linha: undefined,
+        codigo: codigo
+      });
+      setMostrarModalErro(true);
+    }
   };
 
   const handleClear = () => {
