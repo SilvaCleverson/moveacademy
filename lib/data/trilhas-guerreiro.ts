@@ -1965,8 +1965,671 @@ Crie um sistema completo que combine criação, mutação e compartilhamento de 
     },
     cor: "#FBBF24",
     icone: "🪙",
-    xpTotal: 1800,
-    missoes: [],
+    xpTotal: 1800, // 250 + 250 + 300 + 300 + 350 + 350
+    missoes: [
+      {
+        id: "missao-21",
+        slug: "criar-primeira-moeda",
+        numero: 1,
+        icone: "🪙",
+        titulo: "Criar sua Primeira Moeda",
+        descricao: "Aprenda a criar uma moeda customizada na blockchain Sui usando Coin<T> e TreasuryCap.",
+        lore: "O poder econômico começa com uma única moeda. Crie sua primeira moeda e domine o sistema monetário de Moviara.",
+        conteudo: `# 🪙 Missão 1: Criar sua Primeira Moeda
+
+## 📖 O Poder Econômico
+
+O poder econômico começa com uma única moeda. Crie sua primeira moeda e domine o sistema monetário de Moviara.
+
+## 🎯 O Que Você Vai Aprender
+
+- **Coin<T>** - Tipo genérico para moedas na Sui
+- **TreasuryCap<T>** - Capacidade para criar e gerenciar moedas
+- **init** function - Inicialização de módulos
+- **sui::coin** - Framework de moedas do Sui
+
+## 📚 Conceitos Sui Move
+
+- **Coin<T>**: Tipo genérico que representa moedas na blockchain Sui
+- **TreasuryCap<T>**: Objeto especial que permite criar (mint) e queimar (burn) moedas
+- **init function**: Função especial executada uma vez quando o módulo é publicado
+- **Denom**: Struct que identifica o tipo de moeda (deve ter apenas \`store\`)
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::minha_moeda {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct MINHA_MOEDA has drop {}
+
+    fun init(ctx: &mut TxContext) {
+        let (treasury_cap, metadata) = coin::create_currency<MINHA_MOEDA>(
+            ctx,
+            18, // decimals
+            b"Minha Moeda",
+            b"MM",
+            b"Descricao da moeda",
+            option::none(),
+            ctx,
+        );
+        transfer::transfer(treasury_cap, tx_context::sender(ctx));
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- \`struct MINHA_MOEDA has drop {}\` - Struct vazia que identifica o tipo de moeda (witness pattern)
+- \`coin::create_currency\` - Cria uma nova moeda com metadados
+- \`TreasuryCap\` - Permite criar e queimar moedas (deve ser guardado com segurança!)
+- \`transfer::transfer(treasury_cap, ...)\` - Transfere o TreasuryCap para o criador
+
+## ✨ Recompensas
+
+- **XP**: 250 pontos
+- **Badge**: "Criador de Moedas" 🪙
+
+## 🎮 Sua Missão
+
+Crie um módulo que inicializa uma nova moeda chamada "GuerreiroCoin"!`,
+        codigoInicial: `module 0x1::minha_moeda {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    // Crie uma struct GUERREIRO_COIN com drop
+    // Crie uma função init que cria a moeda e transfere o TreasuryCap
+}`,
+        codigoSolucao: `module 0x1::minha_moeda {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::{Self, TxContext};
+
+    struct GUERREIRO_COIN has drop {}
+
+    fun init(ctx: &mut TxContext) {
+        let (treasury_cap, metadata) = coin::create_currency<GUERREIRO_COIN>(
+            ctx,
+            18,
+            b"GuerreiroCoin",
+            b"GC",
+            b"Moeda do Guerreiro do Move",
+            option::none(),
+            ctx,
+        );
+        transfer::transfer(treasury_cap, tx_context::sender(ctx));
+    }
+}`,
+        dicas: [
+          "Use struct vazia com drop para identificar a moeda",
+          "coin::create_currency cria a moeda e retorna TreasuryCap",
+          "Transfira o TreasuryCap para o sender",
+        ],
+        xpRecompensa: 250,
+        badgeRecompensa: {
+          id: "badge-criador-moedas",
+          nome: "Criador de Moedas",
+          descricao: "Você criou sua primeira moeda na blockchain Sui!",
+          icone: "🪙",
+        },
+        conceitosAprendidos: [
+          "Coin<T>",
+          "TreasuryCap<T>",
+          "init function",
+          "create_currency",
+          "Witness pattern",
+        ],
+        preRequisitos: ["missao-20"],
+      },
+      {
+        id: "missao-22",
+        slug: "mint-moedas",
+        numero: 2,
+        icone: "💰",
+        titulo: "Mint de Moedas",
+        descricao: "Aprenda a criar (mint) novas moedas usando o TreasuryCap.",
+        lore: "O poder de criar riqueza. Com o TreasuryCap, você pode gerar novas moedas e distribuí-las.",
+        conteudo: `# 💰 Missão 2: Mint de Moedas
+
+## 📖 Criar Riqueza
+
+O poder de criar riqueza. Com o TreasuryCap, você pode gerar novas moedas e distribuí-las.
+
+## 🎯 O Que Você Vai Aprender
+
+- **coin::mint** - Criar novas moedas
+- **TreasuryCap** - Usar para autorizar mint
+- **Transferir moedas** para endereços
+
+## 📚 Conceitos Sui Move
+
+- **mint**: Processo de criar novas moedas
+- **TreasuryCap**: Objeto que autoriza operações de mint e burn
+- **coin::mint_and_transfer**: Cria moedas e as transfere diretamente
+- **Apenas o dono do TreasuryCap** pode criar moedas
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::mint_example {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct MINHA_MOEDA has drop {}
+
+    public entry fun criar_moedas(
+        treasury_cap: &mut TreasuryCap<MINHA_MOEDA>,
+        quantidade: u64,
+        destinatario: address,
+        ctx: &mut TxContext,
+    ) {
+        coin::mint_and_transfer(treasury_cap, quantidade, destinatario, ctx);
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- \`&mut TreasuryCap\` - Referência mutável ao TreasuryCap (necessário para mint)
+- \`coin::mint_and_transfer\` - Cria moedas e transfere em uma operação
+- \`quantidade\` - Quantidade de moedas a criar (em unidades menores, considerando decimals)
+- O destinatário recebe as moedas em sua carteira
+
+## ✨ Recompensas
+
+- **XP**: 250 pontos
+
+## 🎮 Sua Missão
+
+Crie uma entry function que permite criar e distribuir moedas!`,
+        codigoInicial: `module 0x1::mint_example {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct MINHA_MOEDA has drop {}
+
+    // Crie uma entry function que recebe TreasuryCap e cria moedas
+}`,
+        codigoSolucao: `module 0x1::mint_example {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct MINHA_MOEDA has drop {}
+
+    public entry fun criar_moedas(
+        treasury_cap: &mut TreasuryCap<MINHA_MOEDA>,
+        quantidade: u64,
+        destinatario: address,
+        ctx: &mut TxContext,
+    ) {
+        coin::mint_and_transfer(treasury_cap, quantidade, destinatario, ctx);
+    }
+}`,
+        dicas: [
+          "Use coin::mint_and_transfer para criar e transferir",
+          "TreasuryCap deve ser &mut",
+          "Entry function precisa de ctx",
+        ],
+        xpRecompensa: 250,
+        conceitosAprendidos: ["Mint", "TreasuryCap", "mint_and_transfer"],
+        preRequisitos: ["missao-21"],
+      },
+      {
+        id: "missao-23",
+        slug: "burn-moedas",
+        numero: 3,
+        icone: "🔥",
+        titulo: "Burn de Moedas",
+        descricao: "Aprenda a queimar (burn) moedas para reduzir a oferta.",
+        lore: "Tudo que pode ser criado pode ser destruído. Aprenda a queimar moedas e controlar a oferta.",
+        conteudo: `# 🔥 Missão 3: Burn de Moedas
+
+## 📖 Destruir Riqueza
+
+Tudo que pode ser criado pode ser destruído. Aprenda a queimar moedas e controlar a oferta.
+
+## 🎯 O Que Você Vai Aprender
+
+- **coin::burn** - Queimar moedas
+- **Reduzir oferta** de moedas
+- **Controle de economia**
+
+## 📚 Conceitos Sui Move
+
+- **burn**: Processo de destruir moedas permanentemente
+- **coin::burn**: Remove moedas da circulação
+- **Redução de oferta**: Útil para controle inflacionário
+- **Irreversível**: Moedas queimadas não podem ser recuperadas
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::burn_example {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::tx_context::TxContext;
+
+    struct MINHA_MOEDA has drop {}
+
+    public entry fun queimar_moedas(
+        treasury_cap: &mut TreasuryCap<MINHA_MOEDA>,
+        moedas: Coin<MINHA_MOEDA>,
+        ctx: &mut TxContext,
+    ) {
+        coin::burn(treasury_cap, moedas, ctx);
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- \`Coin<MINHA_MOEDA>\` - Moedas a serem queimadas (ownership é consumido)
+- \`coin::burn\` - Remove as moedas permanentemente
+- O TreasuryCap autoriza a operação
+- As moedas são destruídas e não podem ser recuperadas
+
+## ✨ Recompensas
+
+- **XP**: 300 pontos
+
+## 🎮 Sua Missão
+
+Crie uma entry function que permite queimar moedas!`,
+        codigoInicial: `module 0x1::burn_example {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::tx_context::TxContext;
+
+    struct MINHA_MOEDA has drop {}
+
+    // Crie uma entry function que queima moedas
+}`,
+        codigoSolucao: `module 0x1::burn_example {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::tx_context::TxContext;
+
+    struct MINHA_MOEDA has drop {}
+
+    public entry fun queimar_moedas(
+        treasury_cap: &mut TreasuryCap<MINHA_MOEDA>,
+        moedas: Coin<MINHA_MOEDA>,
+        ctx: &mut TxContext,
+    ) {
+        coin::burn(treasury_cap, moedas, ctx);
+    }
+}`,
+        dicas: [
+          "coin::burn consome o Coin",
+          "TreasuryCap autoriza a operação",
+          "Burn é irreversível",
+        ],
+        xpRecompensa: 300,
+        conceitosAprendidos: ["Burn", "Redução de oferta", "Controle econômico"],
+        preRequisitos: ["missao-22"],
+      },
+      {
+        id: "missao-24",
+        slug: "transferir-moedas",
+        numero: 4,
+        icone: "💸",
+        titulo: "Transferir Moedas",
+        descricao: "Aprenda a transferir moedas entre endereços usando coin::transfer.",
+        lore: "A circulação é a vida da economia. Aprenda a mover moedas entre carteiras.",
+        conteudo: `# 💸 Missão 4: Transferir Moedas
+
+## 📖 A Circulação
+
+A circulação é a vida da economia. Aprenda a mover moedas entre carteiras.
+
+## 🎯 O Que Você Vai Aprender
+
+- **coin::transfer** - Transferir moedas
+- **coin::join** - Combinar moedas
+- **coin::split** - Dividir moedas
+
+## 📚 Conceitos Sui Move
+
+- **coin::transfer**: Move moedas para um endereço
+- **coin::join**: Combina múltiplas moedas em uma
+- **coin::split**: Divide uma moeda em partes menores
+- **Coin<T>**: Tipo genérico para qualquer moeda
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::transfer_example {
+    use sui::coin::{Self, Coin};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct MINHA_MOEDA has drop {}
+
+    public entry fun transferir(
+        moedas: Coin<MINHA_MOEDA>,
+        destinatario: address,
+        ctx: &mut TxContext,
+    ) {
+        transfer::transfer(moedas, destinatario);
+    }
+
+    public fun dividir_moedas(
+        moedas: &mut Coin<MINHA_MOEDA>,
+        quantidade: u64,
+        ctx: &mut TxContext,
+    ): Coin<MINHA_MOEDA> {
+        coin::split(moedas, quantidade, ctx)
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- \`transfer::transfer\` - Move ownership das moedas
+- \`coin::split\` - Cria uma nova moeda com quantidade especificada
+- \`coin::join\` - Combina moedas (útil para consolidar)
+- Moedas são objetos Sui normais e podem ser transferidas
+
+## ✨ Recompensas
+
+- **XP**: 300 pontos
+
+## 🎮 Sua Missão
+
+Crie funções para transferir e dividir moedas!`,
+        codigoInicial: `module 0x1::transfer_example {
+    use sui::coin::{Self, Coin};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct MINHA_MOEDA has drop {}
+
+    // Crie funções para transferir e dividir moedas
+}`,
+        codigoSolucao: `module 0x1::transfer_example {
+    use sui::coin::{Self, Coin};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct MINHA_MOEDA has drop {}
+
+    public entry fun transferir(
+        moedas: Coin<MINHA_MOEDA>,
+        destinatario: address,
+        ctx: &mut TxContext,
+    ) {
+        transfer::transfer(moedas, destinatario);
+    }
+
+    public fun dividir_moedas(
+        moedas: &mut Coin<MINHA_MOEDA>,
+        quantidade: u64,
+        ctx: &mut TxContext,
+    ): Coin<MINHA_MOEDA> {
+        coin::split(moedas, quantidade, ctx)
+    }
+}`,
+        dicas: [
+          "transfer::transfer move ownership",
+          "coin::split cria nova moeda",
+          "Use &mut para modificar moedas",
+        ],
+        xpRecompensa: 300,
+        conceitosAprendidos: ["Transfer de moedas", "split", "join"],
+        preRequisitos: ["missao-23"],
+      },
+      {
+        id: "missao-25",
+        slug: "sistema-completo-moedas",
+        numero: 5,
+        icone: "🏦",
+        titulo: "Sistema Completo de Moedas",
+        descricao: "Crie um sistema completo de moedas com mint, burn, transfer e controle de oferta.",
+        lore: "Você domina as moedas. Agora crie um sistema completo que gerencia toda a economia.",
+        conteudo: `# 🏦 Missão 5: Sistema Completo de Moedas
+
+## 📖 O Banco Central
+
+Você domina as moedas. Agora crie um sistema completo que gerencia toda a economia.
+
+## 🎯 O Que Você Vai Aprender
+
+- Combinar todos os conceitos
+- Sistema completo de moedas
+- Boas práticas
+
+## 📚 Conceitos Sui Move
+
+- **Sistema completo**: Combina criação, mint, burn e transfer
+- **TreasuryCap**: Guardado com segurança (não compartilhado!)
+- **Entry functions**: Para ações principais
+- **Segurança**: Apenas o dono do TreasuryCap pode criar/queimar
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::sistema_moedas {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct GUERREIRO_COIN has drop {}
+
+    fun init(ctx: &mut TxContext) {
+        let (treasury_cap, metadata) = coin::create_currency<GUERREIRO_COIN>(
+            ctx, 18, b"GuerreiroCoin", b"GC", b"Moeda oficial", option::none(), ctx
+        );
+        transfer::transfer(treasury_cap, tx_context::sender(ctx));
+    }
+
+    public entry fun mint(
+        treasury_cap: &mut TreasuryCap<GUERREIRO_COIN>,
+        quantidade: u64,
+        destinatario: address,
+        ctx: &mut TxContext,
+    ) {
+        coin::mint_and_transfer(treasury_cap, quantidade, destinatario, ctx);
+    }
+
+    public entry fun burn(
+        treasury_cap: &mut TreasuryCap<GUERREIRO_COIN>,
+        moedas: Coin<GUERREIRO_COIN>,
+        ctx: &mut TxContext,
+    ) {
+        coin::burn(treasury_cap, moedas, ctx);
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- \`init\` - Cria a moeda quando o módulo é publicado
+- \`mint\` - Entry function para criar moedas
+- \`burn\` - Entry function para queimar moedas
+- TreasuryCap deve ser guardado com segurança!
+
+## ✨ Recompensas
+
+- **XP**: 350 pontos
+- **Badge**: "Mestre das Moedas" 🏦
+
+## 🎮 Sua Missão
+
+Crie um sistema completo de moedas com init, mint e burn!`,
+        codigoInicial: `module 0x1::sistema_moedas {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct GUERREIRO_COIN has drop {}
+
+    // Crie init, mint e burn
+}`,
+        codigoSolucao: `module 0x1::sistema_moedas {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct GUERREIRO_COIN has drop {}
+
+    fun init(ctx: &mut TxContext) {
+        let (treasury_cap, metadata) = coin::create_currency<GUERREIRO_COIN>(
+            ctx, 18, b"GuerreiroCoin", b"GC", b"Moeda oficial", option::none(), ctx
+        );
+        transfer::transfer(treasury_cap, tx_context::sender(ctx));
+    }
+
+    public entry fun mint(
+        treasury_cap: &mut TreasuryCap<GUERREIRO_COIN>,
+        quantidade: u64,
+        destinatario: address,
+        ctx: &mut TxContext,
+    ) {
+        coin::mint_and_transfer(treasury_cap, quantidade, destinatario, ctx);
+    }
+
+    public entry fun burn(
+        treasury_cap: &mut TreasuryCap<GUERREIRO_COIN>,
+        moedas: Coin<GUERREIRO_COIN>,
+        ctx: &mut TxContext,
+    ) {
+        coin::burn(treasury_cap, moedas, ctx);
+    }
+}`,
+        dicas: [
+          "Combine init, mint e burn",
+          "TreasuryCap deve ser guardado com segurança",
+          "Use entry functions para ações principais",
+        ],
+        xpRecompensa: 350,
+        badgeRecompensa: {
+          id: "badge-mestre-moedas",
+          nome: "Mestre das Moedas",
+          descricao: "Você domina o sistema de moedas na Sui!",
+          icone: "🏦",
+        },
+        conceitosAprendidos: ["Sistema completo", "Economia tokenizada", "Boas práticas"],
+        preRequisitos: ["missao-24"],
+      },
+      {
+        id: "missao-26",
+        slug: "token-utilitario",
+        numero: 6,
+        icone: "🎫",
+        titulo: "Token Utilitário",
+        descricao: "Crie um token utilitário com funcionalidades especiais e casos de uso.",
+        lore: "Moedas são poderosas, mas tokens utilitários têm propósito. Crie um token com funcionalidades especiais.",
+        conteudo: `# 🎫 Missão 6: Token Utilitário
+
+## 📖 Propósito Especial
+
+Moedas são poderosas, mas tokens utilitários têm propósito. Crie um token com funcionalidades especiais.
+
+## 🎯 O Que Você Vai Aprender
+
+- Tokens com funcionalidades customizadas
+- Casos de uso reais
+- Integração com outros sistemas
+
+## 📚 Conceitos Sui Move
+
+- **Token utilitário**: Moeda com funcionalidades além de transferência
+- **Casos de uso**: Acesso, votação, recompensas, staking
+- **Integração**: Tokens podem interagir com outros módulos
+- **Design**: Pense no propósito do token antes de criar
+
+## 💻 Exemplo
+
+\`\`\`move
+module 0x1::token_util {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct ACCESS_TOKEN has drop {}
+
+    fun init(ctx: &mut TxContext) {
+        let (treasury_cap, _) = coin::create_currency<ACCESS_TOKEN>(
+            ctx, 0, b"Access Token", b"ACC", b"Token de acesso", option::none(), ctx
+        );
+        transfer::transfer(treasury_cap, tx_context::sender(ctx));
+    }
+
+    public entry fun dar_acesso(
+        treasury_cap: &mut TreasuryCap<ACCESS_TOKEN>,
+        usuario: address,
+        ctx: &mut TxContext,
+    ) {
+        coin::mint_and_transfer(treasury_cap, 1, usuario, ctx);
+    }
+}
+\`\`\`
+
+## 🔍 Explicação
+
+- Token com propósito específico (acesso)
+- Decimals = 0 (não precisa de frações)
+- Mint controlado para dar acesso
+- Pode ser expandido com mais funcionalidades
+
+## ✨ Recompensas
+
+- **XP**: 350 pontos
+- **Badge**: "Criador de Tokens" 🎫
+
+## 🎮 Sua Missão
+
+Crie um token utilitário com propósito específico!`,
+        codigoInicial: `module 0x1::token_util {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct ACCESS_TOKEN has drop {}
+
+    // Crie um token utilitário com funcionalidade especial
+}`,
+        codigoSolucao: `module 0x1::token_util {
+    use sui::coin::{Self, Coin, TreasuryCap};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    struct ACCESS_TOKEN has drop {}
+
+    fun init(ctx: &mut TxContext) {
+        let (treasury_cap, _) = coin::create_currency<ACCESS_TOKEN>(
+            ctx, 0, b"Access Token", b"ACC", b"Token de acesso", option::none(), ctx
+        );
+        transfer::transfer(treasury_cap, tx_context::sender(ctx));
+    }
+
+    public entry fun dar_acesso(
+        treasury_cap: &mut TreasuryCap<ACCESS_TOKEN>,
+        usuario: address,
+        ctx: &mut TxContext,
+    ) {
+        coin::mint_and_transfer(treasury_cap, 1, usuario, ctx);
+    }
+}`,
+        dicas: [
+          "Pense no propósito do token",
+          "Use decimals = 0 para tokens não divisíveis",
+          "Adicione funcionalidades customizadas",
+        ],
+        xpRecompensa: 350,
+        badgeRecompensa: {
+          id: "badge-criador-tokens",
+          nome: "Criador de Tokens",
+          descricao: "Você criou um token utilitário!",
+          icone: "🎫",
+        },
+        conceitosAprendidos: ["Tokens utilitários", "Casos de uso", "Design de tokens"],
+        preRequisitos: ["missao-25"],
+      },
+    ],
   },
   {
     id: "trilha-nfts-avancado",
