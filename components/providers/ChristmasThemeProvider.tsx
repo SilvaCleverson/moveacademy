@@ -248,7 +248,6 @@ export default function ChristmasThemeProvider({
     };
 
     const createStarOfBethlehem = () => {
-      // Remove estrela existente
       removeStarOfBethlehem();
 
       const starContainer = document.createElement("div");
@@ -256,51 +255,47 @@ export default function ChristmasThemeProvider({
       starContainer.style.cssText = `
         position: fixed;
         top: 0;
-        right: -130px;
-        width: 250px;
-        height: 250px;
-        z-index: 9998;
-        pointer-events: none;
-      `;
-      
-      // Estrela principal
-      const star = document.createElement("div");
-      star.style.cssText = `
-        position: absolute;
-        top: 50%;
-        right: 0;
-        transform: translateY(-50%);
+        right: 0px;
         width: 120px;
         height: 120px;
-        background: radial-gradient(circle, #FBBF24 0%, #F59E0B 50%, transparent 75%);
-        border-radius: 50%;
-        animation: star-pulse 3s ease-in-out infinite;
-        box-shadow: 
-          0 0 60px rgba(251, 191, 36, 0.9),
-          0 0 120px rgba(251, 191, 36, 0.7),
-          0 0 180px rgba(251, 191, 36, 0.5),
-          0 0 250px rgba(245, 158, 11, 0.3);
+        z-index: 9998;
+        pointer-events: none;
+        opacity: 0.35;
+        transition: opacity 0.5s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       `;
-      
-      // Raios da estrela
-      const rays = document.createElement("div");
-      rays.style.cssText = `
-        position: absolute;
-        top: 50%;
-        right: 0;
-        transform: translateY(-50%);
-        width: 160px;
-        height: 160px;
-        background: 
-          linear-gradient(0deg, transparent 40%, rgba(251, 191, 36, 0.7) 45%, rgba(251, 191, 36, 0.7) 55%, transparent 60%),
-          linear-gradient(90deg, transparent 40%, rgba(251, 191, 36, 0.7) 45%, rgba(251, 191, 36, 0.7) 55%, transparent 60%),
-          linear-gradient(45deg, transparent 40%, rgba(251, 191, 36, 0.6) 45%, rgba(251, 191, 36, 0.6) 55%, transparent 60%),
-          linear-gradient(-45deg, transparent 40%, rgba(251, 191, 36, 0.6) 45%, rgba(251, 191, 36, 0.6) 55%, transparent 60%);
-        animation: star-rotate 20s linear infinite;
+
+      const video = document.createElement("video");
+      video.src = "/estrela.mp4";
+      video.style.cssText = `
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
       `;
-      
-      starContainer.appendChild(rays);
-      starContainer.appendChild(star);
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+
+      const img = document.createElement("img");
+      img.src = "/estrela.gif";
+      img.style.cssText = `
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: none;
+      `;
+      img.alt = "Estrela de Belém";
+
+      video.addEventListener("error", () => {
+        video.style.display = "none";
+        img.style.display = "block";
+      });
+
+      starContainer.appendChild(video);
+      starContainer.appendChild(img);
       document.body.appendChild(starContainer);
     };
 
