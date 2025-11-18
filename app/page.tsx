@@ -139,9 +139,9 @@ const personagens: Personagem[] = [
     nome: "Mestre F0ntzz",
     nomeEn: "Master F0ntzz",
     nomeEs: "Maestro F0ntzz",
-    descricao: "Mestre dos fundamentos da linguagem. Especialista em const, let e tipos básicos. Explicações diretas e com sotaque carismático.",
-    descricaoEn: "Master of language fundamentals. Expert in const, let and basic types. Direct explanations with a charismatic accent.",
-    descricaoEs: "Maestro de los fundamentos del lenguaje. Experto en const, let y tipos básicos. Explicaciones directas con acento carismático.",
+    descricao: "Guardião do Norte do conhecimento imutável. Mestre dos fundamentos da linguagem. Primeiro mentor técnico com explicações diretas e sotaque carismático.",
+    descricaoEn: "Guardian of the North of immutable knowledge. Master of language fundamentals. First technical mentor with direct explanations and charismatic accent.",
+    descricaoEs: "Guardián del Norte del conocimiento inmutable. Maestro de los fundamentos del lenguaje. Primer mentor técnico con explicaciones directas y acento carismático.",
     imagem: "/C8.png",
     atributos: {
       forca: 9,

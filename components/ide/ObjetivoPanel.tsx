@@ -67,17 +67,17 @@ export default function ObjetivoPanel({ missao, isCollapsed, onToggle, onMostrar
           <div className="flex items-center gap-2 mb-2">
             <span className="text-2xl">{missao.icone}</span>
             <div>
-              <div className="text-xs text-sui-blue font-semibold">
+              <div className={`text-xs font-semibold ${isChristmas ? 'text-[#8b4513]' : 'text-sui-blue'}`}>
                 {lang === "pt" ? "Missão" : lang === "en" ? "Mission" : "Misión"} {missao.numero}
               </div>
-              <h3 className="text-lg font-bold text-[#E5E7EB]">{missao.titulo}</h3>
+              <h3 className={`text-lg font-bold ${isChristmas ? 'text-[#c41e3a]' : 'text-[#E5E7EB]'}`}>{missao.titulo}</h3>
             </div>
           </div>
-          <p className="text-sm text-[#CBD5F5]">{missao.descricao}</p>
+          <p className={`text-sm ${isChristmas ? 'text-[#1a0f05] font-semibold' : 'text-[#CBD5F5]'}`}>{missao.descricao}</p>
         </div>
 
         {/* Conteúdo/Instruções */}
-        <div className={`prose prose-invert max-w-none text-sm ${isChristmas ? '[&>p]:text-[#3d2810] [&>p]:font-medium [&>li]:text-[#3d2810] [&>li]:font-medium [&>h1]:text-[#8b4513] [&>h2]:text-[#8b4513]' : '[&>h1]:text-lg [&>h1]:font-bold [&>h1]:mb-2 [&>h1]:text-sui-blue [&>h2]:text-base [&>h2]:font-semibold [&>h2]:mb-2 [&>h2]:mt-4 [&>h2]:text-sui-cyan [&>p]:mb-3 [&>p]:text-[#CBD5F5] [&>ul]:list-disc [&>ul]:ml-4 [&>ul]:mb-3 [&>ul]:text-[#CBD5F5] [&>ol]:list-decimal [&>ol]:ml-4 [&>ol]:mb-3 [&>ol]:text-[#CBD5F5]'} [&>code]:bg-[#1E293B] [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-move-green [&>pre]:bg-[#020617] [&>pre]:p-3 [&>pre]:rounded-lg [&>pre]:border [&>pre]:border-sui-blue/25 [&>pre]:overflow-x-auto [&>pre>code]:text-[#E5E7EB]`}>
+        <div className={`prose prose-invert max-w-none text-sm ${isChristmas ? '[&>p]:text-[#1a0f05] [&>p]:font-semibold [&>li]:text-[#1a0f05] [&>li]:font-semibold [&>h1]:text-[#8b4513] [&>h1]:font-bold [&>h2]:text-[#8b4513] [&>h2]:font-bold [&>strong]:text-[#000000] [&>strong]:font-bold' : '[&>h1]:text-lg [&>h1]:font-bold [&>h1]:mb-2 [&>h1]:text-sui-blue [&>h2]:text-base [&>h2]:font-semibold [&>h2]:mb-2 [&>h2]:mt-4 [&>h2]:text-sui-cyan [&>p]:mb-3 [&>p]:text-[#CBD5F5] [&>ul]:list-disc [&>ul]:ml-4 [&>ul]:mb-3 [&>ul]:text-[#CBD5F5] [&>ol]:list-decimal [&>ol]:ml-4 [&>ol]:mb-3 [&>ol]:text-[#CBD5F5]'} [&>code]:bg-[#1E293B] [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-move-green [&>pre]:bg-[#020617] [&>pre]:p-3 [&>pre]:rounded-lg [&>pre]:border [&>pre]:border-sui-blue/25 [&>pre]:overflow-x-auto [&>pre>code]:text-[#E5E7EB]`}>
           <ReactMarkdown>{missao.conteudo}</ReactMarkdown>
         </div>
 
@@ -91,7 +91,7 @@ export default function ObjetivoPanel({ missao, isCollapsed, onToggle, onMostrar
                 setMostrarDica(!mostrarDica);
                 playSound("click");
               }}
-              className="w-full text-left mb-2 text-sm text-sui-cyan hover:text-sui-blue transition-colors flex items-center justify-between"
+              className={`w-full text-left mb-2 text-sm transition-colors flex items-center justify-between ${isChristmas ? 'text-[#22c55e] hover:text-[#16a34a] font-semibold' : 'text-sui-cyan hover:text-sui-blue'}`}
             >
               <span className="font-semibold flex items-center gap-2">
                 <span>💭</span>
@@ -126,7 +126,7 @@ export default function ObjetivoPanel({ missao, isCollapsed, onToggle, onMostrar
                 setMostrarExemplo(!mostrarExemplo);
                 playSound("click");
               }}
-              className="w-full text-left mb-2 text-sm text-sui-blue hover:text-sui-cyan transition-colors flex items-center justify-between"
+              className={`w-full text-left mb-2 text-sm transition-colors flex items-center justify-between ${isChristmas ? 'text-[#22c55e] hover:text-[#16a34a] font-semibold' : 'text-sui-blue hover:text-sui-cyan'}`}
             >
               <span className="font-semibold">
                 📖 {lang === "pt" ? "Exemplo Completo" : lang === "en" ? "Full Example" : "Ejemplo Completo"}
@@ -143,18 +143,18 @@ export default function ObjetivoPanel({ missao, isCollapsed, onToggle, onMostrar
 
         {/* Recompensas */}
         <div className="border-t border-sui-blue/25 pt-4">
-          <h4 className="text-xs font-semibold text-sui-blue mb-2 uppercase">
+          <h4 className={`text-xs font-semibold mb-2 uppercase ${isChristmas ? 'text-[#22c55e]' : 'text-sui-blue'}`}>
             {lang === "pt" ? "Recompensas" : lang === "en" ? "Rewards" : "Recompensas"}
           </h4>
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-move-green">
+            <div className={`flex items-center gap-2 ${isChristmas ? 'text-[#22c55e]' : 'text-move-green'}`}>
               <span>⭐</span>
               <span className="font-semibold">{missao.xpRecompensa} XP</span>
             </div>
             {missao.badgeRecompensa && (
               <div className="flex items-center gap-2">
                 <span className="text-lg">{missao.badgeRecompensa.icone}</span>
-                <span className="text-[#CBD5F5] text-sm">{missao.badgeRecompensa.nome}</span>
+                <span className={`text-sm font-semibold ${isChristmas ? 'text-[#1a0f05]' : 'text-[#CBD5F5]'}`}>{missao.badgeRecompensa.nome}</span>
               </div>
             )}
           </div>

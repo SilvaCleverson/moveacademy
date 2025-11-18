@@ -423,12 +423,14 @@ export default function MissaoPage({ params }: PageProps) {
           <div className="flex-1 flex overflow-hidden">
             {/* Editor Central */}
             <div className={`flex-1 flex flex-col overflow-hidden ${isChristmas ? 'christmas-factory-terminal' : 'bg-[#0A1A2F]'}`}>
-              <div className="p-4 border-b border-sui-blue/25 bg-move-navy flex-shrink-0">
-                <h2 className="text-sm font-bold text-sui-blue uppercase tracking-wider">
-                  {lang === "pt" ? "Seu Código" : lang === "en" ? "Your Code" : "Tu Código"}
-                </h2>
-              </div>
-              <div className="flex-1 p-4 overflow-hidden min-h-0">
+              {!isChristmas && (
+                <div className="p-4 border-b border-sui-blue/25 bg-move-navy flex-shrink-0">
+                  <h2 className="text-sm font-bold text-sui-blue uppercase tracking-wider">
+                    {lang === "pt" ? "Seu Código" : lang === "en" ? "Your Code" : "Tu Código"}
+                  </h2>
+                </div>
+              )}
+              <div className="flex-1 p-4 overflow-hidden min-h-0" style={isChristmas ? { marginTop: '50px' } : {}}>
                 <div className="h-full">
                   <MoveEditor
                     value={codigo}
