@@ -455,7 +455,8 @@ export default function Home() {
                 >
                   {personagensEmbaralhados.map((p, index) => {
                     const isSelecionado = index === personagemSelecionado;
-                    const isTransfer = p.id === "transfer";
+                    const isTransfer = p.id === "transfer" || p.id === "entry";
+                    const isAng3l = p.id === "ang3l";
                     
                     return (
                       <div
@@ -486,25 +487,39 @@ export default function Home() {
                         }}
                         >
                           {/* Borda lateral */}
-                          <div className={`absolute ${p.id === "transfer" ? "left-0" : "right-0"} top-0 bottom-0 w-1 bg-gradient-to-b ${
-                            p.id === "transfer"
+                          <div className={`absolute ${p.id === "transfer" || p.id === "entry" || p.id === "ang3l" || p.id === "borrow" || p.id === "module" ? "left-0" : "right-0"} top-0 bottom-0 w-1 bg-gradient-to-b ${
+                            p.id === "ang3l"
+                              ? "from-white via-gray-300 to-white"
+                              : p.id === "transfer" || p.id === "entry"
                               ? "from-sui-blue via-sui-cyan to-sui-blue"
-                              : "from-move-green via-sui-cyan to-move-green"
+                              : p.id === "borrow" || p.id === "module"
+                              ? "from-move-green via-sui-cyan to-move-green"
+                              : "from-purple-400 via-purple-300 to-purple-400"
                           } opacity-60 group-hover:opacity-100 transition-opacity`} />
                           
                           <div className="relative z-10 flex flex-col items-center">
                             {/* Personagem */}
                             <div className="mb-3 sm:mb-4">
                               <div className={`relative w-32 h-32 sm:w-36 sm:h-36 border-2 ${
-                                p.id === "transfer" ? "border-sui-blue/60" : "border-move-green/60"
+                                p.id === "ang3l" ? "border-white/60" :
+                                p.id === "transfer" || p.id === "entry" ? "border-sui-blue/60" :
+                                p.id === "borrow" || p.id === "module" ? "border-move-green/60" :
+                                "border-purple-400/60"
                               } bg-[#0A1A2F] p-1.5`}
                               style={{
-                                boxShadow: p.id === "transfer"
+                                boxShadow: p.id === "ang3l"
+                                  ? "inset 0 0 15px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.3)"
+                                  : p.id === "transfer" || p.id === "entry"
                                   ? "inset 0 0 15px rgba(106, 215, 229, 0.4), 0 0 20px rgba(106, 215, 229, 0.3)"
-                                  : "inset 0 0 15px rgba(63, 254, 149, 0.4), 0 0 20px rgba(63, 254, 149, 0.3)",
+                                  : p.id === "borrow" || p.id === "module"
+                                  ? "inset 0 0 15px rgba(63, 254, 149, 0.4), 0 0 20px rgba(63, 254, 149, 0.3)"
+                                  : "inset 0 0 15px rgba(192, 132, 252, 0.4), 0 0 20px rgba(192, 132, 252, 0.3)",
                               }}>
                                 <div className={`relative w-full h-full border-2 ${
-                                  p.id === "transfer" ? "border-sui-blue/50" : "border-move-green/50"
+                                  p.id === "ang3l" ? "border-white/50" :
+                                  p.id === "transfer" || p.id === "entry" ? "border-sui-blue/50" :
+                                  p.id === "borrow" || p.id === "module" ? "border-move-green/50" :
+                                  "border-purple-400/50"
                                 }`}>
                                   <Image
                                     src={p.imagem}
@@ -522,12 +537,18 @@ export default function Home() {
                             <div className="w-full text-center">
                               <div className="hud-text-box mb-2">
                                 <h2 className={`text-lg sm:text-xl font-bold ${
-                                  p.id === "transfer" ? "text-sui-blue" : "text-move-green"
+                                  p.id === "ang3l" ? "text-white" :
+                                  p.id === "transfer" || p.id === "entry" ? "text-sui-blue" :
+                                  p.id === "borrow" || p.id === "module" ? "text-move-green" :
+                                  "text-purple-400"
                                 } mb-1.5 font-mono uppercase tracking-wider group-hover:text-sui-cyan transition-colors`}>
                                   {lang === "pt" ? p.nome : lang === "en" ? p.nomeEn : p.nomeEs}
                                 </h2>
                                 <div className={`h-0.5 bg-gradient-to-r from-transparent ${
-                                  p.id === "transfer" ? "via-sui-blue/60" : "via-move-green/60"
+                                  p.id === "ang3l" ? "via-white/60" :
+                                  p.id === "transfer" || p.id === "entry" ? "via-sui-blue/60" :
+                                  p.id === "borrow" || p.id === "module" ? "via-move-green/60" :
+                                  "via-purple-400/60"
                                 } to-transparent my-1.5`} />
                                 <p className="text-[#E5E7EB] text-xs font-mono">
                                   &gt; {p.id === "transfer"
@@ -538,46 +559,46 @@ export default function Home() {
                                         : "LA CODORNIZ QUE MUEVE OBJETOS")
                                     : p.id === "borrow"
                                     ? (lang === "pt"
-                                        ? "A CODORNA QUE USA BORROWING COM SABEDORIA"
+                                        ? "A CODORNA QUE EMPRESTA COM SABEDORIA"
                                         : lang === "en"
-                                        ? "THE QUAIL WHO USES BORROWING WISELY"
-                                        : "LA CODORNIZ QUE USA BORROWING CON SABIDURÍA")
+                                        ? "THE QUAIL WHO LENDS WISELY"
+                                        : "LA CODORNIZ QUE PRESTA CON SABIDURÍA")
                                     : p.id === "entry"
                                     ? (lang === "pt"
-                                        ? "O GUARDIÃO DAS FUNÇÕES DE ENTRADA"
+                                        ? "O PROTETOR DAS PORTAS DO CÓDIGO"
                                         : lang === "en"
-                                        ? "THE GUARDIAN OF ENTRY FUNCTIONS"
-                                        : "EL GUARDIÁN DE LAS FUNCIONES DE ENTRADA")
+                                        ? "THE PROTECTOR OF CODE GATES"
+                                        : "EL PROTECTOR DE LAS PUERTAS DEL CÓDIGO")
                                     : p.id === "module"
                                     ? (lang === "pt"
-                                        ? "A GUERREIRA DAS ESTRUTURAS"
+                                        ? "A ARQUITETA DOS MÓDULOS"
                                         : lang === "en"
-                                        ? "THE WARRIOR OF STRUCTURES"
-                                        : "LA GUERRERA DE LAS ESTRUCTURAS")
+                                        ? "THE ARCHITECT OF MODULES"
+                                        : "LA ARQUITECTA DE LOS MÓDULOS")
                                     : p.id === "patch"
                                     ? (lang === "pt"
-                                        ? "O ESPECIALISTA EM CORREÇÕES"
+                                        ? "O ARTESÃO DAS MELHORIAS"
                                         : lang === "en"
-                                        ? "THE EXPERT IN FIXES"
-                                        : "EL EXPERTO EN CORRECCIONES")
+                                        ? "THE CRAFTSMAN OF IMPROVEMENTS"
+                                        : "EL ARTESANO DE LAS MEJORAS")
                                     : p.id === "quasimodo"
                                     ? (lang === "pt"
-                                        ? "O NÚCLEO DO COMPILADOR"
+                                        ? "O SÁBIO DAS DICAS"
                                         : lang === "en"
-                                        ? "THE COMPILER CORE"
-                                        : "EL NÚCLEO DEL COMPILADOR")
+                                        ? "THE WISE ONE OF TIPS"
+                                        : "EL SABIO DE LOS CONSEJOS")
                                     : p.id === "constz"
                                     ? (lang === "pt"
-                                        ? "O MESTRE DOS FUNDAMENTOS"
+                                        ? "O GUARDIÃO DO CONHECIMENTO IMUTÁVEL"
                                         : lang === "en"
-                                        ? "THE MASTER OF FUNDAMENTALS"
-                                        : "EL MAESTRO DE LOS FUNDAMENTOS")
+                                        ? "THE GUARDIAN OF IMMUTABLE KNOWLEDGE"
+                                        : "EL GUARDIÁN DEL CONOCIMIENTO INMUTABLE")
                                     : p.id === "ang3l"
                                     ? (lang === "pt"
-                                        ? "A GUARDADORA DAS CHAVES DE AUTENTICIDADE"
+                                        ? "A PROTETORA DA IDENTIDADE"
                                         : lang === "en"
-                                        ? "THE KEEPER OF AUTHENTICITY KEYS"
-                                        : "LA GUARDIANA DE LAS LLAVES DE AUTENTICIDAD")
+                                        ? "THE PROTECTOR OF IDENTITY"
+                                        : "LA PROTECTORA DE LA IDENTIDAD")
                                     : (lang === "pt"
                                         ? "A CODORNA QUE ENTRA EM AÇÃO"
                                         : lang === "en"
