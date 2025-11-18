@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAudio } from "@/contexts/AudioContext";
+import { useState, useEffect } from "react";
 
 interface ActionBarProps {
   onRun: () => void;
@@ -20,6 +21,17 @@ export default function ActionBar({
 }: ActionBarProps) {
   const { lang } = useLanguage();
   const { playSound } = useAudio();
+  const [isChristmas, setIsChristmas] = useState(false);
+
+  useEffect(() => {
+    const checkChristmas = () => {
+      setIsChristmas(document.documentElement.classList.contains("christmas-theme"));
+    };
+    checkChristmas();
+    const observer = new MutationObserver(checkChristmas);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   const isProcessing = status === "compilando" || status === "executando";
 
@@ -35,7 +47,7 @@ export default function ActionBar({
         className="px-6 py-2.5 rounded-lg bg-gradient-sui-move text-[#020617] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-base font-bold transition-opacity flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95"
         title={lang === "pt" ? "Executa e verifica seu código" : lang === "en" ? "Run and verify your code" : "Ejecuta y verifica tu código"}
       >
-        <span className="text-lg">▶</span>
+        <span className="text-lg">{isChristmas ? "🎄" : "▶"}</span>
         <span>{lang === "pt" ? "Executar" : lang === "en" ? "Run" : "Ejecutar"}</span>
       </button>
 

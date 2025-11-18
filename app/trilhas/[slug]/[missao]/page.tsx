@@ -25,7 +25,7 @@ interface PageProps {
   };
 }
 
-type CodornaType = "transfer" | "entry" | null;
+type CodornaType = "ang3l" | "transfer" | "entry" | "borrow" | "module" | "patch" | "quasimodo" | "constz" | null;
 
 export default function MissaoPage({ params }: PageProps) {
   const router = useRouter();
@@ -48,13 +48,25 @@ export default function MissaoPage({ params }: PageProps) {
   const [xpInicializado, setXpInicializado] = useState(false);
   const [mostrarModalSucesso, setMostrarModalSucesso] = useState(false);
   const [mostrarModalSolucao, setMostrarModalSolucao] = useState(false);
+  const [isChristmas, setIsChristmas] = useState(false);
   const [mostrarModalErro, setMostrarModalErro] = useState(false);
   const [erroDetalhes, setErroDetalhes] = useState<{ titulo: string; mensagem: string; linha?: number; codigo?: string } | null>(null);
+
+  // Detecta tema natalino
+  useEffect(() => {
+    const checkChristmas = () => {
+      setIsChristmas(document.documentElement.classList.contains("christmas-theme"));
+    };
+    checkChristmas();
+    const observer = new MutationObserver(checkChristmas);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   // Carrega codorna selecionada do localStorage
   useEffect(() => {
     const savedCodorna = localStorage.getItem("moveacademy-codorna") as CodornaType;
-    if (savedCodorna === "transfer" || savedCodorna === "entry") {
+    if (savedCodorna && ["ang3l", "transfer", "entry", "borrow", "module", "patch", "quasimodo", "constz"].includes(savedCodorna)) {
       setCodornaSelecionada(savedCodorna);
     }
   }, []);
@@ -410,7 +422,7 @@ export default function MissaoPage({ params }: PageProps) {
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 flex overflow-hidden">
             {/* Editor Central */}
-            <div className="flex-1 flex flex-col overflow-hidden bg-[#0A1A2F]">
+            <div className={`flex-1 flex flex-col overflow-hidden ${isChristmas ? 'christmas-factory-terminal' : 'bg-[#0A1A2F]'}`}>
               <div className="p-4 border-b border-sui-blue/25 bg-move-navy flex-shrink-0">
                 <h2 className="text-sm font-bold text-sui-blue uppercase tracking-wider">
                   {lang === "pt" ? "Seu Código" : lang === "en" ? "Your Code" : "Tu Código"}

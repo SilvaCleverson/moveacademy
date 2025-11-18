@@ -4,7 +4,7 @@ import { Missao } from "@/lib/types/guerreiro";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAudio } from "@/contexts/AudioContext";
 import ReactMarkdown from "react-markdown";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MoveEditor from "@/components/MoveEditor";
 
 interface ObjetivoPanelProps {
@@ -19,6 +19,17 @@ export default function ObjetivoPanel({ missao, isCollapsed, onToggle, onMostrar
   const { playSound } = useAudio();
   const [mostrarExemplo, setMostrarExemplo] = useState(false);
   const [mostrarDica, setMostrarDica] = useState(false);
+  const [isChristmas, setIsChristmas] = useState(false);
+
+  useEffect(() => {
+    const checkChristmas = () => {
+      setIsChristmas(document.documentElement.classList.contains("christmas-theme"));
+    };
+    checkChristmas();
+    const observer = new MutationObserver(checkChristmas);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   if (isCollapsed) {
     return (
@@ -35,10 +46,11 @@ export default function ObjetivoPanel({ missao, isCollapsed, onToggle, onMostrar
   }
 
   return (
-    <aside className="w-80 bg-move-navy border-l border-sui-blue/25 flex flex-col h-full overflow-hidden">
+    <aside className={`w-80 ${isChristmas ? 'christmas-scroll' : 'bg-move-navy border-l border-sui-blue/25'} flex flex-col h-full overflow-hidden`}>
       <div className="p-4 border-b border-sui-blue/25 flex items-center justify-between">
-        <h2 className="text-sm font-bold text-sui-blue uppercase tracking-wider">
-          {lang === "pt" ? "Objetivo" : lang === "en" ? "Objective" : "Objetivo"}
+        <h2 className={`text-sm font-bold ${isChristmas ? 'text-[#8b4513]' : 'text-sui-blue'} uppercase tracking-wider flex items-center gap-2`}>
+          {isChristmas && <span className="text-lg">📜</span>}
+          <span>{lang === "pt" ? "Desafio" : lang === "en" ? "Challenge" : "Desafío"}</span>
         </h2>
         <button
           onClick={onToggle}

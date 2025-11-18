@@ -3,9 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAudio } from "@/contexts/AudioContext";
 
-type CodornaType = "transfer" | "entry" | null;
+type CodornaType = "ang3l" | "transfer" | "entry" | "borrow" | "module" | "patch" | "quasimodo" | "constz" | null;
 
 interface IDEHeaderProps {
   codornaSelecionada: CodornaType;
@@ -15,7 +14,6 @@ interface IDEHeaderProps {
 
 export default function IDEHeader({ codornaSelecionada, xp, xpAnimando }: IDEHeaderProps) {
   const { lang, setLang } = useLanguage();
-  const { isMuted, toggleMute, volume, setVolume } = useAudio();
 
   return (
     <header className="bg-move-navy border-b border-sui-blue/25 px-4 py-3 flex items-center justify-between gap-4">
@@ -27,31 +25,8 @@ export default function IDEHeader({ codornaSelecionada, xp, xpAnimando }: IDEHea
         </Link>
       </div>
 
-      {/* Direita: Codorna, XP, Idioma, Áudio */}
+      {/* Direita: Codorna, XP, Idioma */}
       <div className="flex items-center gap-4">
-        {/* Controle de Áudio */}
-        <div className="flex items-center gap-2 bg-[#0A1A2F] px-2 py-1.5 rounded-lg border border-sui-blue/25">
-          <button
-            onClick={toggleMute}
-            className="text-sui-blue hover:text-sui-cyan transition-colors"
-            title={isMuted ? (lang === "pt" ? "Ativar som" : lang === "en" ? "Enable sound" : "Activar sonido") : (lang === "pt" ? "Desativar som" : lang === "en" ? "Disable sound" : "Desactivar sonido")}
-          >
-            {isMuted ? "🔇" : "🔊"}
-          </button>
-          {!isMuted && (
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.1"
-              value={volume}
-              onChange={(e) => setVolume(parseFloat(e.target.value))}
-              className="w-16 h-1 bg-sui-blue/30 rounded-lg appearance-none cursor-pointer accent-sui-blue"
-              title={lang === "pt" ? "Volume" : lang === "en" ? "Volume" : "Volumen"}
-            />
-          )}
-        </div>
-
         {/* Seletor de Idioma */}
         <div className="flex items-center gap-2 bg-[#0A1A2F] px-3 py-1.5 rounded-lg border border-sui-blue/25">
           <button
@@ -87,8 +62,28 @@ export default function IDEHeader({ codornaSelecionada, xp, xpAnimando }: IDEHea
           <div className="flex items-center gap-3 bg-[#0A1A2F] px-3 py-1.5 rounded-lg border border-sui-blue/25">
             <div className="relative w-8 h-8 border border-sui-blue/50 rounded">
               <Image
-                src={codornaSelecionada === "transfer" ? "/C1.png" : "/C2.png"}
-                alt={codornaSelecionada === "transfer" ? "Sir Transfer" : "Sir Entry"}
+                src={
+                  codornaSelecionada === "ang3l" ? "/C0.png" :
+                  codornaSelecionada === "transfer" ? "/C1.png" :
+                  codornaSelecionada === "borrow" ? "/C3.png" :
+                  codornaSelecionada === "entry" ? "/C2.png" :
+                  codornaSelecionada === "module" ? "/C4.png" :
+                  codornaSelecionada === "patch" ? "/C6.png" :
+                  codornaSelecionada === "quasimodo" ? "/C7.png" :
+                  codornaSelecionada === "constz" ? "/C8.png" :
+                  "/C1.png"
+                }
+                alt={
+                  codornaSelecionada === "ang3l" ? "Ang3l" :
+                  codornaSelecionada === "transfer" ? "Sir Transfer" :
+                  codornaSelecionada === "borrow" ? "Lady Borrowa" :
+                  codornaSelecionada === "entry" ? "Sir Entry" :
+                  codornaSelecionada === "module" ? "Madame Structa" :
+                  codornaSelecionada === "patch" ? "Patch" :
+                  codornaSelecionada === "quasimodo" ? "Core" :
+                  codornaSelecionada === "constz" ? "Mestre F0ntzz" :
+                  "Codorna"
+                }
                 fill
                 className="object-cover rounded"
                 sizes="32px"
