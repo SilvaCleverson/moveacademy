@@ -77,7 +77,7 @@ export default function ObjetivoPanel({ missao, isCollapsed, onToggle, onMostrar
         </div>
 
         {/* Conteúdo/Instruções */}
-        <div className="prose prose-invert max-w-none text-sm [&>h1]:text-lg [&>h1]:font-bold [&>h1]:mb-2 [&>h1]:text-sui-blue [&>h2]:text-base [&>h2]:font-semibold [&>h2]:mb-2 [&>h2]:mt-4 [&>h2]:text-sui-cyan [&>p]:mb-3 [&>p]:text-[#CBD5F5] [&>ul]:list-disc [&>ul]:ml-4 [&>ul]:mb-3 [&>ul]:text-[#CBD5F5] [&>ol]:list-decimal [&>ol]:ml-4 [&>ol]:mb-3 [&>ol]:text-[#CBD5F5] [&>code]:bg-[#1E293B] [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-move-green [&>pre]:bg-[#020617] [&>pre]:p-3 [&>pre]:rounded-lg [&>pre]:border [&>pre]:border-sui-blue/25 [&>pre]:overflow-x-auto [&>pre>code]:text-[#E5E7EB]">
+        <div className={`prose prose-invert max-w-none text-sm ${isChristmas ? '[&>p]:text-[#3d2810] [&>p]:font-medium [&>li]:text-[#3d2810] [&>li]:font-medium [&>h1]:text-[#8b4513] [&>h2]:text-[#8b4513]' : '[&>h1]:text-lg [&>h1]:font-bold [&>h1]:mb-2 [&>h1]:text-sui-blue [&>h2]:text-base [&>h2]:font-semibold [&>h2]:mb-2 [&>h2]:mt-4 [&>h2]:text-sui-cyan [&>p]:mb-3 [&>p]:text-[#CBD5F5] [&>ul]:list-disc [&>ul]:ml-4 [&>ul]:mb-3 [&>ul]:text-[#CBD5F5] [&>ol]:list-decimal [&>ol]:ml-4 [&>ol]:mb-3 [&>ol]:text-[#CBD5F5]'} [&>code]:bg-[#1E293B] [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-move-green [&>pre]:bg-[#020617] [&>pre]:p-3 [&>pre]:rounded-lg [&>pre]:border [&>pre]:border-sui-blue/25 [&>pre]:overflow-x-auto [&>pre>code]:text-[#E5E7EB]`}>
           <ReactMarkdown>{missao.conteudo}</ReactMarkdown>
         </div>
 
