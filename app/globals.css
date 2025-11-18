@@ -268,7 +268,8 @@ body {
 
 .christmas-theme .christmas-scroll p,
 .christmas-theme .christmas-scroll li {
-  color: #5c3a1a !important;
+  color: #3d2810 !important;
+  font-weight: 500;
 }
 
 .christmas-theme .christmas-scroll code {

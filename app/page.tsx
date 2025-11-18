@@ -231,6 +231,14 @@ export default function Home() {
 
   const confirmarSelecao = useCallback(() => {
     const personagem = personagensEmbaralhados[personagemSelecionado];
+    const codornaAnterior = localStorage.getItem("moveacademy-codorna");
+    
+    // Se trocou de personagem, limpa o histórico
+    if (codornaAnterior && codornaAnterior !== personagem.id) {
+      localStorage.removeItem("moveacademy-missoes-concluidas");
+      localStorage.removeItem("moveacademy-xp");
+    }
+    
     localStorage.setItem("moveacademy-codorna", personagem.id);
     playSound("success");
     
@@ -528,6 +536,48 @@ export default function Home() {
                                         : lang === "en"
                                         ? "THE QUAIL THAT MOVES OBJECTS"
                                         : "LA CODORNIZ QUE MUEVE OBJETOS")
+                                    : p.id === "borrow"
+                                    ? (lang === "pt"
+                                        ? "A CODORNA QUE USA BORROWING COM SABEDORIA"
+                                        : lang === "en"
+                                        ? "THE QUAIL WHO USES BORROWING WISELY"
+                                        : "LA CODORNIZ QUE USA BORROWING CON SABIDURÍA")
+                                    : p.id === "entry"
+                                    ? (lang === "pt"
+                                        ? "O GUARDIÃO DAS FUNÇÕES DE ENTRADA"
+                                        : lang === "en"
+                                        ? "THE GUARDIAN OF ENTRY FUNCTIONS"
+                                        : "EL GUARDIÁN DE LAS FUNCIONES DE ENTRADA")
+                                    : p.id === "module"
+                                    ? (lang === "pt"
+                                        ? "A GUERREIRA DAS ESTRUTURAS"
+                                        : lang === "en"
+                                        ? "THE WARRIOR OF STRUCTURES"
+                                        : "LA GUERRERA DE LAS ESTRUCTURAS")
+                                    : p.id === "patch"
+                                    ? (lang === "pt"
+                                        ? "O ESPECIALISTA EM CORREÇÕES"
+                                        : lang === "en"
+                                        ? "THE EXPERT IN FIXES"
+                                        : "EL EXPERTO EN CORRECCIONES")
+                                    : p.id === "quasimodo"
+                                    ? (lang === "pt"
+                                        ? "O NÚCLEO DO COMPILADOR"
+                                        : lang === "en"
+                                        ? "THE COMPILER CORE"
+                                        : "EL NÚCLEO DEL COMPILADOR")
+                                    : p.id === "constz"
+                                    ? (lang === "pt"
+                                        ? "O MESTRE DOS FUNDAMENTOS"
+                                        : lang === "en"
+                                        ? "THE MASTER OF FUNDAMENTALS"
+                                        : "EL MAESTRO DE LOS FUNDAMENTOS")
+                                    : p.id === "ang3l"
+                                    ? (lang === "pt"
+                                        ? "A GUARDADORA DAS CHAVES DE AUTENTICIDADE"
+                                        : lang === "en"
+                                        ? "THE KEEPER OF AUTHENTICITY KEYS"
+                                        : "LA GUARDIANA DE LAS LLAVES DE AUTENTICIDAD")
                                     : (lang === "pt"
                                         ? "A CODORNA QUE ENTRA EM AÇÃO"
                                         : lang === "en"
