@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { Missao } from "@/lib/types/guerreiro";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface MissaoCardProps {
   missao: Missao;
   trilhaSlug: string;
   concluida?: boolean;
   bloqueada?: boolean;
+  motivoBloqueio?: "trilha_anterior" | "missao_anterior";
 }
 
 export default function MissaoCard({
@@ -15,7 +17,9 @@ export default function MissaoCard({
   trilhaSlug,
   concluida = false,
   bloqueada = false,
+  motivoBloqueio,
 }: MissaoCardProps) {
+  const { lang } = useLanguage();
   const CardContent = (
     <div
       className={`p-4 sm:p-5 rounded-xl border transition-all duration-200 ${
@@ -46,12 +50,12 @@ export default function MissaoCard({
             <span className="text-xl sm:text-2xl">{missao.icone}</span>
             {concluida && (
               <span className="px-2 py-0.5 rounded-full bg-move-green/20 text-move-green text-xs font-semibold">
-                Concluída
+                {lang === "pt" ? "Concluída" : lang === "en" ? "Completed" : "Completada"}
               </span>
             )}
             {bloqueada && (
               <span className="px-2 py-0.5 rounded-full bg-[#1E293B] text-[#9CA3AF] text-xs font-semibold">
-                Bloqueada
+                🔒 {lang === "pt" ? "Bloqueada" : lang === "en" ? "Locked" : "Bloqueada"}
               </span>
             )}
           </div>
@@ -63,6 +67,22 @@ export default function MissaoCard({
             {missao.titulo}
           </h3>
           <p className="text-xs sm:text-sm text-[#CBD5F5] mb-3 line-clamp-2">{missao.descricao}</p>
+          {bloqueada && (
+            <p className="text-xs text-[#9CA3AF] italic mb-2">
+              {motivoBloqueio === "trilha_anterior"
+                ? (lang === "pt" 
+                    ? "Complete todas as missões da trilha anterior para desbloquear"
+                    : lang === "en"
+                    ? "Complete all missions from the previous trail to unlock"
+                    : "Completa todas las misiones de la trilha anterior para desbloquear")
+                : (lang === "pt" 
+                    ? "Complete a missão anterior para desbloquear"
+                    : lang === "en"
+                    ? "Complete the previous mission to unlock"
+                    : "Completa la misión anterior para desbloquear")
+              }
+            </p>
+          )}
 
           {/* Recompensas */}
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">

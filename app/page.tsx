@@ -281,13 +281,13 @@ export default function Home() {
   }, [personagemSelecionado, animando, personagemAnterior, proximoPersonagem, confirmarSelecao]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 sm:p-4 bg-[#0A1A2F] text-[#FFFFFF] relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center py-6 px-6 sm:py-4 sm:px-4 bg-[#0A1A2F] text-[#FFFFFF] relative overflow-y-auto">
       {/* Background pattern estilo Phantasy Star */}
       <div className="absolute inset-0 opacity-10" style={{
         backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(106,215,229,0.1) 2px, rgba(106,215,229,0.1) 4px)`,
       }} />
       <div className="max-w-4xl w-full relative z-10">
-        <main className="w-full hud-panel p-4 sm:p-6 relative">
+        <main className="w-full hud-panel p-4 sm:p-6 relative mb-6">
           {/* Borda superior estilo HUD */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sui-blue to-transparent opacity-60" />
           
@@ -652,7 +652,7 @@ export default function Home() {
           </div>
           
           {/* Borda inferior estilo HUD */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sui-cyan to-transparent opacity-60 mt-6" />
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sui-cyan to-transparent opacity-60" />
 
         </main>
       </div>

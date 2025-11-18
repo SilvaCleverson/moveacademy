@@ -230,9 +230,36 @@ export default function TrilhaDetailPage({ params }: PageProps) {
             </div>
           </div>
           
-          <h2 className="text-xl sm:text-2xl font-bold text-sui-blue mb-4 sm:mb-6">
-            {lang === "pt" ? "Missões" : lang === "en" ? "Missions" : "Misiones"}
-          </h2>
+          {/* Gauge de Progresso */}
+          {trilha.missoes.length > 0 && (
+            <div className="mb-6 sm:mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xl sm:text-2xl font-bold text-sui-blue">
+                  {lang === "pt" ? "Missões" : lang === "en" ? "Missions" : "Misiones"}
+                </h2>
+                <span className="text-sm sm:text-base text-[#CBD5F5] font-mono">
+                  {missoesConcluidas.filter(id => trilha.missoes.some(m => m.id === id)).length} / {trilha.missoes.length}
+                </span>
+              </div>
+              {/* Barra de Progresso */}
+              <div className="w-full h-3 sm:h-4 bg-[#1E293B] rounded-full overflow-hidden border border-sui-blue/20">
+                <div 
+                  className="h-full bg-gradient-to-r from-sui-blue via-sui-cyan to-move-green transition-all duration-500 ease-out"
+                  style={{
+                    width: `${(missoesConcluidas.filter(id => trilha.missoes.some(m => m.id === id)).length / trilha.missoes.length) * 100}%`
+                  }}
+                />
+              </div>
+              <p className="text-xs text-[#9CA3AF] mt-2 font-mono">
+                {lang === "pt" 
+                  ? `${Math.round((missoesConcluidas.filter(id => trilha.missoes.some(m => m.id === id)).length / trilha.missoes.length) * 100)}% concluído`
+                  : lang === "en"
+                  ? `${Math.round((missoesConcluidas.filter(id => trilha.missoes.some(m => m.id === id)).length / trilha.missoes.length) * 100)}% completed`
+                  : `${Math.round((missoesConcluidas.filter(id => trilha.missoes.some(m => m.id === id)).length / trilha.missoes.length) * 100)}% completado`
+                }
+              </p>
+            </div>
+          )}
           {trilha.missoes.length === 0 ? (
             <div className="bg-[#020617]/50 rounded-lg p-6 sm:p-8 border border-sui-blue/20">
               <div className="text-center mb-6">
@@ -269,16 +296,32 @@ export default function TrilhaDetailPage({ params }: PageProps) {
             <div className="space-y-4">
               {trilha.missoes.map((missao, index) => {
                 const concluida = missoesConcluidas.includes(missao.id);
-                const bloqueada = false; // BLOQUEIO DESABILITADO - Todas as missões liberadas
+                
+                // Verifica se a trilha anterior foi completamente concluída
+                const trilhaIndex = trilhas.findIndex(t => t.id === trilha.id);
+                const trilhaAnteriorCompleta = trilhaIndex > 0 
+                  ? trilhas[trilhaIndex - 1].missoes.every(m => missoesConcluidas.includes(m.id))
+                  : true; // Primeira trilha sempre liberada
+                
+                // Missão está bloqueada se:
+                // 1. É a primeira missão E a trilha anterior não foi completamente concluída
+                // 2. OU não é a primeira E a missão anterior não foi concluída
+                const bloqueada = (index === 0 && !trilhaAnteriorCompleta) || 
+                                 (index > 0 && !missoesConcluidas.includes(trilha.missoes[index - 1].id));
 
                 return (
                   <MissaoCard
                     key={missao.id}
                     missao={missao}
-              trilhaSlug={trilha.slug}
+                    trilhaSlug={trilha.slug}
                     concluida={concluida}
                     bloqueada={bloqueada}
-            />
+                    motivoBloqueio={index === 0 && !trilhaAnteriorCompleta 
+                      ? "trilha_anterior" 
+                      : index > 0 && !missoesConcluidas.includes(trilha.missoes[index - 1].id)
+                      ? "missao_anterior"
+                      : undefined}
+                  />
                 );
               })}
             </div>
