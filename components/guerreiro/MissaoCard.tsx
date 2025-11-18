@@ -33,7 +33,7 @@ export default function MissaoCard({
       <div className="flex items-start gap-3 sm:gap-4">
         {/* Número/Status */}
         <div
-          className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-bold text-base sm:text-lg ${
+          className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-bold text-base sm:text-lg relative ${
             bloqueada
               ? "bg-[#1E293B] text-[#4B5563]"
               : concluida
@@ -41,7 +41,16 @@ export default function MissaoCard({
               : "bg-aqua-soft text-sui-blue border border-sui-blue/30"
           }`}
         >
-          {bloqueada ? "🔒" : concluida ? "✓" : missao.numero}
+          {bloqueada ? (
+            <>
+              <span>{missao.numero}</span>
+              <span className="absolute -top-1 -right-1 text-xs">🔒</span>
+            </>
+          ) : concluida ? (
+            "✓"
+          ) : (
+            missao.numero
+          )}
         </div>
 
         {/* Conteúdo */}
