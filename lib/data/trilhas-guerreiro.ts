@@ -696,7 +696,7 @@ Crie uma função que regenera a mana do herói, respeitando o limite máximo!`,
         numero: 7,
         icone: "🔓",
         titulo: "Revele seu símbolo – NFT com nome/atributos",
-        descricao: "Crie seu primeiro NFT no Sui! Aprenda sobre objetos, UID e o ecossistema Sui Move.",
+        descricao: "Crie seu primeiro NFT na blockchain Sui! Aprenda sobre objetos, UID e o ecossistema Sui Move.",
         lore: "Sua essência se materializa. É hora de criar seu símbolo único, um NFT que representa quem você é. Este é seu primeiro passo no mundo real do Sui.",
         conteudo: `# 🔓 Missão 7: Revele seu Símbolo
 
@@ -706,7 +706,7 @@ Sua essência se materializa. É hora de criar seu símbolo único, um NFT que r
 
 ## 🎯 O Que Você Vai Aprender
 
-- **Objetos** no Sui
+- **Objetos** na blockchain Sui
 - **UID** (Unique Identifier)
 - **Structs com key** para objetos
 - **Transfer** de objetos
@@ -803,7 +803,7 @@ Crie um NFT Hero com nome e nível que pode ser transferido!`,
         badgeRecompensa: {
           id: "badge-criador-nfts",
           nome: "Criador de NFTs",
-          descricao: "Você criou seu primeiro NFT no Sui!",
+          descricao: "Você criou seu primeiro NFT na blockchain Sui!",
           icone: "🔓",
         },
         conceitosAprendidos: [
@@ -1165,7 +1165,7 @@ Alguns recursos precisam ser guardados para sempre. Aprenda a habilidade 'store'
 - **store**: Ability que permite armazenar structs em recursos globais
 - Usado para dados que precisam persistir na blockchain
 - Necessário para structs dentro de outras structs armazenadas globalmente
-- Diferente de \`key\` (usado no Sui para objetos)
+- Diferente de \`key\` (usado na blockchain Sui para objetos)
 
 ## 💻 Exemplo
 
@@ -1224,7 +1224,7 @@ A chave mestre. Com ela, você pode criar objetos únicos que existem no mundo i
 
 - Ability **key** no Move
 - Diferença entre key e store
-- Uso no Sui
+- Uso na blockchain Sui
 
 ## 📚 Conceitos Move
 
@@ -1251,7 +1251,7 @@ module 0x1::key_example {
 - \`has key\` - Permite que a struct seja um objeto Sui identificável
 - \`id: UID\` - Campo obrigatório para objetos com \`key\`
 - \`UID\` é criado com \`object::new(ctx)\` durante a criação
-- Objetos com \`key\` podem ser transferidos, compartilhados ou congelados no Sui
+- Objetos com \`key\` podem ser transferidos, compartilhados ou congelados na blockchain Sui
 
 ## ✨ Recompensas
 
@@ -1271,7 +1271,7 @@ Crie uma struct com ability key e campo UID!`,
         dados: u64,
     }
 }`,
-        dicas: ["Key requer UID", "Key é usado no Sui para objetos"],
+        dicas: ["Key requer UID", "Key é usado na blockchain Sui para objetos"],
         xpRecompensa: 200,
         conceitosAprendidos: ["Key ability", "UID"],
         preRequisitos: ["missao-11"],
@@ -1454,7 +1454,7 @@ Crie uma struct que combine copy, drop e store!`,
         numero: 1,
         icone: "🌊",
         titulo: "Criar seu Primeiro Objeto",
-        descricao: "Aprenda a criar objetos no Sui usando UID e a ability key.",
+        descricao: "Aprenda a criar objetos na blockchain Sui usando UID e a ability key.",
         lore: "O mundo Sui se abre. Crie seu primeiro objeto que existe no blockchain.",
         conteudo: `# 🌊 Missão 1: Criar seu Primeiro Objeto
 
@@ -1464,7 +1464,7 @@ O mundo Sui se abre. Crie seu primeiro objeto que existe no blockchain.
 
 ## 🎯 O Que Você Vai Aprender
 
-- Criar objetos no Sui
+- Criar objetos na blockchain Sui
 - UID (Unique Identifier)
 - Ability key
 
@@ -1557,12 +1557,12 @@ O poder de mover objetos. Aprenda a transferir propriedades no mundo Sui.
 
 - transfer::transfer
 - Transferir objetos para endereços
-- Ownership no Sui
+- Ownership na blockchain Sui
 
 ## 📚 Conceitos Sui Move
 
 - **transfer::transfer**: Função que move ownership de um objeto para um endereço
-- **Ownership no Sui**: Objetos pertencem a endereços (carteiras)
+- **Ownership na blockchain Sui**: Objetos pertencem a endereços (carteiras)
 - **Address**: Tipo que representa um endereço na blockchain Sui
 - Após transferir, o objeto passa a pertencer ao destinatário
 
@@ -1619,18 +1619,18 @@ Crie uma função que transfere um objeto para um endereço!`,
         icone: "🚪",
         titulo: "Entry Functions",
         descricao: "Aprenda a criar entry functions que podem ser chamadas diretamente em transações.",
-        lore: "A porta de entrada. Entry functions são o ponto de partida para todas as ações no Sui.",
+        lore: "A porta de entrada. Entry functions são o ponto de partida para todas as ações na blockchain Sui.",
         conteudo: `# 🚪 Missão 3: Entry Functions
 
 ## 📖 A Porta de Entrada
 
-A porta de entrada. Entry functions são o ponto de partida para todas as ações no Sui.
+A porta de entrada. Entry functions são o ponto de partida para todas as ações na blockchain Sui.
 
 ## 🎯 O Que Você Vai Aprender
 
 - entry fun
 - Diferença entre public e entry
-- Transações no Sui
+- Transações na blockchain Sui
 
 ## 📚 Conceitos Sui Move
 
@@ -1763,7 +1763,7 @@ Crie uma função que compartilha um objeto para acesso global!`,
         numero: 5,
         icone: "❄️",
         titulo: "Objetos Congelados",
-        descricao: "Aprenda sobre frozen objects - objetos imutáveis no Sui.",
+        descricao: "Aprenda sobre frozen objects - objetos imutáveis na blockchain Sui.",
         lore: "Algumas coisas nunca mudam. Aprenda a criar objetos congelados no tempo.",
         conteudo: `# ❄️ Missão 5: Objetos Congelados
 
@@ -1954,7 +1954,7 @@ Crie um sistema completo que combine criação, mutação e compartilhamento de 
       es: "Monedas y Tokens",
     },
     descricao: {
-      pt: "Crie seu próprio sistema de moedas e tokens no Sui. Aprenda sobre Coin<T> e economia tokenizada.",
+      pt: "Crie seu próprio sistema de moedas e tokens na blockchain Sui. Aprenda sobre Coin<T> e economia tokenizada.",
       en: "Create your own coin and token system on Sui. Learn about Coin<T> and tokenized economics.",
       es: "Crea tu propio sistema de monedas y tokens en Sui. Aprende sobre Coin<T> y economía tokenizada.",
     },
@@ -1977,7 +1977,7 @@ Crie um sistema completo que combine criação, mutação e compartilhamento de 
       es: "NFTs Avanzado",
     },
     descricao: {
-      pt: "Crie coleções NFT complexas com metadados, royalties e marketplaces no Sui.",
+      pt: "Crie coleções NFT complexas com metadados, royalties e marketplaces na blockchain Sui.",
       en: "Create complex NFT collections with metadata, royalties, and marketplaces on Sui.",
       es: "Crea colecciones NFT complejas con metadatos, regalías y mercados en Sui.",
     },
@@ -2000,7 +2000,7 @@ Crie um sistema completo que combine criação, mutação e compartilhamento de 
       es: "DeFi y Finanzas",
     },
     descricao: {
-      pt: "Construa protocolos DeFi: DEX, staking, lending e yield farming no Sui.",
+      pt: "Construa protocolos DeFi: DEX, staking, lending e yield farming na blockchain Sui.",
       en: "Build DeFi protocols: DEX, staking, lending, and yield farming on Sui.",
       es: "Construye protocolos DeFi: DEX, staking, lending y yield farming en Sui.",
     },
@@ -2023,7 +2023,7 @@ Crie um sistema completo que combine criação, mutação e compartilhamento de 
       es: "Gaming y Metaverso",
     },
     descricao: {
-      pt: "Crie jogos Web3, sistemas de recompensas e experiências imersivas no Sui.",
+      pt: "Crie jogos Web3, sistemas de recompensas e experiências imersivas na blockchain Sui.",
       en: "Create Web3 games, reward systems, and immersive experiences on Sui.",
       es: "Crea juegos Web3, sistemas de recompensas y experiencias inmersivas en Sui.",
     },

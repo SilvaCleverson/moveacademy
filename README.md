@@ -69,22 +69,22 @@ Explore os 8 continentes de Moviara, cada um com seu próprio desafio e conhecim
    - Conceitos: Ownership, Copy, Store, Key, Drop, abilities combinadas
 
 3. **⚡ Sui Prático** (6 missões • 1300 XP)
-   - Aprenda a trabalhar com objetos, transferências e funções entry no Sui.
+   - Aprenda a trabalhar com objetos, transferências e funções entry na blockchain Sui.
    - Conceitos: Objetos Sui, transfer, entry functions, compartilhado, congelado
 
 ### 🚧 Trilhas em Construção
 
 4. **🪙 Moedas e Tokens** (0 missões • 1800 XP planejado)
-   - Crie seu próprio sistema de moedas e tokens no Sui. Aprenda sobre Coin<T> e economia tokenizada.
+   - Crie seu próprio sistema de moedas e tokens na blockchain Sui. Aprenda sobre Coin<T> e economia tokenizada.
 
 5. **🎨 NFTs Avançado** (0 missões • 2000 XP planejado)
-   - Crie coleções NFT complexas com metadados, royalties e marketplaces no Sui.
+   - Crie coleções NFT complexas com metadados, royalties e marketplaces na blockchain Sui.
 
 6. **💎 DeFi e Finanças** (0 missões • 2500 XP planejado)
-   - Construa protocolos DeFi: DEX, staking, lending e yield farming no Sui.
+   - Construa protocolos DeFi: DEX, staking, lending e yield farming na blockchain Sui.
 
 7. **🎮 Gaming e Metaverso** (0 missões • 2200 XP planejado)
-   - Crie jogos Web3, sistemas de recompensas e experiências imersivas no Sui.
+   - Crie jogos Web3, sistemas de recompensas e experiências imersivas na blockchain Sui.
 
 8. **👑 Caminho do Mestre** (0 missões • 3000 XP planejado)
    - Torne-se um mestre do Move. Projetos avançados, otimizações e padrões de design profissional.

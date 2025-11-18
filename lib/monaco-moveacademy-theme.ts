@@ -1,6 +1,6 @@
 // lib/monaco-moveacademy-theme.ts
 // Tema Monaco Editor customizado para MoveAcademy
-// Paleta de cores alinhada com a identidade visual MoveAcademy (inspirada na Sui)
+// Paleta de cores alinhada com a identidade visual MoveAcademy (inspirada na blockchain Sui)
 
 export function registerMoveAcademyTheme(monaco: any) {
   monaco.editor.defineTheme("moveacademy-dark", {

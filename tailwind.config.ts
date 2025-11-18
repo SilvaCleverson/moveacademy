@@ -9,13 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Paleta oficial MoveAcademy (inspirada na Sui)
+        // Paleta oficial MoveAcademy (inspirada na blockchain Sui)
         "sui-blue": "#6AD7E5",
         "sui-cyan": "#4BE4C9",
         "sui-dark": "#0A1A2F",
         "move-navy": "#0F233E",
         "aqua-soft": "#122C4A",
         "move-green": "#3FFE95",
+        // Cores natalinas
+        "christmas-red": "#DC2626",
+        "christmas-green": "#16A34A",
+        "christmas-gold": "#FBBF24",
+        "christmas-snow": "#F0F9FF",
       },
       backgroundImage: {
         "gradient-sui-move": "linear-gradient(135deg, #6AD7E5 0%, #4BE4C9 100%)",

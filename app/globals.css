@@ -38,3 +38,168 @@ body {
   }
 }
 
+/* ❄ Apenas Efeito de Neve */
+@keyframes snowflake {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* 🎅 Papai Noel voando */
+@keyframes santa-fly {
+  0% {
+    left: -200px;
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  45% {
+    transform: translateY(-20px) scale(1.1);
+  }
+  50% {
+    transform: translateY(0) scale(1);
+  }
+  55% {
+    transform: translateY(20px) scale(0.9);
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% + 200px);
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+}
+
+/* 🐦 Codorna voando da esquerda em direção à Estrela de Belém (canto superior direito) */
+@keyframes quail-fly-to-star {
+  0% {
+    left: -100px;
+    top: 10%;
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  50% {
+    left: 70%;
+    top: 3%;
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  95% {
+    left: calc(100% - 50px);
+    top: -50px;
+    transform: translateY(0) scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 30px);
+    top: -80px;
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* 🐦 Codorna voando da esquerda em direção à Estrela (trajetória 2) */
+@keyframes quail-fly-to-star-2 {
+  0% {
+    left: -100px;
+    top: 15%;
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  50% {
+    left: 75%;
+    top: 2%;
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  95% {
+    left: calc(100% - 40px);
+    top: -40px;
+    transform: translateY(0) scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 20px);
+    top: -70px;
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* 🐦 Codorna voando da esquerda em direção à Estrela (trajetória 3) */
+@keyframes quail-fly-to-star-3 {
+  0% {
+    left: -100px;
+    top: 20%;
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  50% {
+    left: 80%;
+    top: 1%;
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  95% {
+    left: calc(100% - 30px);
+    top: -30px;
+    transform: translateY(0) scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 10px);
+    top: -60px;
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* ⭐ Estrela de Belém */
+@keyframes star-pulse {
+  0%, 100% {
+    transform: translateY(-50%) scale(1);
+    opacity: 0.9;
+    box-shadow: 
+      0 0 50px rgba(251, 191, 36, 0.9),
+      0 0 100px rgba(251, 191, 36, 0.7),
+      0 0 150px rgba(251, 191, 36, 0.5),
+      0 0 200px rgba(251, 191, 36, 0.3);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.2);
+    opacity: 1;
+    box-shadow: 
+      0 0 60px rgba(251, 191, 36, 1),
+      0 0 120px rgba(251, 191, 36, 0.9),
+      0 0 180px rgba(251, 191, 36, 0.7),
+      0 0 250px rgba(251, 191, 36, 0.5);
+  }
+}
+
+@keyframes star-rotate {
+  0% {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}
+

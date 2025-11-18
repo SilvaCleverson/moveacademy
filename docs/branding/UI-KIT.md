@@ -1,6 +1,6 @@
 # MoveAcademy UI Kit
 
-Este UI Kit define componentes básicos usando a paleta oficial MoveAcademy (inspirada na Sui).
+Este UI Kit define componentes básicos usando a paleta oficial MoveAcademy (inspirada na blockchain Sui).
 
 ## 🎨 Paleta (referência rápida)
 
@@ -65,7 +65,7 @@ Este UI Kit define componentes básicos usando a paleta oficial MoveAcademy (ins
     <span class="track-tag">Trilha 1 · Fundamentos</span>
     <h3>Introdução à linguagem Move</h3>
   </header>
-  <p>Aprenda módulos, structs, funções e tipos básicos, com exemplos executáveis na Sui.</p>
+  <p>Aprenda módulos, structs, funções e tipos básicos, com exemplos executáveis na blockchain Sui.</p>
   <footer>
     <span class="track-meta">6 aulas · 12 desafios</span>
     <button class="btn-ghost">Ver conteúdo</button>

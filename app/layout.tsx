@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { LanguageProviderWrapper } from "@/components/providers/LanguageProviderWrapper";
 import AudioProviderWrapper from "@/components/providers/AudioProviderWrapper";
+import ChristmasThemeProvider from "@/components/providers/ChristmasThemeProvider";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
@@ -19,8 +20,10 @@ export default function RootLayout({
       <body suppressHydrationWarning>
       <LanguageProviderWrapper>
         <AudioProviderWrapper>
-          {children}
-          <Footer />
+          <ChristmasThemeProvider>
+            {children}
+            <Footer />
+          </ChristmasThemeProvider>
         </AudioProviderWrapper>
       </LanguageProviderWrapper>
       </body>
