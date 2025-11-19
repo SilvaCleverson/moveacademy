@@ -10,6 +10,7 @@ interface MissaoCardProps {
   concluida?: boolean;
   bloqueada?: boolean;
   motivoBloqueio?: "trilha_anterior" | "missao_anterior";
+  modoInstrutor?: boolean;
 }
 
 export default function MissaoCard({
@@ -18,6 +19,7 @@ export default function MissaoCard({
   concluida = false,
   bloqueada = false,
   motivoBloqueio,
+  modoInstrutor = false,
 }: MissaoCardProps) {
   const { lang } = useLanguage();
   const CardContent = (
@@ -115,7 +117,11 @@ export default function MissaoCard({
     return CardContent;
   }
 
+  const href = modoInstrutor 
+    ? `/trilhas/${trilhaSlug}/${missao.slug}?instructor=true`
+    : `/trilhas/${trilhaSlug}/${missao.slug}`;
+
   return (
-    <Link href={`/trilhas/${trilhaSlug}/${missao.slug}`}>{CardContent}</Link>
+    <Link href={href}>{CardContent}</Link>
   );
 }

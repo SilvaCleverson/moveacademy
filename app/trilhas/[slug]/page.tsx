@@ -4,7 +4,7 @@ import { getTrilhaBySlug, trilhas } from "@/lib/data/trilhas-guerreiro";
 import MissaoCard from "@/components/guerreiro/MissaoCard";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -18,8 +18,10 @@ type CodornaType = "transfer" | "entry" | null;
 
 export default function TrilhaDetailPage({ params }: PageProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const trilha = getTrilhaBySlug(params.slug);
   const { lang } = useLanguage();
+  const modoInstrutor = searchParams.get("instructor") === "true";
   const [codornaSelecionada, setCodornaSelecionada] = useState<CodornaType>(null);
   const [missoesConcluidas, setMissoesConcluidas] = useState<string[]>([]);
   const [xp, setXp] = useState(0);
@@ -306,8 +308,11 @@ export default function TrilhaDetailPage({ params }: PageProps) {
                 // Missão está bloqueada se:
                 // 1. É a primeira missão E a trilha anterior não foi completamente concluída
                 // 2. OU não é a primeira E a missão anterior não foi concluída
-                const bloqueada = (index === 0 && !trilhaAnteriorCompleta) || 
-                                 (index > 0 && !missoesConcluidas.includes(trilha.missoes[index - 1].id));
+                // EXCETO se estiver no modo instrutor (desbloqueia tudo)
+                const bloqueada = modoInstrutor 
+                  ? false 
+                  : (index === 0 && !trilhaAnteriorCompleta) || 
+                    (index > 0 && !missoesConcluidas.includes(trilha.missoes[index - 1].id));
 
                 return (
                   <MissaoCard
@@ -321,6 +326,7 @@ export default function TrilhaDetailPage({ params }: PageProps) {
                       : index > 0 && !missoesConcluidas.includes(trilha.missoes[index - 1].id)
                       ? "missao_anterior"
                       : undefined}
+                    modoInstrutor={modoInstrutor}
                   />
                 );
               })}
